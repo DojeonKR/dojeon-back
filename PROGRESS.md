@@ -16,8 +16,6 @@
 | 변경 | `sections` — `content Json` 컬럼 제거, 카드·머티리얼·문항 relation 추가 |
 | 변경 | `scraps` — `word`/`meaning` 컬럼 제거 → `card_id` FK, `material_id` FK |
 | 변경 | `user_section_logs` — `difficulty` 컬럼 추가 |
-| 변경 | `nlp_jobs` — `job_id`를 UUID PK로 유지, `cache_key` 컬럼 추가, `section_id` 제거 |
-| 변경 | Enum `NlpJobStatus` — `COMPLETED` → `DONE` 으로 변경 |
 
 마이그레이션 SQL: `prisma/migrations/20260403120000_full_plan/migration.sql`  
 (실제 DB 적용은 `DATABASE_URL` 설정 후 `npx prisma migrate dev` 또는 `deploy`)
@@ -122,21 +120,10 @@
 
 ---
 
-### 1-11. NLP (`src/modules/nlp/`)
+### 1-11. 공통 인프라 변경
 
 | 항목 | 상세 |
 |------|------|
-| `POST /nlp/analyze` | Request body: `text` (최대 1000자), SHA256 → Redis 캐시 확인 후 히트 시 즉시 반환 (`code: "200"`), 미스 시 SQS 발행 + jobId 반환 (`code: "202"`) |
-| `GET /nlp/job/:jobId` | 2초 폴링용, 본인 job 검증 (403/404), `status`·`result` 반환 |
-| `NlpJobStatus` | PENDING → PROCESSING → DONE / FAILED |
-
----
-
-### 1-12. 공통 인프라 변경
-
-| 항목 | 상세 |
-|------|------|
-| `ResponseInterceptor` | `__envelope { code, message }` 패턴으로 응답 코드·메시지 오버라이드 가능 (NLP 202 용) |
 | `app.module.ts` | `HomeModule`, `PracticeModule`, `SubscriptionModule` 등록 |
 | `README.md` | 엔드포인트·마이그레이트 안내 갱신 |
 
@@ -146,11 +133,9 @@
 
 | 항목 | 결과 |
 |------|------|
-| `.env.example` 바른 AI 항목 추가 | `BAREUNA_AI_API_URL`, `BAREUNA_AI_API_KEY`, `NLP_REDIS_CACHE_TTL` |
 | `recalculateStreak` 최적화 | 400회 DB 루프 → `findMany` 단일 쿼리 + JS 순회 |
 | AWS SES 이메일 발송 | `src/infra/email/email.service.ts`, `EmailModule` (Global) — dev는 로그, prod는 SES |
 | Auth 이메일 연동 | `sendEmailCode`, `passwordResetRequest` 에서 `EmailService` 호출 |
-| NLP Lambda 워커 | `lambda/nlp-worker/` — SQS 컨슈머, 바른 AI 호출, DB·Redis 업데이트, Partial Batch Response |
 | Scrap Pagination | `GET /scrap?type=&cursor=&limit=` 커서 기반 (기본 20, 최대 100) |
 
 ---
@@ -178,24 +163,7 @@ npm run prisma:seed
 
 ---
 
-### 3-2. NLP Lambda 배포 (코드 완성 ✅ — AWS 설정 필요)
-
-```bash
-cd lambda/nlp-worker
-npm install
-npm run build
-npm run package:win    # Windows: lambda.zip 생성
-
-aws lambda update-function-code \
-  --function-name dojeon-nlp-worker \
-  --zip-file fileb://lambda.zip
-```
-
-Lambda 환경변수: `DATABASE_URL`, `REDIS_URL`, `BAREUNA_AI_API_URL`, `BAREUNA_AI_API_KEY`
-
----
-
-### 3-3. 콘텐츠 관리 (관리자/마이그레이션)
+### 3-2. 콘텐츠 관리 (관리자/마이그레이션)
 
 현재 Section 콘텐츠(단어카드·문법 머티리얼·퀴즈)가 새 테이블로 분리됐지만, **데이터 입력 수단이 없음**.
 
@@ -219,7 +187,6 @@ Lambda 환경변수: `DATABASE_URL`, `REDIS_URL`, `BAREUNA_AI_API_URL`, `BAREUNA
 
 - [ ] `AuthService` — signup / login / generateUniqueUsername
 - [ ] `LogService` — saveSectionProgress (streak·badge 연동)
-- [ ] `NlpService` — Redis 캐시 히트·미스 분기
 
 ---
 

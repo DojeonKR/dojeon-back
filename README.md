@@ -69,7 +69,6 @@ API 베이스 URL: `http://localhost:3000/api/v1`
 | Scrap | GET/POST/DELETE | `/scrap/dashboard`, `/scrap?type=VOCAB` 또는 `GRAMMAR` + `sort=recent`, `/scrap`, `/scrap/:scrapId` |
 | Practice | GET | `/practice/topic`, `/practice/topic/:topicId/question` |
 | Subscription | GET | `/subscription/plan` |
-| NLP | POST/GET | `/nlp/analyze`, `/nlp/job/:jobId` |
 
 ## 구현 상태 체크리스트
 
@@ -77,7 +76,7 @@ API 베이스 URL: `http://localhost:3000/api/v1`
 
 ### 데이터·스키마
 
-- [x] Prisma 스키마: `SectionCard` / `SectionMaterial` / `SectionQuestion`, `Practice*`, `SubscriptionPlan`, `NlpJob`, Scrap 정규화
+- [x] Prisma 스키마: `SectionCard` / `SectionMaterial` / `SectionQuestion`, `Practice*`, `SubscriptionPlan`, Scrap 정규화
 - [x] 마이그레이션 SQL (`prisma/migrations/`)
 - [x] 시드: 배지, 구독 플랜, 샘플 코스·섹션 카드·머티리얼, 연습 토픽
 - [ ] (선택) 기존 DB에서 `Section.content` JSON → 분리 테이블로 이전하는 전용 스크립트
@@ -92,28 +91,23 @@ API 베이스 URL: `http://localhost:3000/api/v1`
 - [x] **Scrap** — 대시보드, 통합 리스트(`type`, `sort`, `cursor`, `limit`), 생성·삭제, DTO 조건부 검증
 - [x] **Practice** — 토픽·문항 조회
 - [x] **Subscription** — 플랜 목록 + `benefits`
-- [x] **Nlp** — 분석 요청(SQS·Redis 캐시), 작업 조회, 응답 `__envelope`(202 등)
 
 ### 공통·인프라 (코드)
 
-- [x] Global 응답 래핑, `__envelope` 오버라이드
+- [x] Global 응답 래핑
 - [x] Redis (세션·캐시·idempotency)
-- [x] SQS 발행 (`NlpService`)
 - [x] **EmailService** (AWS SES) — 인증 코드·임시 비밀번호 메일 (개발 시 로그 폴백)
-- [x] **Lambda 워커 소스** (`lambda/nlp-worker/`) — SQS 소비, 바른 AI 호출, DB·Redis 반영
 
 ### 배포·운영 연동 (저장소 밖 작업)
 
 - [ ] PostgreSQL에 `prisma migrate` 적용 및 운영 `DATABASE_URL` 설정
-- [ ] Redis, SQS 큐 URL, S3 버킷 등 AWS 리소스 연결
-- [ ] **NLP Lambda** ZIP 빌드 후 업로드, SQS 트리거·환경변수(`DATABASE_URL`, `REDIS_URL`, `BAREUNA_AI_*`) 설정
+- [ ] Redis, S3 버킷 등 AWS 리소스 연결
 - [ ] **AWS SES** 발신 도메인/주소 검증, Sandbox 해제(필요 시)
 - [ ] (선택) ECS/CI 파이프라인, 단위 테스트 추가
 
 ### 문서
 
 - [x] `PROGRESS.md` — 상세 진행·후속 작업
-- [x] `lambda/nlp-worker/README.md` — Lambda 빌드·배포 가이드
 
 ---
 

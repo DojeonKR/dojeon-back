@@ -7,9 +7,6 @@ CREATE TYPE "SectionType" AS ENUM ('VOCAB', 'GRAMMAR', 'READING', 'LISTENING', '
 -- CreateEnum
 CREATE TYPE "ScrapType" AS ENUM ('VOCAB', 'GRAMMAR');
 
--- CreateEnum
-CREATE TYPE "NlpJobStatus" AS ENUM ('PENDING', 'PROCESSING', 'DONE', 'FAILED');
-
 -- CreateTable
 CREATE TABLE "users" (
     "user_id" BIGSERIAL NOT NULL,
@@ -212,20 +209,6 @@ CREATE TABLE "subscription_plans" (
     CONSTRAINT "subscription_plans_pkey" PRIMARY KEY ("plan_id")
 );
 
--- CreateTable
-CREATE TABLE "nlp_jobs" (
-    "job_id" TEXT NOT NULL,
-    "user_id" BIGINT NOT NULL,
-    "target_text" TEXT NOT NULL,
-    "status" "NlpJobStatus" NOT NULL DEFAULT 'PENDING',
-    "result_data" JSONB,
-    "cache_key" TEXT,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "nlp_jobs_pkey" PRIMARY KEY ("job_id")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
@@ -249,12 +232,6 @@ CREATE UNIQUE INDEX "user_section_logs_user_id_section_id_key" ON "user_section_
 
 -- CreateIndex
 CREATE INDEX "idx_scraps_user_type" ON "scraps"("user_id", "type");
-
--- CreateIndex
-CREATE INDEX "idx_nlp_jobs_user_status" ON "nlp_jobs"("user_id", "status");
-
--- CreateIndex
-CREATE INDEX "idx_nlp_jobs_created_at" ON "nlp_jobs"("created_at");
 
 -- AddForeignKey
 ALTER TABLE "user_stats" ADD CONSTRAINT "user_stats_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -303,7 +280,3 @@ ALTER TABLE "scraps" ADD CONSTRAINT "scraps_material_id_fkey" FOREIGN KEY ("mate
 
 -- AddForeignKey
 ALTER TABLE "practice_questions" ADD CONSTRAINT "practice_questions_topic_id_fkey" FOREIGN KEY ("topic_id") REFERENCES "practice_topics"("topic_id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "nlp_jobs" ADD CONSTRAINT "nlp_jobs_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
-

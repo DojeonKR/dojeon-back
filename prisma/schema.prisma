@@ -25,13 +25,6 @@ enum ScrapType {
   GRAMMAR
 }
 
-enum NlpJobStatus {
-  PENDING
-  PROCESSING
-  DONE
-  FAILED
-}
-
 model User {
   id                   BigInt   @id @default(autoincrement()) @map("user_id")
   email                String   @unique
@@ -60,7 +53,6 @@ model User {
   userBadges   UserBadge[]
   sectionLogs  UserSectionLog[]
   scraps       Scrap[]
-  nlpJobs      NlpJob[]
 
   @@unique([socialProvider, socialUid], name: "uk_social")
   @@map("users")
@@ -267,21 +259,4 @@ model SubscriptionPlan {
   billingCycleMonths Int     @map("billing_cycle_months")
 
   @@map("subscription_plans")
-}
-
-model NlpJob {
-  id         String       @id @default(uuid()) @map("job_id")
-  userId     BigInt       @map("user_id")
-  targetText String       @map("target_text") @db.Text
-  status     NlpJobStatus @default(PENDING)
-  resultData Json?        @map("result_data")
-  cacheKey   String?      @map("cache_key")
-  createdAt  DateTime     @default(now()) @map("created_at")
-  updatedAt  DateTime     @updatedAt @map("updated_at")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, status], map: "idx_nlp_jobs_user_status")
-  @@index([createdAt], map: "idx_nlp_jobs_created_at")
-  @@map("nlp_jobs")
 }
