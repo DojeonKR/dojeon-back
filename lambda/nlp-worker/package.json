@@ -1,0 +1,23 @@
+{
+  "name": "dojeon-nlp-worker",
+  "version": "1.0.0",
+  "description": "AWS Lambda SQS consumer — Bareun AI 형태소 분석",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "package": "npm run build && cd dist && zip -r ../lambda.zip .",
+    "package:win": "npm run build && powershell Compress-Archive -Path dist\\* -DestinationPath lambda.zip -Force"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sqs": "^3.700.0",
+    "@prisma/client": "^5.22.0",
+    "ioredis": "^5.4.2",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.145",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}

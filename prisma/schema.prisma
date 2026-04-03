@@ -1,0 +1,287 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SubscriptionTier {
+  FREE
+  PREMIUM
+}
+
+enum SectionType {
+  VOCAB
+  GRAMMAR
+  READING
+  LISTENING
+  QUIZ
+}
+
+enum ScrapType {
+  VOCAB
+  GRAMMAR
+}
+
+enum NlpJobStatus {
+  PENDING
+  PROCESSING
+  DONE
+  FAILED
+}
+
+model User {
+  id                   BigInt   @id @default(autoincrement()) @map("user_id")
+  email                String   @unique
+  passwordHash         String?  @map("password_hash")
+  nickname             String
+  username             String   @unique
+  phoneNumber          String?  @map("phone_number")
+  birthday             DateTime? @db.Date
+  profileImgUrl        String?  @map("profile_img_url")
+  socialProvider       String?  @map("social_provider")
+  socialUid            String?  @map("social_uid")
+  deviceToken          String?  @map("device_token")
+  motherLanguage       String?  @map("mother_language")
+  proficiencyLevel     String?  @map("proficiency_level")
+  ageGroup             String?  @map("age_group")
+  dailyGoalMin         Int?     @map("daily_goal_min")
+  learningGoal         String?  @map("learning_goal")
+  subscriptionTier     SubscriptionTier @default(FREE) @map("subscription_tier")
+  isPushNotificationOn Boolean @default(true) @map("is_push_notification_on")
+  isMarketingAgreed    Boolean @default(false) @map("is_marketing_agreed")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  stats        UserStats?
+  attendances  UserAttendance[]
+  userBadges   UserBadge[]
+  sectionLogs  UserSectionLog[]
+  scraps       Scrap[]
+  nlpJobs      NlpJob[]
+
+  @@unique([socialProvider, socialUid], name: "uk_social")
+  @@map("users")
+}
+
+model UserStats {
+  userId                BigInt   @id @map("user_id")
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalStudyMin         Int      @default(0) @map("total_study_min")
+  currentStreak         Int      @default(0) @map("current_streak")
+  maxStreak             Int      @default(0) @map("max_streak")
+  totalCompletedLessons Int      @default(0) @map("total_completed_lessons")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  @@map("user_stats")
+}
+
+model UserAttendance {
+  id               BigInt   @id @default(autoincrement()) @map("attendance_id")
+  userId           BigInt   @map("user_id")
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attendanceDate DateTime @db.Date @map("attendance_date")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, attendanceDate])
+  @@map("user_attendance")
+}
+
+model Badge {
+  id          Int      @id @default(autoincrement()) @map("badge_id")
+  title       String
+  description String?
+  imageUrl    String   @map("image_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  userBadges UserBadge[]
+
+  @@map("badges")
+}
+
+model UserBadge {
+  id       BigInt   @id @default(autoincrement()) @map("mapping_id")
+  userId   BigInt   @map("user_id")
+  badgeId  Int      @map("badge_id")
+  earnedAt DateTime @default(now()) @map("earned_at")
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+  @@map("user_badges")
+}
+
+model Course {
+  id          Int      @id @default(autoincrement()) @map("course_id")
+  title       String
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  orderNum    Int      @map("order_num")
+
+  lessons Lesson[]
+
+  @@map("courses")
+}
+
+model Lesson {
+  id       Int     @id @default(autoincrement()) @map("lesson_id")
+  courseId Int     @map("course_id")
+  title    String
+  subtitle String?
+  orderNum Int     @map("order_num")
+
+  course   Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  sections Section[]
+
+  @@map("lessons")
+}
+
+model Section {
+  id         Int         @id @default(autoincrement()) @map("section_id")
+  lessonId   Int         @map("lesson_id")
+  type       SectionType
+  title      String
+  totalPages Int         @map("total_pages")
+  orderNum   Int         @map("order_num")
+
+  lesson      Lesson           @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  sectionLogs UserSectionLog[]
+  scraps      Scrap[]
+  cards       SectionCard[]
+  materials   SectionMaterial[]
+  questions   SectionQuestion[]
+
+  @@map("sections")
+}
+
+model SectionCard {
+  id        Int     @id @default(autoincrement()) @map("card_id")
+  sectionId Int     @map("section_id")
+  wordFront String  @map("word_front")
+  wordBack  String  @map("word_back")
+  audioUrl  String? @map("audio_url")
+  sequence  Int
+
+  section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  scraps  Scrap[]
+
+  @@map("section_cards")
+}
+
+model SectionMaterial {
+  id          Int     @id @default(autoincrement()) @map("material_id")
+  sectionId   Int     @map("section_id")
+  type        String
+  sequence    Int
+  isExtra     Boolean @default(false) @map("is_extra")
+  contentText Json    @map("content_text")
+
+  section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  scraps  Scrap[]
+
+  @@map("section_materials")
+}
+
+model SectionQuestion {
+  id           Int     @id @default(autoincrement()) @map("question_id")
+  sectionId    Int     @map("section_id")
+  type         String
+  questionText String  @map("question_text")
+  options      Json
+  answer       String
+  explanation  String?
+
+  section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@map("section_questions")
+}
+
+model UserSectionLog {
+  id               BigInt   @id @default(autoincrement()) @map("log_id")
+  userId           BigInt   @map("user_id")
+  sectionId        Int      @map("section_id")
+  isCompleted      Boolean  @default(false) @map("is_completed")
+  maxPageReached   Int      @default(0) @map("max_page_reached")
+  totalStaySeconds Int      @default(0) @map("total_stay_seconds")
+  difficulty       String?  @map("difficulty")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sectionId])
+  @@index([userId], map: "idx_logs_user")
+  @@map("user_section_logs")
+}
+
+model Scrap {
+  id         BigInt    @id @default(autoincrement()) @map("scrap_id")
+  userId     BigInt    @map("user_id")
+  sectionId  Int?      @map("section_id")
+  type       ScrapType
+  cardId     Int?      @map("card_id")
+  materialId Int?      @map("material_id")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  section  Section?          @relation(fields: [sectionId], references: [id], onDelete: SetNull)
+  card     SectionCard?      @relation(fields: [cardId], references: [id], onDelete: SetNull)
+  material SectionMaterial?  @relation(fields: [materialId], references: [id], onDelete: SetNull)
+
+  @@index([userId, type], map: "idx_scraps_user_type")
+  @@map("scraps")
+}
+
+model PracticeTopic {
+  id        Int                @id @default(autoincrement()) @map("topic_id")
+  titleEn   String             @map("title_en")
+  isActive  Boolean            @default(true) @map("is_active")
+  questions PracticeQuestion[]
+
+  @@map("practice_topics")
+}
+
+model PracticeQuestion {
+  id           Int           @id @default(autoincrement()) @map("question_id")
+  topicId      Int           @map("topic_id")
+  type         String
+  questionText String        @map("question_text")
+  options      Json
+  answer       String
+  explanation  String?
+
+  topic PracticeTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@map("practice_questions")
+}
+
+model SubscriptionPlan {
+  id                 String  @id @map("plan_id")
+  title              String
+  priceText          String  @map("price_text")
+  subText            String? @map("sub_text")
+  hasTrial           Boolean @default(false) @map("has_trial")
+  billingCycleMonths Int     @map("billing_cycle_months")
+
+  @@map("subscription_plans")
+}
+
+model NlpJob {
+  id         String       @id @default(uuid()) @map("job_id")
+  userId     BigInt       @map("user_id")
+  targetText String       @map("target_text") @db.Text
+  status     NlpJobStatus @default(PENDING)
+  resultData Json?        @map("result_data")
+  cacheKey   String?      @map("cache_key")
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status], map: "idx_nlp_jobs_user_status")
+  @@index([createdAt], map: "idx_nlp_jobs_created_at")
+  @@map("nlp_jobs")
+}

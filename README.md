@@ -1,133 +1,87 @@
 # DOJEON Backend
 
-DDD(Domain-Driven Design) 설계 패턴을 적용한 Spring Boot 백엔드 프로젝트입니다.
+외국인 대상 한국어 학습 플랫폼 API (NestJS + Prisma + PostgreSQL).
 
-## 🏗️ 프로젝트 구조
+## 요구 사항
 
-```
-src/main/java/kr/dojeon/
-├── domain/              # 도메인 레이어 (비즈니스 로직)
-│   └── user/           # 사용자 도메인 (예시)
-│       ├── controller/ # REST API 엔드포인트
-│       ├── service/    # 비즈니스 로직
-│       ├── repository/ # 데이터 접근 계층
-│       ├── entity/     # JPA 엔티티
-│       └── dto/        # 데이터 전송 객체
-├── global/             # 전역 설정 및 공통 기능
-│   ├── config/         # 설정 클래스 (Security, JPA 등)
-│   ├── exception/      # 전역 예외 처리
-│   ├── common/         # 공통 응답 객체
-│   └── util/           # 유틸리티 클래스
-└── infra/              # 외부 인프라 연동
-    ├── aws/            # AWS 서비스 연동
-    └── redis/          # Redis 연동
-```
+- Node.js 20+
+- Docker (로컬 PostgreSQL / Redis)
 
-## 🚀 시작하기
-
-### 필수 요구사항
-
-- Java 17 이상
-- Gradle 7.x 이상
-
-### 실행 방법
+## 빠른 시작
 
 1. 의존성 설치
+
 ```bash
-./gradlew clean build
+npm install
 ```
 
-2. 애플리케이션 실행
+2. 환경 변수
+
+`.env.example`을 복사해 `.env`를 만들고 `DATABASE_URL`, `REDIS_URL`, `JWT_*` 등을 설정합니다.
+
+3. 로컬 DB
+
 ```bash
-./gradlew bootRun
+docker compose up -d
 ```
 
-3. H2 콘솔 접속
-- URL: http://localhost:8080/api/h2-console
-- JDBC URL: jdbc:h2:mem:testdb
-- Username: sa
-- Password: (비워두기)
+4. 스키마 반영 및 시드
 
-## 📝 API 엔드포인트 (예시)
+```bash
+npx prisma generate
+npx prisma migrate dev
+npm run prisma:seed
+```
 
-### User API
+(또는 `npm run prisma:push`로 스키마만 동기화)
 
-- `POST /api/users` - 사용자 생성
-- `GET /api/users/{id}` - 사용자 조회
-- `GET /api/users` - 전체 사용자 조회
-- `PUT /api/users/{id}` - 사용자 수정
-- `DELETE /api/users/{id}` - 사용자 삭제
+5. 개발 서버
 
-## 🔧 기술 스택
+```bash
+npm run start:dev
+```
 
-- **Framework**: Spring Boot 3.2.1
-- **Language**: Java 17
-- **Build Tool**: Gradle
-- **Database**: H2 (개발), MySQL/PostgreSQL (운영 가능)
-- **ORM**: Spring Data JPA
-- **Security**: Spring Security
-- **Utilities**: Lombok
+API 베이스 URL: `http://localhost:3000/api/v1`
 
-## 📚 설계 원칙
+## 응답 포맷
 
-### DDD (Domain-Driven Design)
-- 도메인별로 패키지를 분리하여 응집도 높은 설계
-- 각 도메인은 독립적으로 Controller-Service-Repository 계층 구조 유지
+모든 성공 응답은 Global Interceptor로 아래 형태로 래핑됩니다.
 
-### 계층형 아키텍처
-- **Controller**: HTTP 요청/응답 처리
-- **Service**: 비즈니스 로직 처리
-- **Repository**: 데이터 접근 로직
-- **Entity**: 도메인 객체
-- **DTO**: 계층 간 데이터 전송
-
-### 전역 레이어
-- 여러 도메인에서 공통으로 사용하는 설정, 예외 처리, 유틸리티 모음
-
-### 인프라 레이어
-- 외부 시스템 연동을 위한 별도 레이어
-- AWS, Redis 등 외부 서비스와의 통신 담당
-
-## 📖 개발 가이드
-
-### 새로운 도메인 추가하기
-
-1. `domain` 패키지 하위에 새로운 도메인 패키지 생성
-2. 다음 하위 패키지 생성:
-   - `controller` - REST API 엔드포인트
-   - `service` - 비즈니스 로직
-   - `repository` - JPA Repository
-   - `entity` - JPA Entity
-   - `dto` - Request/Response DTO
-
-### 예외 처리
-- 비즈니스 예외는 `BusinessException` 사용
-- `ErrorCode` enum에 새로운 에러 코드 추가
-- `GlobalExceptionHandler`가 자동으로 처리
-
-### API 응답 형식
-모든 API는 `ApiResponse<T>` 래퍼 클래스를 사용하여 일관된 응답 형식 유지:
 ```json
 {
-  "success": true,
-  "data": {...},
-  "message": null,
-  "errorCode": null
+  "isSuccess": true,
+  "code": "200",
+  "message": "요청이 성공했습니다.",
+  "data": {},
+  "timestamp": "2026-04-03T00:00:00.000Z"
 }
 ```
 
-## 🔐 보안
+## 주요 엔드포인트
 
-- Spring Security 기본 설정 적용
-- TODO: JWT 토큰 기반 인증 구현 필요
-- TODO: 비밀번호 암호화 로직 추가 필요
+| 영역 | 메서드 | 경로 |
+|------|--------|------|
+| Auth | POST/GET | `/auth/email/send`, `/auth/email/verify`, `/auth/signup`, `/auth/login`, `/auth/google`, `/auth/reissue`, `/auth/logout`, `/auth/password/reset-request`, `/auth/check-nickname` |
+| User | GET/PATCH | `/user/me?year=&month=`, `/user/me/achievement`, `/user/me/profileImage/presignedUrl` |
+| Home | GET | `/home/resume` |
+| Learning | GET | `/courses/dashboard`, `/lessons/:id/sections` |
+| Section | GET/POST | `/section/:id/material`, `/section/:id/card`, `/section/:id/question`, `/section/:id/progress` (Idempotency-Key) |
+| Scrap | GET/POST/DELETE | `/scrap/dashboard`, `/scrap?type=VOCAB` 또는 `GRAMMAR` + `sort=recent`, `/scrap`, `/scrap/:scrapId` |
+| Practice | GET | `/practice/topic`, `/practice/topic/:topicId/question` |
+| Subscription | GET | `/subscription/plan` |
+| NLP | POST/GET | `/nlp/analyze`, `/nlp/job/:jobId` |
 
-## 📌 TODO
+## 프로덕션 빌드
 
-- [ ] JWT 인증/인가 구현
-- [ ] 실제 운영 데이터베이스 설정 (MySQL/PostgreSQL)
-- [ ] 로깅 설정 (Logback)
-- [ ] API 문서화 (Swagger/SpringDoc)
-- [ ] 테스트 코드 작성
-- [ ] Docker 설정
-- [ ] CI/CD 파이프라인 구성
+```bash
+npm run build
+npm run start:prod
+```
+
+## Docker 이미지
+
+```bash
+docker build -t dojeon-back .
+```
+
+ECS 배포 시 `DATABASE_URL`, `REDIS_URL`, `JWT_*`, `AWS_*` 등을 태스크 정의에서 주입합니다.
