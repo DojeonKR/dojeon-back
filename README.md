@@ -19,11 +19,15 @@ npm install
 
 `.env.example`을 복사해 `.env`를 만들고 `DATABASE_URL`, `REDIS_URL`, `JWT_*` 등을 설정합니다.
 
-3. 로컬 DB
+3. 로컬 DB (PostgreSQL + Redis만 — 호스트에서 `npm run start:dev` 할 때)
+
+`.env`에 `POSTGRES_PASSWORD`를 두고 `DATABASE_URL`의 비밀번호와 맞춥니다.
 
 ```bash
 docker compose up -d
 ```
+
+API까지 컨테이너로 띄우려면 `COMPOSE_PROFILES=api docker compose up -d --build` — 자세한 내용은 `DOCKER.md` 참고.
 
 4. 스키마 반영 및 시드
 
@@ -41,7 +45,7 @@ npm run prisma:seed
 npm run start:dev
 ```
 
-API 베이스 URL: `http://localhost:3000/api/v1`
+API 베이스 URL: `http://localhost:3000`
 
 ## 응답 포맷
 

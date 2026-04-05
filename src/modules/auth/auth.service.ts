@@ -79,23 +79,17 @@ export class AuthService {
     if (existing) {
       throw new AppException('EMAIL_EXISTS', '이미 가입된 이메일입니다.', HttpStatus.CONFLICT);
     }
-    const nicknameTaken = await this.prisma.user.findFirst({ where: { nickname: dto.nickname } });
-    if (nicknameTaken) {
-      throw new AppException('NICKNAME_EXISTS', '이미 사용 중인 닉네임입니다.', HttpStatus.CONFLICT);
-    }
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const username = await this.generateUniqueUsername(dto.email);
+    // 온보딩 첫 화면에서 닉네임을 확정하므로, 가입 시 이메일 앞부분으로 임시 닉네임 부여
+    const tempNickname = await this.generateTempNickname(dto.email);
     const user = await this.prisma.$transaction(async (tx) => {
       const u = await tx.user.create({
         data: {
           email: dto.email,
           passwordHash,
-          nickname: dto.nickname,
+          nickname: tempNickname,
           username,
-          motherLanguage: dto.motherLanguage ?? null,
-          proficiencyLevel: dto.proficiencyLevel ?? null,
-          ageGroup: dto.ageGroup ?? null,
-          dailyGoalMin: dto.dailyGoalMin ?? null,
         },
       });
       await tx.userStats.create({
@@ -105,6 +99,17 @@ export class AuthService {
     });
     await this.redis.del(`signup:verify:${dto.verifyToken}`);
     return this.issueTokens(user.id, user.email);
+  }
+
+  private async generateTempNickname(email: string): Promise<string> {
+    const local = email.split('@')[0].slice(0, 20) || 'user';
+    for (let i = 0; i < 10; i++) {
+      const suffix = randomBytes(2).toString('hex');
+      const candidate = `${local}_${suffix}`;
+      const taken = await this.prisma.user.findFirst({ where: { nickname: candidate } });
+      if (!taken) return candidate;
+    }
+    return `user_${Date.now().toString(36)}`;
   }
 
   async login(dto: LoginDto) {

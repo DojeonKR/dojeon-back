@@ -1,6 +1,8 @@
 export default () => ({
   nodeEnv: process.env.NODE_ENV ?? 'development',
   port: parseInt(process.env.PORT ?? '3000', 10),
+  /** 쉼표로 구분된 허용 Origin (비우면 모든 Origin 허용 — 개발 편의) */
+  corsOrigin: process.env.CORS_ORIGIN ?? '',
   databaseUrl: process.env.DATABASE_URL,
   redisUrl: process.env.REDIS_URL ?? 'redis://localhost:6379',
   jwt: {

@@ -2,8 +2,22 @@ node_modules
 dist
 .env
 .env.local
+# 기타 비밀/로컬 전용 env (템플릿은 예외)
+.env.*
+!.env.example
+!.env.docker.example
 *.log
 coverage
 .idea
 .vscode/*
 !.vscode/settings.json
+
+# TypeScript incremental
+*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 실수로 레포에 넣는 키 방지
+*.pem

@@ -1,3 +1,7 @@
+# 로컬: postgres + redis만 → `docker compose up -d`
+# EC2 전체 스택: `docker compose --profile api up -d --build`
+# (또는 `export COMPOSE_PROFILES=api` / .env에 COMPOSE_PROFILES=api)
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -5,19 +9,68 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: dojeon
-      POSTGRES_PASSWORD: dojeon_secret
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required in .env}
       POSTGRES_DB: dojeon
-    ports:
-      - "5432:5432"
     volumes:
       - dojeon_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U dojeon -d dojeon']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    mem_limit: 512m
+    cpus: '0.5'
+    command:
+      - postgres
+      - -c
+      - shared_buffers=128MB
+      - -c
+      - max_connections=50
+      - -c
+      - effective_cache_size=256MB
 
   redis:
     image: redis:7-alpine
     container_name: dojeon-redis
     restart: unless-stopped
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru --appendonly yes
+    volumes:
+      - dojeon_redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 8
+      start_period: 5s
+    mem_limit: 256m
+    cpus: '0.25'
+
+  api:
+    profiles: ['api']
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dojeon-api:latest
+    container_name: dojeon-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     ports:
-      - "6379:6379"
+      - '3000:3000'
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: '3000'
+      DATABASE_URL: postgresql://dojeon:${POSTGRES_PASSWORD}@postgres:5432/dojeon?schema=public
+      REDIS_URL: redis://redis:6379
+    mem_limit: 896m
+    cpus: '1.0'
 
 volumes:
   dojeon_pg_data:
+  dojeon_redis_data:
