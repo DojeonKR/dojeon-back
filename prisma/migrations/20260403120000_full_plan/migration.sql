@@ -1,4 +1,4 @@
-﻿-- CreateEnum
+-- CreateEnum
 CREATE TYPE "SubscriptionTier" AS ENUM ('FREE', 'PREMIUM');
 
 -- CreateEnum

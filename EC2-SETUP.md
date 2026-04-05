@@ -230,6 +230,56 @@ Nginx만 쓸 때는 **3000 포트 규칙은 넣지 않아도** 됨 (내부 local
 
 ---
 
+## 11. 문제 해결 (P1000, `curl` 000, 502)
+
+### `docker compose down -v` 로 DB를 초기화했는데도 P1000 / `curl`이 000인 경우
+
+- **`down -v`가 맞게 끝나면** 새 Postgres 볼륨은 **현재 `.env`의 `POSTGRES_PASSWORD` 한 가지**로만 초기화됩니다. “비밀번호가 자동으로 다른 값으로 재설정된다”기보다, **지금 `.env`에 적어 둔 값이 곧 DB 비밀번호**입니다.
+- **`curl` HTTP 코드 `000`** 은 “연결 실패”입니다. **`dojeon-api`가 `Restarting`이거나 3000에서 안 떠 있으면** 항상 000입니다. 원인은 로그에 있습니다.
+
+**여전히 `P1000`(인증 실패)이면 흔한 원인:**
+
+1. **볼륨이 실제로 안 지워짐** — 다른 디렉터리에서 `compose`를 쓰면 **프로젝트 이름이 달라** 예전 볼륨이 남을 수 있음. 항상 **`cd ~/dojeon-back`** 후:
+   ```bash
+   docker compose --profile api down -v
+   docker volume ls | grep dojeon
+   ```
+   `dojeon-back_*` 볼륨이 없어야 합니다.
+
+2. **`POSTGRES_PASSWORD`에 `@`, `#`, `%`, 공백 등** — `DATABASE_URL` 안에 그대로 들어가 **URL이 깨져** Prisma가 잘못된 비밀번호로 접속합니다. **영문·숫자 위주**(예: 24자 이상 랜덤)로 바꿔 보세요.
+
+3. **`.env` 위치/이름** — `docker-compose.yml`과 **같은 디렉터리**의 `.env`인지 확인 (`~/dojeon-back/.env`).
+
+**502 (Nginx)** — 보통 **3000에 API가 없을 때**입니다. 위를 해결해 `docker compose --profile api ps`에서 `dojeon-api`가 **Up**이고, 서버 안에서 `curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:3000/docs` 가 **200** 근처가 되면 Nginx도 정상으로 이어집니다.
+
+**`curl`이 바로 `000`일 때** — 컨테이너가 막 `Started` 된 직후에는 **아직 `prisma migrate deploy`가 돌아가는 중**일 수 있습니다. 그때는 3000에 아무 것도 안 떠 있어 `000`이 나옵니다. 아래로 로그 끝에 `Application is running` 이 보일 때까지 기다린 뒤 다시 `curl` 하세요.
+
+```bash
+docker compose --profile api logs api --tail=30 -f
+# (Nest 기동 메시지 확인 후 Ctrl+C)
+curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:3000/docs
+```
+
+### `P3009` / `P3018` — 마이그레이션 실패 (첫 적용에서도 발생 가능)
+
+- **`P3018`** + Postgres `syntax error at or near "\u{feff}"` 등: `migration.sql` 파일 맨 앞에 **UTF-8 BOM**이 들어간 경우입니다. Windows에서 메모장 등으로 저장하면 생길 수 있어, **UTF-8(BOM 없음)**으로 저장하거나 BOM을 제거해야 합니다.
+- **`P3009`**: 이전 실행이 실패해 `_prisma_migrations`에 **실패** 기록이 남은 경우입니다. (첫 실행이 **P3018**로 깨지면 곧바로 **P3009**로 반복될 수 있음)
+
+이전에 마이그레이션이 **중간에 실패**하면, Postgres의 `_prisma_migrations` 테이블에 **실패** 상태가 남고, 이후 `prisma migrate deploy`는 **P3009**로 막힙니다. (비밀번호가 맞아도 API는 **기동하지 않음** — 엔트리포인트가 migrate에서 종료)
+
+**개발·스테이징에서 DB 데이터를 지워도 될 때 (가장 단순):** 볼륨까지 지우고 **완전히 새 DB**로 다시 올립니다.
+
+```bash
+cd ~/dojeon-back
+docker compose --profile api down -v
+docker volume ls | grep dojeon   # dojeon-back_dojeon_pg_data 가 없어야 함
+docker compose --profile api up -d --build
+```
+
+**운영 등 데이터를 유지해야 할 때**는 [Prisma 문서 — migrate resolve](https://www.prisma.io/docs/orm/prisma-migrate/workflows/troubleshooting#failed-migration)를 보고, 실패한 마이그레이션을 **수동으로 스키마·데이터에 맞게 정리한 뒤** `prisma migrate resolve`로 상태를 맞춥니다. (중간까지 적용된 상태일 수 있어 난이도가 높음)
+
+---
+
 ## 자주 쓰는 명령
 
 ```bash
