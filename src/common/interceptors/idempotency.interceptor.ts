@@ -13,6 +13,11 @@ import { createHash } from 'crypto';
 
 const TTL_SECONDS = 86400;
 
+/**
+ * Idempotency-Key가 있으면 성공 응답 본문 전체를 Redis에 보관(24h)하고 재요청 시 그대로 반환한다.
+ * 토큰·개인정보·대용량 민감 데이터를 담는 엔드포인트에는 적용하지 않는 것이 안전하다.
+ * 해당 라우트에서 인터셉터를 제외하거나, 필요 시 캐시 payload 최소화는 별도 구현이 필요하다.
+ */
 @Injectable()
 export class IdempotencyInterceptor implements NestInterceptor {
   constructor(private readonly redis: RedisService) {}

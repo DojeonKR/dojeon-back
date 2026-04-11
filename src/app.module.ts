@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { PrismaModule } from './prisma/prisma.module';
@@ -14,6 +15,8 @@ import { LogModule } from './modules/log/log.module';
 import { HomeModule } from './modules/home/home.module';
 import { PracticeModule } from './modules/practice/practice.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
+import { HealthController } from './health.controller';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -21,6 +24,13 @@ import { SubscriptionModule } from './modules/subscription/subscription.module';
       isGlobal: true,
       load: [configuration],
     }),
+    ThrottlerModule.forRoot([
+      {
+        name: 'default',
+        ttl: 60000,
+        limit: 120,
+      },
+    ]),
     PrismaModule,
     RedisModule,
     EmailModule,
@@ -32,7 +42,12 @@ import { SubscriptionModule } from './modules/subscription/subscription.module';
     PracticeModule,
     SubscriptionModule,
     LogModule,
+    AdminModule,
   ],
-  providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
+  controllers: [HealthController],
+  providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+  ],
 })
 export class AppModule {}

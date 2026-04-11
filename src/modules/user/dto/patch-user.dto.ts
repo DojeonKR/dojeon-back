@@ -64,4 +64,9 @@ export class PatchUserDto {
   @IsOptional()
   @IsString()
   deviceToken?: string;
+
+  @ApiPropertyOptional({ description: '프로필 이미지 URL (S3 presigned 업로드 완료 후 저장)', example: 'https://bucket.s3.region.amazonaws.com/profiles/1/photo.jpg' })
+  @IsOptional()
+  @IsString()
+  profileImgUrl?: string;
 }

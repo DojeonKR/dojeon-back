@@ -1,11 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
+import * as nodemailer from 'nodemailer';
+import type { Transporter } from 'nodemailer';
 
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
-  private readonly client: SESClient | null;
+  private readonly sesClient: SESClient | null;
+  private readonly smtpTransport: Transporter | null;
   private readonly from: string;
   private readonly isDev: boolean;
 
@@ -18,17 +21,41 @@ export class EmailService {
     const region = this.configService.get<string>('aws.region') ?? 'ap-northeast-2';
 
     if (accessKeyId && secretAccessKey) {
-      this.client = new SESClient({
+      this.sesClient = new SESClient({
         region,
         credentials: { accessKeyId, secretAccessKey },
       });
     } else {
-      this.client = null;
-      this.logger.warn('AWS credentials not set — email will be logged only (dev mode)');
+      this.sesClient = null;
+    }
+
+    const smtpHost = this.configService.get<string>('smtp.host')?.trim() ?? '';
+    const smtpUser = this.configService.get<string>('smtp.user')?.trim() ?? '';
+    const smtpPass = this.configService.get<string>('smtp.pass') ?? '';
+    const smtpPort = this.configService.get<number>('smtp.port') ?? 587;
+    const smtpSecure = this.configService.get<boolean>('smtp.secure') ?? false;
+
+    if (smtpHost && smtpUser && smtpPass) {
+      this.smtpTransport = nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpSecure,
+        auth: { user: smtpUser, pass: smtpPass },
+      });
+      this.logger.log(`SMTP configured (host=${smtpHost}, port=${smtpPort})`);
+    } else {
+      this.smtpTransport = null;
+    }
+
+    if (!this.sesClient && !this.smtpTransport) {
+      this.logger.warn(
+        'No email transport (set AWS keys for SES, or SMTP_HOST/SMTP_USER/SMTP_PASS for Gmail etc.) — OTP will only appear in server logs.',
+      );
     }
   }
 
-  async sendOtpEmail(to: string, code: string): Promise<void> {
+  /** @returns true if mail was actually handed to SES/SMTP */
+  async sendOtpEmail(to: string, code: string): Promise<boolean> {
     const subject = '[DOJEON] 이메일 인증 코드';
     const body = `
 안녕하세요, DOJEON입니다.
@@ -39,10 +66,10 @@ export class EmailService {
 본인이 요청하지 않은 경우 이 이메일을 무시하세요.
 `.trim();
 
-    await this.send(to, subject, body);
+    return this.send(to, subject, body);
   }
 
-  async sendTempPasswordEmail(to: string, tempPassword: string): Promise<void> {
+  async sendTempPasswordEmail(to: string, tempPassword: string): Promise<boolean> {
     const subject = '[DOJEON] 임시 비밀번호 안내';
     const body = `
 안녕하세요, DOJEON입니다.
@@ -53,29 +80,49 @@ export class EmailService {
 본인이 요청하지 않은 경우 고객센터에 문의하세요.
 `.trim();
 
-    await this.send(to, subject, body);
+    return this.send(to, subject, body);
   }
 
-  private async send(to: string, subject: string, body: string): Promise<void> {
-    if (this.isDev || !this.client) {
-      this.logger.log(`[DEV EMAIL] To: ${to} | Subject: ${subject}\n${body}`);
-      return;
+  private async send(to: string, subject: string, body: string): Promise<boolean> {
+    // 1) SES — 운영(NODE_ENV=production)에서 AWS 자격 증명이 있을 때
+    if (this.sesClient && !this.isDev) {
+      try {
+        await this.sesClient.send(
+          new SendEmailCommand({
+            Source: this.from,
+            Destination: { ToAddresses: [to] },
+            Message: {
+              Subject: { Data: subject, Charset: 'UTF-8' },
+              Body: { Text: { Data: body, Charset: 'UTF-8' } },
+            },
+          }),
+        );
+        this.logger.log(`Email sent via SES to ${to}`);
+        return true;
+      } catch (err) {
+        this.logger.error(`SES send failed to ${to}: ${String(err)}`);
+        throw err;
+      }
     }
 
-    try {
-      await this.client.send(
-        new SendEmailCommand({
-          Source: this.from,
-          Destination: { ToAddresses: [to] },
-          Message: {
-            Subject: { Data: subject, Charset: 'UTF-8' },
-            Body: { Text: { Data: body, Charset: 'UTF-8' } },
-          },
-        }),
-      );
-    } catch (err) {
-      this.logger.error(`SES send failed to ${to}: ${String(err)}`);
-      throw err;
+    // 2) SMTP — Gmail 등 (개발/운영 모두, SES 미사용 또는 로컬에서 실메일 테스트 시)
+    if (this.smtpTransport) {
+      try {
+        await this.smtpTransport.sendMail({
+          from: this.from,
+          to,
+          subject,
+          text: body,
+        });
+        this.logger.log(`Email sent via SMTP to ${to}`);
+        return true;
+      } catch (err) {
+        this.logger.error(`SMTP send failed to ${to}: ${String(err)}`);
+        throw err;
+      }
     }
+
+    this.logger.log(`[DEV EMAIL] To: ${to} | Subject: ${subject}\n${body}`);
+    return false;
   }
 }

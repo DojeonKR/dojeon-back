@@ -30,6 +30,15 @@ export class RedisService implements OnModuleDestroy {
     await this.client.del(key);
   }
 
+  /** INCR 후 첫 호출이면 TTL 설정 (실패 횟수 카운터 등) */
+  async incrWithTtlOnFirst(key: string, ttlSeconds: number): Promise<number> {
+    const n = await this.client.incr(key);
+    if (n === 1) {
+      await this.client.expire(key, ttlSeconds);
+    }
+    return n;
+  }
+
   async onModuleDestroy() {
     await this.client.quit();
   }

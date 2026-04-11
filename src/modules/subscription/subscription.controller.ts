@@ -9,7 +9,11 @@ import { successExample } from '../../common/swagger/swagger-response.helper';
 export class SubscriptionController {
   constructor(private readonly subscriptionService: SubscriptionService) {}
 
-  @ApiOperation({ summary: '구독 플랜 목록', description: '무료·유료 구독 플랜과 각 플랜의 혜택을 반환합니다.' })
+  @ApiOperation({
+    summary: '구독 플랜 목록',
+    description:
+      'DB `subscription_plan`의 `planId`·표시 필드 + 서버 하드코딩 `benefits` 맵(`free`·`basic`·`pro`·`annual`)을 합쳐 반환합니다. 플랜 id가 맵에 없으면 `benefits`는 빈 배열입니다. `title`·`priceText` 등은 DB 시드 값과 일치해야 합니다.',
+  })
   @ApiResponse({
     status: 200,
     description: '구독 플랜 목록 조회 성공',
@@ -23,7 +27,7 @@ export class SubscriptionController {
             subText: null,
             hasTrial: false,
             billingCycleMonths: 1,
-            benefits: ['기초 코스 1개 무료', '하루 3섹션 학습'],
+            benefits: ['기본 레슨', '광고 포함'],
           },
           {
             planId: 'pro',
@@ -32,7 +36,7 @@ export class SubscriptionController {
             subText: '첫 달 무료',
             hasTrial: true,
             billingCycleMonths: 1,
-            benefits: ['모든 코스 무제한', '무제한 스크랩', '오프라인 다운로드'],
+            benefits: ['전체 레슨', 'AI 분석', '우선 지원'],
           },
         ],
       }),

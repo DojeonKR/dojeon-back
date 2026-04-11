@@ -1,7 +1,9 @@
 export default () => ({
   nodeEnv: process.env.NODE_ENV ?? 'development',
   port: parseInt(process.env.PORT ?? '3000', 10),
-  /** 쉼표로 구분된 허용 Origin (비우면 모든 Origin 허용 — 개발 편의) */
+  /** production에서만 true일 때 Swagger UI 활성 (기본 비활성) */
+  swaggerEnabled: process.env.SWAGGER_ENABLED === 'true',
+  /** 쉼표로 구분된 허용 Origin (비우면 모든 Origin 허용 — 개발 편의). production에서는 필수. */
   corsOrigin: process.env.CORS_ORIGIN ?? '',
   databaseUrl: process.env.DATABASE_URL,
   redisUrl: process.env.REDIS_URL ?? 'redis://localhost:6379',
@@ -21,4 +23,12 @@ export default () => ({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
   emailFrom: process.env.EMAIL_FROM ?? 'noreply@dojeon.local',
+  /** Gmail 등 SMTP (SMTP_HOST + SMTP_USER + SMTP_PASS 설정 시 nodemailer 사용) */
+  smtp: {
+    host: process.env.SMTP_HOST ?? '',
+    port: parseInt(process.env.SMTP_PORT ?? '587', 10),
+    secure: process.env.SMTP_SECURE === 'true' || process.env.SMTP_PORT === '465',
+    user: process.env.SMTP_USER ?? '',
+    pass: process.env.SMTP_PASS ?? '',
+  },
 });

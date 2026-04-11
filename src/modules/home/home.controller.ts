@@ -10,15 +10,21 @@ import { successExample } from '../../common/swagger/swagger-response.helper';
 export class HomeController {
   constructor(private readonly homeService: HomeService) {}
 
-  @ApiOperation({ summary: '홈 화면 정보 조회', description: '사용자 이름, 연속 학습 일수, 오늘의 목표, 최근 학습 레슨 정보를 반환합니다.' })
+  @ApiOperation({
+    summary: '홈 화면 정보 조회',
+    description:
+      '`userFirstName`에는 **닉네임 전체**가 들어갑니다(이름 파싱 없음). `lastLesson`은 학습 이력이 없으면 `null`입니다. 이론상 사용자 레코드가 없으면 `data`가 `null`일 수 있습니다.',
+  })
   @ApiResponse({
     status: 200,
     description: '홈 정보 조회 성공',
     schema: {
       example: successExample({
-        userFirstName: '도전',
+        userFirstName: '도전이',
         dailyStreak: 7,
         todayGoal: { targetMin: 30, studiedMin: 15 },
+        weekGoal: { targetMin: 210, studiedMin: 45 },
+        weeklyAttendance: [true, true, false, false, false, false, false],
         lastLesson: {
           courseId: 1,
           lessonId: 2,

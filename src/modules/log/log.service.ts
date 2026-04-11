@@ -5,7 +5,9 @@ import { AppException } from '../../common/exceptions/app.exception';
 import { HttpStatus } from '@nestjs/common';
 import { SectionProgressDto } from './dto/section-progress.dto';
 import { CreateScrapDto } from './dto/create-scrap.dto';
+import { CheckSectionQuestionDto } from './dto/check-section-question.dto';
 import { AchievementService } from '../achievement/achievement.service';
+import { normalizeQuizAnswer } from '../../common/utils/quiz-answer.util';
 
 function utcDateOnly(d: Date): Date {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
@@ -33,7 +35,7 @@ export class LogService {
     return { sectionId, courseId: section.lesson.courseId, lessonId: section.lessonId, materials };
   }
 
-  async getSectionCardsList(sectionId: number) {
+  async getSectionCardsList(sectionId: number, userId?: bigint) {
     const section = await this.prisma.section.findUnique({ where: { id: sectionId } });
     if (!section) {
       throw new AppException('SECTION_NOT_FOUND', '섹션을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
@@ -42,7 +44,31 @@ export class LogService {
       where: { sectionId },
       orderBy: { sequence: 'asc' },
     });
-    return { sectionId, cards };
+
+    let scrapMap = new Map<number, bigint>();
+    if (userId !== undefined && cards.length > 0) {
+      const cardIds = cards.map((c) => c.id);
+      const scraps = await this.prisma.scrap.findMany({
+        where: { userId, type: ScrapType.VOCAB, cardId: { in: cardIds } },
+        select: { id: true, cardId: true },
+      });
+      scrapMap = new Map(
+        scraps.filter((s) => s.cardId != null).map((s) => [s.cardId as number, s.id]),
+      );
+    }
+
+    return {
+      sectionId,
+      cards: cards.map((c) => ({
+        id: c.id,
+        wordFront: c.wordFront,
+        wordBack: c.wordBack,
+        audioUrl: c.audioUrl,
+        sequence: c.sequence,
+        isScraped: scrapMap.has(c.id),
+        scrapId: scrapMap.get(c.id)?.toString() ?? null,
+      })),
+    };
   }
 
   async getSectionQuestionsList(sectionId: number) {
@@ -54,7 +80,64 @@ export class LogService {
       where: { sectionId },
       orderBy: { id: 'asc' },
     });
-    return { sectionId, questions };
+    return {
+      sectionId,
+      questions: questions.map((q) => ({
+        id: q.id,
+        type: q.type,
+        questionText: q.questionText,
+        options: q.options,
+        explanation: q.explanation,
+      })),
+    };
+  }
+
+  async getSectionProgressForUser(userId: bigint, sectionId: number) {
+    const section = await this.prisma.section.findUnique({ where: { id: sectionId } });
+    if (!section) {
+      throw new AppException('SECTION_NOT_FOUND', '섹션을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+    }
+    const log = await this.prisma.userSectionLog.findUnique({
+      where: { userId_sectionId: { userId, sectionId } },
+    });
+    return {
+      sectionId,
+      currentPage: log?.maxPageReached ?? 0,
+      isCompleted: log?.isCompleted ?? false,
+      stayTimeSeconds: log?.totalStaySeconds ?? 0,
+    };
+  }
+
+  /** 정책 A: 정답일 때만 correctAnswer·explanation 포함 */
+  async checkSectionQuestion(
+    userId: bigint,
+    sectionId: number,
+    dto: CheckSectionQuestionDto,
+  ): Promise<
+    | { correct: false }
+    | { correct: true; correctAnswer: string; explanation: string | null }
+  > {
+    void userId;
+    const section = await this.prisma.section.findUnique({ where: { id: sectionId } });
+    if (!section) {
+      throw new AppException('SECTION_NOT_FOUND', '섹션을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+    }
+    const q = await this.prisma.sectionQuestion.findFirst({
+      where: { id: dto.questionId, sectionId },
+    });
+    if (!q) {
+      throw new AppException('QUESTION_NOT_FOUND', '문제를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+    }
+    const correct =
+      normalizeQuizAnswer(dto.userAnswer) === normalizeQuizAnswer(q.answer);
+    if (!correct) {
+      return { correct: false };
+    }
+    return {
+      correct: true,
+      correctAnswer: q.answer,
+      explanation: q.explanation ?? null,
+    };
   }
 
   async saveSectionProgress(userId: bigint, sectionId: number, dto: SectionProgressDto) {

@@ -1,4 +1,5 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -7,6 +8,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AppException } from '../../common/exceptions/app.exception';
 import { PatchUserDto } from './dto/patch-user.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { PresignedProfileImageDto } from './dto/presigned-profile-image.dto';
 import { LearningService } from '../learning/learning.service';
 
@@ -83,6 +85,8 @@ export class UserService {
         dailyGoalMin: user.dailyGoalMin,
         learningGoal: user.learningGoal,
         subscriptionTier: user.subscriptionTier,
+        subscriptionPlanId: user.subscriptionPlanId ?? null,
+        subscriptionExpiresAt: user.subscriptionExpiresAt?.toISOString() ?? null,
         isPushNotificationOn: user.isPushNotificationOn,
         isMarketingAgreed: user.isMarketingAgreed,
         createdAt: user.createdAt,
@@ -124,15 +128,49 @@ export class UserService {
     if (dto.isPushNotificationOn !== undefined) data.isPushNotificationOn = dto.isPushNotificationOn;
     if (dto.isMarketingAgreed !== undefined) data.isMarketingAgreed = dto.isMarketingAgreed;
     if (dto.deviceToken !== undefined) data.deviceToken = dto.deviceToken;
+    if (dto.profileImgUrl !== undefined) data.profileImgUrl = dto.profileImgUrl;
 
     try {
-      return await this.prisma.user.update({
+      await this.prisma.user.update({
         where: { id: userId },
         data,
       });
-    } catch {
+      return { updated: true };
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
+        throw new AppException(
+          'DUPLICATE_ENTRY',
+          '이미 사용 중인 닉네임 또는 사용자명입니다.',
+          HttpStatus.CONFLICT,
+        );
+      }
       throw new AppException('UPDATE_FAILED', '프로필 수정에 실패했습니다.', HttpStatus.BAD_REQUEST);
     }
+  }
+
+  async changePassword(userId: bigint, dto: ChangePasswordDto) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user?.passwordHash) {
+      throw new AppException(
+        'PASSWORD_NOT_SET',
+        '소셜 로그인 계정은 비밀번호가 없습니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const ok = await bcrypt.compare(dto.currentPassword, user.passwordHash);
+    if (!ok) {
+      throw new AppException(
+        'INVALID_CURRENT_PASSWORD',
+        '현재 비밀번호가 올바르지 않습니다.',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    const passwordHash = await bcrypt.hash(dto.newPassword, 10);
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash },
+    });
+    return { updated: true };
   }
 
   async getAchievementsList(userId: bigint) {

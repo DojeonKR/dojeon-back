@@ -17,7 +17,12 @@ export class LearningService {
       include: {
         section: {
           include: {
-            lesson: { include: { course: true } },
+            lesson: {
+              include: {
+                course: true,
+                sections: { select: { id: true } },
+              },
+            },
             materials: { orderBy: { sequence: 'asc' } },
           },
         },
@@ -30,6 +35,18 @@ export class LearningService {
     const ct = grammarMat?.contentText as { title?: string } | null;
     const grammarPreview = ct?.title ?? null;
 
+    const lessonSectionIds = s.lesson.sections.map((sec) => sec.id);
+    const totalSections = lessonSectionIds.length;
+    const completedInLesson = await this.prisma.userSectionLog.count({
+      where: {
+        userId,
+        sectionId: { in: lessonSectionIds },
+        isCompleted: true,
+      },
+    });
+    const overallProgressPercent =
+      totalSections > 0 ? Math.round((completedInLesson / totalSections) * 100) : 0;
+
     return {
       courseId: s.lesson.courseId,
       courseTitle: s.lesson.course.title,
@@ -39,6 +56,7 @@ export class LearningService {
       sectionTitle: s.title,
       sectionType: s.type,
       grammarPreview,
+      overallProgressPercent,
     };
   }
 
@@ -188,10 +206,50 @@ export class LearningService {
       orderNum: l.orderNum,
     }));
 
-    const logs = await this.prisma.userSectionLog.findMany({
-      where: { userId, sectionId: { in: lesson.sections.map((s) => s.id) } },
-    });
+    const sectionIds = lesson.sections.map((sec) => sec.id);
+    const [logs, cardGroups, materialGroups, questionGroups] = await Promise.all([
+      this.prisma.userSectionLog.findMany({
+        where: { userId, sectionId: { in: sectionIds } },
+      }),
+      this.prisma.sectionCard.groupBy({
+        by: ['sectionId'],
+        where: { sectionId: { in: sectionIds } },
+        _count: { _all: true },
+      }),
+      this.prisma.sectionMaterial.groupBy({
+        by: ['sectionId'],
+        where: { sectionId: { in: sectionIds } },
+        _count: { _all: true },
+      }),
+      this.prisma.sectionQuestion.groupBy({
+        by: ['sectionId'],
+        where: { sectionId: { in: sectionIds } },
+        _count: { _all: true },
+      }),
+    ]);
     const logMap = new Map(logs.map((l) => [l.sectionId, l]));
+    const cardCount = new Map(cardGroups.map((g) => [g.sectionId, g._count._all]));
+    const materialCount = new Map(materialGroups.map((g) => [g.sectionId, g._count._all]));
+    const questionCount = new Map(questionGroups.map((g) => [g.sectionId, g._count._all]));
+
+    const hasContentFor = (s: { id: number; type: string }): boolean => {
+      const c = cardCount.get(s.id) ?? 0;
+      const m = materialCount.get(s.id) ?? 0;
+      const q = questionCount.get(s.id) ?? 0;
+      switch (s.type) {
+        case 'VOCAB':
+          return c > 0;
+        case 'GRAMMAR':
+          return m > 0;
+        case 'READING':
+        case 'LISTENING':
+          return m > 0 || q > 0;
+        case 'QUIZ':
+          return q > 0;
+        default:
+          return m > 0 || q > 0 || c > 0;
+      }
+    };
 
     let completedCount = 0;
     const sections = lesson.sections.map((s) => {
@@ -210,6 +268,7 @@ export class LearningService {
         currentPage,
         progressPercent,
         isCompleted: log?.isCompleted ?? false,
+        hasContent: hasContentFor(s),
       };
     });
 
