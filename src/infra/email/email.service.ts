@@ -4,6 +4,7 @@ import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import * as nodemailer from 'nodemailer';
 import type { Transporter } from 'nodemailer';
 
+/** 인증 OTP 메일은 AuthService에서 동기(await) 발송 유지. 비OTP 알림·배치 메일은 추후 BullMQ/SQS 검토. */
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);

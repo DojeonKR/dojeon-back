@@ -11,6 +11,7 @@ import { PatchUserDto } from './dto/patch-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { PresignedProfileImageDto } from './dto/presigned-profile-image.dto';
 import { LearningService } from '../learning/learning.service';
+import { buildS3ObjectPublicUrl } from '../../common/utils/public-asset-url.util';
 
 @Injectable()
 export class UserService {
@@ -39,11 +40,34 @@ export class UserService {
   async getDashboard(userId: bigint, year?: number, month?: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: {
+      select: {
+        id: true,
+        email: true,
+        nickname: true,
+        username: true,
+        phoneNumber: true,
+        birthday: true,
+        profileImgUrl: true,
+        motherLanguage: true,
+        proficiencyLevel: true,
+        ageGroup: true,
+        dailyGoalMin: true,
+        learningGoal: true,
+        subscriptionTier: true,
+        subscriptionPlanId: true,
+        subscriptionExpiresAt: true,
+        isPushNotificationOn: true,
+        isMarketingAgreed: true,
+        createdAt: true,
         stats: true,
         userBadges: {
           orderBy: { earnedAt: 'desc' },
-          include: { badge: true },
+          take: 4,
+          select: {
+            badgeId: true,
+            earnedAt: true,
+            badge: { select: { title: true, imageUrl: true } },
+          },
         },
       },
     });
@@ -105,7 +129,7 @@ export class UserService {
         activeDays,
       },
       recentCourse,
-      recentAchievements: user.userBadges.slice(0, 4).map((ub) => ({
+      recentAchievements: user.userBadges.map((ub) => ({
         badgeId: ub.badgeId,
         title: ub.badge.title,
         imageUrl: ub.badge.imageUrl,
@@ -206,7 +230,13 @@ export class UserService {
       ContentType: dto.contentType,
     });
     const uploadUrl = await getSignedUrl(this.s3, command, { expiresIn: 3600 });
-    const fileUrl = `https://${this.bucket}.s3.${this.configService.get('aws.region')}.amazonaws.com/${key}`;
+    const region = this.configService.get<string>('aws.region') ?? 'ap-northeast-2';
+    const fileUrl = buildS3ObjectPublicUrl({
+      cloudfrontBaseUrl: this.configService.get<string>('cloudfrontBaseUrl'),
+      bucket: this.bucket,
+      region,
+      key,
+    });
     return { uploadUrl, key, fileUrl };
   }
 }

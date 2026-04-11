@@ -22,6 +22,7 @@ import {
   PatchQuestionDto,
   PatchSectionDto,
 } from './admin.dto';
+import { buildS3ObjectPublicUrl } from '../../common/utils/public-asset-url.util';
 
 @Injectable()
 export class AdminService {
@@ -262,8 +263,13 @@ export class AdminService {
       ContentType: dto.contentType,
     });
     const uploadUrl = await getSignedUrl(this.s3, command, { expiresIn: 3600 });
-    const region = this.configService.get<string>('aws.region');
-    const fileUrl = `https://${this.bucket}.s3.${region}.amazonaws.com/${key}`;
+    const region = this.configService.get<string>('aws.region') ?? 'ap-northeast-2';
+    const fileUrl = buildS3ObjectPublicUrl({
+      cloudfrontBaseUrl: this.configService.get<string>('cloudfrontBaseUrl'),
+      bucket: this.bucket,
+      region,
+      key,
+    });
     return { uploadUrl, key, fileUrl };
   }
 

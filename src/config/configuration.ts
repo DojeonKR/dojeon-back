@@ -22,6 +22,8 @@ export default () => ({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
+  /** 설정 시 presigned 응답의 fileUrl 등 공개 읽기 URL에 사용 (예: https://d111111abcdef8.cloudfront.net, 끝 슬래시 없음 권장) */
+  cloudfrontBaseUrl: process.env.CLOUDFRONT_BASE_URL ?? '',
   emailFrom: process.env.EMAIL_FROM ?? 'noreply@dojeon.local',
   /** Gmail 등 SMTP (SMTP_HOST + SMTP_USER + SMTP_PASS 설정 시 nodemailer 사용) */
   smtp: {

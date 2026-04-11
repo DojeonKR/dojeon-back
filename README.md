@@ -51,7 +51,7 @@ npm install
 
 2. 환경 변수
 
-`.env.example`을 복사해 `.env`를 만들고 `DATABASE_URL`, `REDIS_URL`, `JWT_*` 등을 설정합니다.
+`.env.example`을 복사해 `.env`를 만들고 `DATABASE_URL`, `REDIS_URL`, `JWT_*` 등을 설정합니다. 프로필·오디오 등 공개 읽기 URL을 CDN으로 쓸 때는 `CLOUDFRONT_BASE_URL`(선택)을 둡니다.
 
 3. 로컬 DB (PostgreSQL + Redis만 — 호스트에서 `npm run start:dev` 할 때)
 
@@ -99,14 +99,17 @@ API 베이스 URL: `http://localhost:3000`
 
 | 영역 | 메서드 | 경로 |
 |------|--------|------|
-| Auth | POST/GET | `/auth/email/send`, `/auth/email/verify`, `/auth/signup`, `/auth/login`, `/auth/google`, `/auth/reissue`, `/auth/logout`, `/auth/password/reset-request`, `/auth/check-nickname` |
-| User | GET/PATCH | `/user/me?year=&month=`, `/user/me/achievement`, `/user/me/profileImage/presignedUrl` |
+| Auth | POST/GET | `/auth/email/send`, `/auth/email/verify`, `/auth/signup` (Idempotency-Key 권장), `/auth/login`, `/auth/google`, `/auth/reissue`, `/auth/logout`, `/auth/password/reset-request`, `/auth/password/reset-confirm`, `/auth/check-nickname` |
+| User | GET/PATCH/POST | `/user/me?year=&month=`, `/user/me`, `/user/me/password`, `/user/me/achievement`, `/user/me/profileImage/presignedUrl` |
 | Home | GET | `/home/resume` |
-| Learning | GET | `/courses/dashboard`, `/lessons/:id/sections` |
-| Section | GET/POST | `/section/:id/material`, `/section/:id/card`, `/section/:id/question`, `/section/:id/progress` (Idempotency-Key) |
+| Learning | GET | `/courses/dashboard`, `/lessons/:lessonId/sections` |
+| Section | GET/POST | `/section/:sectionId/material`, `/section/:sectionId/card`, `/section/:sectionId/question`, `/section/:sectionId/questions/check`, `/section/:sectionId/progress` (GET·POST, POST는 Idempotency-Key 권장) |
 | Scrap | GET/POST/DELETE | `/scrap/dashboard`, `/scrap?type=VOCAB` 또는 `GRAMMAR` + `sort=recent`, `/scrap`, `/scrap/:scrapId` |
-| Practice | GET | `/practice/topic`, `/practice/topic/:topicId/question` |
+| Practice | GET/POST | `/practice/topic`, `/practice/topic/:topicId/question`, `/practice/topic/:topicId/questions/check` |
 | Subscription | GET | `/subscription/plan` |
+| Health | GET | `/health` (헬스체크, `@SkipThrottle`) |
+| Admin | POST/PATCH/DELETE | 관리자 JWT — `/admin/courses`, `/admin/courses/:courseId`, `/admin/courses/:courseId/lessons`, `/admin/lessons/:lessonId`, `/admin/lessons/:lessonId/sections`, `/admin/sections/:sectionId` |
+| Admin (콘텐츠) | POST/PATCH/DELETE | `/admin/sections/:sectionId/cards`, `/admin/sections/:sectionId/cards/bulk`, `/admin/cards/:cardId`, `/admin/sections/:sectionId/materials`, `/admin/materials/:materialId`, `/admin/sections/:sectionId/questions`, `/admin/questions/:questionId`, `/admin/sections/:sectionId/audio-upload-url` |
 
 ## 구현 상태 체크리스트
 
@@ -121,14 +124,15 @@ API 베이스 URL: `http://localhost:3000`
 
 ### API 도메인 (NestJS)
 
-- [x] **Auth** — 이메일 인증, 회원가입, 로그인, Google, 토큰 재발급, 로그아웃, 비밀번호 재설정 요청, 닉네임 중복 확인
-- [x] **User** — `GET/PATCH /user/me`, 출석 `year`/`month`, 업적, 프로필 이미지 presigned URL
+- [x] **Auth** — 이메일 인증, 회원가입(Idempotency-Key 권장), 로그인, Google, 토큰 재발급, 로그아웃, 비밀번호 재설정 요청·확인, 닉네임 중복 확인
+- [x] **User** — `GET/PATCH /user/me`, 비밀번호 변경, 출석 `year`/`month`, 업적, 프로필 이미지 presigned URL
 - [x] **Home** — `GET /home/resume`
 - [x] **Learning** — 코스 대시보드(`resumeBanner`, 비활성 코스), 레슨 섹션 목록, `getLastLessonResume` 공통 로직
-- [x] **Section** — material / card / question 조회, 진행률 저장(`nextSection`, `difficulty`)
+- [x] **Section** — material / card / question 조회, 문항 채점(`questions/check`), 진행 조회·저장(Idempotency-Key 권장)
 - [x] **Scrap** — 대시보드, 통합 리스트(`type`, `sort`, `cursor`, `limit`), 생성·삭제, DTO 조건부 검증
-- [x] **Practice** — 토픽·문항 조회
+- [x] **Practice** — 토픽·문항 조회, 문항 채점
 - [x] **Subscription** — 플랜 목록 + `benefits`
+- [x] **Admin** — 코스·레슨·섹션·카드(일괄)·머티리얼·문항 CRUD, 오디오 업로드 presigned URL
 
 ### 공통·인프라 (코드)
 
@@ -162,4 +166,4 @@ npm run start:prod
 docker build -t dojeon-back .
 ```
 
-ECS 배포 시 `DATABASE_URL`, `REDIS_URL`, `JWT_*`, `AWS_*` 등을 태스크 정의에서 주입합니다.
+ECS 배포 시 `DATABASE_URL`, `REDIS_URL`, `JWT_*`, `AWS_*`, (선택) `CLOUDFRONT_BASE_URL` 등을 태스크 정의에서 주입합니다.

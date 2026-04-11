@@ -14,16 +14,22 @@ export class LearningService {
     const lastLog = await this.prisma.userSectionLog.findFirst({
       where: { userId },
       orderBy: { updatedAt: 'desc' },
-      include: {
+      select: {
         section: {
-          include: {
+          select: {
+            id: true,
+            title: true,
+            type: true,
+            lessonId: true,
+            materials: { orderBy: { sequence: 'asc' }, select: { type: true, contentText: true } },
             lesson: {
-              include: {
-                course: true,
+              select: {
+                courseId: true,
+                title: true,
+                course: { select: { title: true } },
                 sections: { select: { id: true } },
               },
             },
-            materials: { orderBy: { sequence: 'asc' } },
           },
         },
       },
@@ -63,13 +69,20 @@ export class LearningService {
   async getCoursesDashboard(userId: bigint) {
     const courses = await this.prisma.course.findMany({
       orderBy: { orderNum: 'asc' },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        orderNum: true,
+        isActive: true,
         lessons: {
           orderBy: { orderNum: 'asc' },
-          include: {
-            sections: {
-              select: { id: true },
-            },
+          select: {
+            id: true,
+            title: true,
+            subtitle: true,
+            orderNum: true,
+            sections: { select: { id: true } },
           },
         },
       },
@@ -87,10 +100,20 @@ export class LearningService {
     const resumeLog = await this.prisma.userSectionLog.findFirst({
       where: { userId, isCompleted: false },
       orderBy: { updatedAt: 'desc' },
-      include: {
+      select: {
         section: {
-          include: {
-            lesson: { include: { course: true } },
+          select: {
+            id: true,
+            title: true,
+            type: true,
+            lessonId: true,
+            lesson: {
+              select: {
+                courseId: true,
+                title: true,
+                course: { select: { title: true } },
+              },
+            },
           },
         },
       },
@@ -187,11 +210,15 @@ export class LearningService {
   async getLessonSections(userId: bigint, lessonId: number) {
     const lesson = await this.prisma.lesson.findUnique({
       where: { id: lessonId },
-      include: {
+      select: {
+        id: true,
+        courseId: true,
+        title: true,
+        subtitle: true,
         sections: { orderBy: { orderNum: 'asc' } },
         course: {
-          include: {
-            lessons: { orderBy: { orderNum: 'asc' } },
+          select: {
+            lessons: { orderBy: { orderNum: 'asc' }, select: { id: true, title: true, orderNum: true } },
           },
         },
       },

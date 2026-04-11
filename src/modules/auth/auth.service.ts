@@ -69,11 +69,18 @@ export class AuthService {
     } else {
       this.logger.log(`OTP for ${email}: ${code} (실제 발송 시 메일함 확인, 미발송 시 이 로그 사용)`);
     }
-    const delivered = await this.sendEmailSafely(() => this.emailService.sendOtpEmail(email, code));
-    this.assertEmailDeliveredInProduction(delivered);
-    await this.redis.set(`email:otp:${email}`, code, OTP_TTL);
+    const otpKey = `email:otp:${email}`;
+    await this.redis.set(otpKey, code, OTP_TTL);
     await this.redis.set(cooldownKey, '1', OTP_COOLDOWN_SECONDS);
-    return { sent: this.effectiveSent(delivered) };
+    try {
+      const delivered = await this.sendEmailSafely(() => this.emailService.sendOtpEmail(email, code));
+      this.assertEmailDeliveredInProduction(delivered);
+      return { sent: this.effectiveSent(delivered) };
+    } catch (err) {
+      await this.redis.del(otpKey);
+      await this.redis.del(cooldownKey);
+      throw err;
+    }
   }
 
   async verifyEmailCode(email: string, code: string): Promise<{ verifyToken: string }> {
@@ -272,11 +279,18 @@ export class AuthService {
     } else {
       this.logger.log(`Password reset OTP for ${email}: ${code}`);
     }
-    const delivered = await this.sendEmailSafely(() => this.emailService.sendOtpEmail(email, code));
-    this.assertEmailDeliveredInProduction(delivered);
-    await this.redis.set(`pwdreset:otp:${email}`, code, OTP_TTL);
+    const otpKey = `pwdreset:otp:${email}`;
+    await this.redis.set(otpKey, code, OTP_TTL);
     await this.redis.set(cooldownKey, '1', OTP_COOLDOWN_SECONDS);
-    return { sent: this.effectiveSent(delivered) };
+    try {
+      const delivered = await this.sendEmailSafely(() => this.emailService.sendOtpEmail(email, code));
+      this.assertEmailDeliveredInProduction(delivered);
+      return { sent: this.effectiveSent(delivered) };
+    } catch (err) {
+      await this.redis.del(otpKey);
+      await this.redis.del(cooldownKey);
+      throw err;
+    }
   }
 
   async passwordResetConfirm(dto: PasswordResetConfirmDto): Promise<{ reset: boolean }> {

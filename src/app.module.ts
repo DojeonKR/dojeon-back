@@ -5,6 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { PrismaModule } from './prisma/prisma.module';
 import { RedisModule } from './infra/redis/redis.module';
+import { RedisService } from './infra/redis/redis.service';
+import { RedisThrottlerStorageService } from './infra/throttler/redis-throttler.storage';
 import { EmailModule } from './infra/email/email.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
@@ -24,13 +26,20 @@ import { AdminModule } from './modules/admin/admin.module';
       isGlobal: true,
       load: [configuration],
     }),
-    ThrottlerModule.forRoot([
-      {
-        name: 'default',
-        ttl: 60000,
-        limit: 120,
-      },
-    ]),
+    ThrottlerModule.forRootAsync({
+      imports: [RedisModule],
+      inject: [RedisService],
+      useFactory: (redis: RedisService) => ({
+        throttlers: [
+          {
+            name: 'default',
+            ttl: 60000,
+            limit: 120,
+          },
+        ],
+        storage: new RedisThrottlerStorageService(redis.getClient(), false),
+      }),
+    }),
     PrismaModule,
     RedisModule,
     EmailModule,

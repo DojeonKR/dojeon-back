@@ -23,7 +23,10 @@ export class LogService {
   async getSectionMaterialsList(sectionId: number) {
     const section = await this.prisma.section.findUnique({
       where: { id: sectionId },
-      include: { lesson: { include: { course: true } } },
+      select: {
+        lessonId: true,
+        lesson: { select: { courseId: true } },
+      },
     });
     if (!section) {
       throw new AppException('SECTION_NOT_FOUND', '섹션을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
@@ -297,10 +300,15 @@ export class LogService {
       where: { userId, type: ScrapType.VOCAB },
       orderBy: { createdAt: 'desc' },
       take: 10,
-      include: {
-        card: true,
+      select: {
+        id: true,
+        card: { select: { wordFront: true } },
         section: {
-          include: { lesson: { include: { course: true } } },
+          select: {
+            lesson: {
+              select: { courseId: true, course: { select: { title: true } } },
+            },
+          },
         },
       },
     });
@@ -308,10 +316,18 @@ export class LogService {
       where: { userId, type: ScrapType.GRAMMAR },
       orderBy: { createdAt: 'desc' },
       take: 10,
-      include: {
-        material: true,
+      select: {
+        id: true,
+        material: { select: { contentText: true } },
         section: {
-          include: { lesson: { include: { course: true } } },
+          select: {
+            lesson: {
+              select: {
+                title: true,
+                course: { select: { title: true } },
+              },
+            },
+          },
         },
       },
     });
@@ -375,11 +391,16 @@ export class LogService {
       },
       orderBy: { id: 'desc' },
       take,
-      include: {
-        card: true,
+      select: {
+        id: true,
+        sectionId: true,
+        createdAt: true,
+        card: { select: { id: true, wordFront: true, wordBack: true, audioUrl: true } },
         section: {
-          include: {
-            lesson: { include: { course: true } },
+          select: {
+            lesson: {
+              select: { courseId: true, course: { select: { title: true } } },
+            },
           },
         },
       },
@@ -412,11 +433,16 @@ export class LogService {
       },
       orderBy: { id: 'desc' },
       take,
-      include: {
-        material: true,
+      select: {
+        id: true,
+        sectionId: true,
+        createdAt: true,
+        material: { select: { id: true, contentText: true, type: true } },
         section: {
-          include: {
-            lesson: { include: { course: true } },
+          select: {
+            lesson: {
+              select: { title: true, course: { select: { title: true } } },
+            },
           },
         },
       },
@@ -450,7 +476,15 @@ export class LogService {
           cardId: dto.cardId,
           materialId: null,
         },
-        include: { card: true },
+        select: {
+          id: true,
+          sectionId: true,
+          type: true,
+          cardId: true,
+          materialId: true,
+          createdAt: true,
+          card: { select: { id: true, wordFront: true, wordBack: true, audioUrl: true, sequence: true } },
+        },
       });
     }
 
@@ -469,7 +503,22 @@ export class LogService {
         cardId: null,
         materialId: dto.materialId,
       },
-      include: { material: true },
+      select: {
+        id: true,
+        sectionId: true,
+        type: true,
+        cardId: true,
+        materialId: true,
+        createdAt: true,
+        material: {
+          select: {
+            id: true,
+            type: true,
+            sequence: true,
+            contentText: true,
+          },
+        },
+      },
     });
   }
 
