@@ -2,6 +2,40 @@
 
 외국인 대상 한국어 학습 플랫폼 API (NestJS + Prisma + PostgreSQL).
 
+## 아키텍처
+
+클라이언트는 HTTPS로 REST API를 호출하고, 서버는 Prisma로 PostgreSQL에 접근하며 Redis·AWS 서비스와 연동합니다.
+
+```mermaid
+flowchart TB
+  subgraph clients["클라이언트"]
+    APP[모바일 / 웹]
+  end
+
+  subgraph api["NestJS API"]
+    direction TB
+    GLOBAL["글로벌 레이어<br/>ValidationPipe · 응답 래핑 Interceptor · 예외 필터<br/>JwtAuthGuard · ThrottlerGuard"]
+    MODULES["기능 모듈<br/>Auth · User · Achievement · Learning<br/>Log · Home · Practice · Subscription · Admin · Health"]
+    GLOBAL --> MODULES
+  end
+
+  subgraph data["데이터·캐시"]
+    PG[(PostgreSQL)]
+    R[(Redis)]
+  end
+
+  subgraph aws["AWS"]
+    SES[SES 이메일]
+    S3[S3 Presigned 업로드]
+  end
+
+  APP -->|REST / Swagger| api
+  MODULES -->|Prisma ORM| PG
+  MODULES -->|세션 · 캐시 · Idempotency| R
+  MODULES -->|인증·비밀번호 메일| SES
+  MODULES -->|프로필 이미지 · 관리자 오디오| S3
+```
+
 ## 요구 사항
 
 - Node.js 20+
