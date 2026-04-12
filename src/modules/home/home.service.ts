@@ -43,13 +43,14 @@ export class HomeService {
     const endOfDay = new Date(startOfDay);
     endOfDay.setUTCDate(endOfDay.getUTCDate() + 1);
 
-    const todayLogs = await this.prisma.userSectionLog.findMany({
+    const todayAgg = await this.prisma.userSectionLog.aggregate({
       where: {
         userId,
         updatedAt: { gte: startOfDay, lt: endOfDay },
       },
+      _sum: { totalStaySeconds: true },
     });
-    const studiedSeconds = todayLogs.reduce((acc, l) => acc + l.totalStaySeconds, 0);
+    const studiedSeconds = todayAgg._sum.totalStaySeconds ?? 0;
 
     const lastLesson = await this.learningService.getLastLessonResume(userId);
 

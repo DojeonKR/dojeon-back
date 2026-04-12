@@ -194,13 +194,10 @@ export class LogService {
         },
       });
 
-      const completedAfter = await tx.userSectionLog.count({
-        where: {
-          userId,
-          sectionId: { in: lessonSectionIds },
-          isCompleted: true,
-        },
-      });
+      // completedAfter를 직접 계산: 이전 상태와 비교하여 DB 쿼리 1회 제거
+      const wasCompleted = beforeLog?.isCompleted ?? false;
+      const nowCompleted = log.isCompleted;
+      const completedAfter = completedBefore + (nowCompleted && !wasCompleted ? 1 : 0);
 
       const totalLessonSections = lessonSectionIds.length;
       if (
@@ -269,22 +266,37 @@ export class LogService {
     const stats = await tx.userStats.findUnique({ where: { userId } });
     if (!stats) return;
 
-    // 최근 출석 날짜를 내림차순으로 가져와 연속 일수를 단일 쿼리로 계산
-    const rows = await tx.userAttendance.findMany({
-      where: { userId },
-      orderBy: { attendanceDate: 'desc' },
-      select: { attendanceDate: true },
-    });
-
+    // 페이지네이션: 전체 출석 기록 대신 30일씩 끊어서 가져옴
+    const PAGE_SIZE = 30;
     let streak = 0;
     let expected = utcDateOnly(new Date());
-    for (const row of rows) {
-      const d = utcDateOnly(row.attendanceDate);
-      if (d.getTime() !== expected.getTime()) break;
-      streak += 1;
-      const prev = new Date(expected);
-      prev.setUTCDate(prev.getUTCDate() - 1);
-      expected = prev;
+    let skip = 0;
+    let done = false;
+
+    while (!done) {
+      const rows = await tx.userAttendance.findMany({
+        where: { userId },
+        orderBy: { attendanceDate: 'desc' },
+        select: { attendanceDate: true },
+        take: PAGE_SIZE,
+        skip,
+      });
+
+      if (rows.length === 0) break;
+
+      for (const row of rows) {
+        const d = utcDateOnly(row.attendanceDate);
+        if (d.getTime() !== expected.getTime()) {
+          done = true;
+          break;
+        }
+        streak += 1;
+        const prev = new Date(expected);
+        prev.setUTCDate(prev.getUTCDate() - 1);
+        expected = prev;
+      }
+
+      skip += PAGE_SIZE;
     }
 
     const maxStreak = Math.max(stats.maxStreak, streak);
