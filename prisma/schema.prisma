@@ -71,6 +71,7 @@ model UserStats {
   currentStreak         Int      @default(0) @map("current_streak")
   maxStreak             Int      @default(0) @map("max_streak")
   totalCompletedLessons Int      @default(0) @map("total_completed_lessons")
+  lastAttendanceDate    DateTime? @db.Date @map("last_attendance_date")
   updatedAt             DateTime @updatedAt @map("updated_at")
 
   @@map("user_stats")
@@ -84,6 +85,7 @@ model UserAttendance {
   createdAt        DateTime @default(now()) @map("created_at")
 
   @@unique([userId, attendanceDate])
+  @@index([userId, attendanceDate], map: "idx_attendance_user_date")
   @@map("user_attendance")
 }
 
@@ -166,6 +168,7 @@ model SectionCard {
   section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   scraps  Scrap[]
 
+  @@index([sectionId, sequence], map: "idx_cards_section_seq")
   @@map("section_cards")
 }
 
@@ -180,6 +183,7 @@ model SectionMaterial {
   section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
   scraps  Scrap[]
 
+  @@index([sectionId, sequence], map: "idx_materials_section_seq")
   @@map("section_materials")
 }
 
@@ -212,6 +216,8 @@ model UserSectionLog {
 
   @@unique([userId, sectionId])
   @@index([userId], map: "idx_logs_user")
+  @@index([userId, isCompleted], map: "idx_logs_user_completed")
+  @@index([userId, updatedAt], map: "idx_logs_user_updated")
   @@map("user_section_logs")
 }
 

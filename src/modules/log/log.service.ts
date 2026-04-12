@@ -219,19 +219,28 @@ export class LogService {
         });
       }
 
+      let shouldCheckAward = !wasCompleted && nowCompleted;
+
       if (log.isCompleted) {
         const today = utcDateOnly(new Date());
-        await tx.userAttendance.upsert({
+        const existingAtt = await tx.userAttendance.findUnique({
           where: {
             userId_attendanceDate: { userId, attendanceDate: today },
           },
-          create: { userId, attendanceDate: today },
-          update: {},
         });
-        await this.recalculateStreak(tx, userId);
+
+        if (!existingAtt) {
+          await tx.userAttendance.create({
+            data: { userId, attendanceDate: today },
+          });
+          await this.recalculateStreak(tx, userId);
+          shouldCheckAward = true;
+        }
       }
 
-      await this.achievementService.checkAndAward(tx, userId);
+      if (shouldCheckAward) {
+        await this.achievementService.checkAndAward(tx, userId);
+      }
 
       const nextSection = await tx.section.findFirst({
         where: {
@@ -266,83 +275,92 @@ export class LogService {
     const stats = await tx.userStats.findUnique({ where: { userId } });
     if (!stats) return;
 
-    // 페이지네이션: 전체 출석 기록 대신 30일씩 끊어서 가져옴
-    const PAGE_SIZE = 30;
-    let streak = 0;
-    let expected = utcDateOnly(new Date());
-    let skip = 0;
-    let done = false;
+    const today = utcDateOnly(new Date());
 
-    while (!done) {
-      const rows = await tx.userAttendance.findMany({
-        where: { userId },
-        orderBy: { attendanceDate: 'desc' },
-        select: { attendanceDate: true },
-        take: PAGE_SIZE,
-        skip,
-      });
-
-      if (rows.length === 0) break;
-
-      for (const row of rows) {
-        const d = utcDateOnly(row.attendanceDate);
-        if (d.getTime() !== expected.getTime()) {
-          done = true;
-          break;
-        }
-        streak += 1;
-        const prev = new Date(expected);
-        prev.setUTCDate(prev.getUTCDate() - 1);
-        expected = prev;
+    // O(1) incremental streak: lastAttendanceDate 기반 비교
+    if (stats.lastAttendanceDate) {
+      const lastDate = utcDateOnly(stats.lastAttendanceDate);
+      if (lastDate.getTime() === today.getTime()) {
+        return; // 오늘 이미 처리됨
       }
+      const yesterday = new Date(today);
+      yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+      const isConsecutive = lastDate.getTime() === yesterday.getTime();
+      const newStreak = isConsecutive ? stats.currentStreak + 1 : 1;
+      const maxStreak = Math.max(stats.maxStreak, newStreak);
+      await tx.userStats.update({
+        where: { userId },
+        data: { currentStreak: newStreak, maxStreak, lastAttendanceDate: today },
+      });
+      return;
+    }
 
-      skip += PAGE_SIZE;
+    // 최초 호출 또는 lastAttendanceDate 없는 기존 사용자: 전체 재계산 (1회)
+    const rows = await tx.userAttendance.findMany({
+      where: { userId },
+      orderBy: { attendanceDate: 'desc' },
+      select: { attendanceDate: true },
+      take: 366,
+    });
+
+    let streak = 0;
+    let expected = today;
+    for (const row of rows) {
+      const d = utcDateOnly(row.attendanceDate);
+      if (d.getTime() !== expected.getTime()) break;
+      streak += 1;
+      const prev = new Date(expected);
+      prev.setUTCDate(prev.getUTCDate() - 1);
+      expected = prev;
     }
 
     const maxStreak = Math.max(stats.maxStreak, streak);
     await tx.userStats.update({
       where: { userId },
-      data: { currentStreak: streak, maxStreak },
+      data: { currentStreak: streak, maxStreak, lastAttendanceDate: today },
     });
   }
 
   async getScrapsDashboard(userId: bigint) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    const vocab = await this.prisma.scrap.findMany({
-      where: { userId, type: ScrapType.VOCAB },
-      orderBy: { createdAt: 'desc' },
-      take: 10,
-      select: {
-        id: true,
-        card: { select: { wordFront: true } },
-        section: {
-          select: {
-            lesson: {
-              select: { courseId: true, course: { select: { title: true } } },
-            },
-          },
-        },
-      },
-    });
-    const grammar = await this.prisma.scrap.findMany({
-      where: { userId, type: ScrapType.GRAMMAR },
-      orderBy: { createdAt: 'desc' },
-      take: 10,
-      select: {
-        id: true,
-        material: { select: { contentText: true } },
-        section: {
-          select: {
-            lesson: {
-              select: {
-                title: true,
-                course: { select: { title: true } },
+    // 3개 독립 쿼리를 Promise.all로 병렬 실행
+    const [user, vocab, grammar] = await Promise.all([
+      this.prisma.user.findUnique({ where: { id: userId } }),
+      this.prisma.scrap.findMany({
+        where: { userId, type: ScrapType.VOCAB },
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+        select: {
+          id: true,
+          card: { select: { wordFront: true } },
+          section: {
+            select: {
+              lesson: {
+                select: { courseId: true, course: { select: { title: true } } },
               },
             },
           },
         },
-      },
-    });
+      }),
+      this.prisma.scrap.findMany({
+        where: { userId, type: ScrapType.GRAMMAR },
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+        select: {
+          id: true,
+          material: { select: { contentText: true } },
+          section: {
+            select: {
+              lesson: {
+                select: {
+                  title: true,
+                  course: { select: { title: true } },
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
 
     const vocabularyPreview = this.groupVocabForDashboard(vocab);
     const grammarPreview = grammar.map((g) => ({
