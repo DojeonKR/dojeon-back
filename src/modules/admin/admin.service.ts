@@ -23,6 +23,7 @@ import {
   PatchSectionDto,
 } from './admin.dto';
 import { buildS3ObjectPublicUrl } from '../../common/utils/public-asset-url.util';
+import { AchievementService } from '../achievement/achievement.service';
 
 @Injectable()
 export class AdminService {
@@ -32,6 +33,7 @@ export class AdminService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
+    private readonly achievementService: AchievementService,
   ) {
     const region = this.configService.get<string>('aws.region');
     this.bucket = this.configService.get<string>('aws.s3Bucket') ?? '';
@@ -271,6 +273,11 @@ export class AdminService {
       key,
     });
     return { uploadUrl, key, fileUrl };
+  }
+
+  async refreshBadgeCache(): Promise<{ refreshed: boolean }> {
+    await this.achievementService.refreshBadges();
+    return { refreshed: true };
   }
 
   private async ensureCourse(id: number) {

@@ -58,26 +58,56 @@ async function bootstrap() {
     logger.warn('CORS: 모든 Origin 허용 (개발 전용; production에서는 CORS_ORIGIN 필수)');
   }
 
+  const port = Number(process.env.PORT ?? 3000);
+  const host = process.env.HOST ?? '0.0.0.0';
+
   const swaggerEnabled = configService.get<boolean>('swaggerEnabled') === true;
   if (!isProd || swaggerEnabled) {
-    const swaggerConfig = new DocumentBuilder()
+    const swaggerServerUrl = configService.get<string>('swaggerServerUrl') ?? '';
+    const docBuilder = new DocumentBuilder()
       .setTitle('DOJEON API')
-      .setDescription('외국인 대상 한국어 학습 플랫폼 API\n\n모든 성공 응답은 `{ isSuccess, code, message, data, timestamp }` 형태로 래핑됩니다.\n인증이 필요한 엔드포인트는 우측 **Authorize** 버튼에 `Bearer <accessToken>`을 입력하세요.')
+      .setDescription(
+        [
+          '외국인 대상 한국어 학습 플랫폼 API',
+          '',
+          '**응답 형식**',
+          '- 성공: `{ isSuccess, code, message, data, timestamp }`',
+          '- 실패: `{ isSuccess, code, message, data, errorCode?, timestamp }`',
+          '',
+          '**인증**',
+          '- 보호된 엔드포인트는 `Authorization: Bearer <accessToken>`',
+          '- Swagger에서는 우측 **Authorize**에 토큰만 넣으면 됩니다 (Bearer 접두어 없이).',
+          '',
+          '**프론트엔드용 스펙 파일**',
+          `- OpenAPI JSON: \`/docs-json\` (Postman·OpenAPI Generator 등에서 Import)`,
+          `- OpenAPI YAML: \`/docs-yaml\``,
+        ].join('\n'),
+      )
       .setVersion('1.0')
+      .addServer('/', '문서를 연 호스트와 동일 (로컬·배포 공통)');
+    if (swaggerServerUrl) {
+      docBuilder.addServer(swaggerServerUrl.replace(/\/$/, ''), '고정 베이스 URL (SWAGGER_SERVER_URL)');
+    }
+    const swaggerConfig = docBuilder
       .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'access-token')
       .build();
     const document = SwaggerModule.createDocument(app, swaggerConfig);
-    SwaggerModule.setup('docs', app, document);
+    SwaggerModule.setup('docs', app, document, {
+      customSiteTitle: 'DOJEON API',
+      jsonDocumentUrl: 'docs-json',
+      yamlDocumentUrl: 'docs-yaml',
+    });
   } else {
     logger.log('Swagger: production에서 비활성 (SWAGGER_ENABLED=true 로 활성화)');
   }
 
-  const port = Number(process.env.PORT ?? 3000);
-  const host = process.env.HOST ?? '0.0.0.0';
   await app.listen(port, host);
-  console.log(`Application is running on: http://${host}:${port}`);
+  const listenUrl = host === '0.0.0.0' ? `http://127.0.0.1:${port}` : `http://${host}:${port}`;
+  console.log(`Application is running on: ${listenUrl}`);
   if (!isProd || swaggerEnabled) {
-    console.log(`Swagger UI: http://localhost:${port}/docs`);
+    console.log(`Swagger UI: ${listenUrl}/docs`);
+    console.log(`OpenAPI JSON: ${listenUrl}/docs-json`);
+    console.log(`OpenAPI YAML: ${listenUrl}/docs-yaml`);
   }
 }
 bootstrap();

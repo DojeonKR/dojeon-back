@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AdminService } from './admin.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
+import { AchievementService } from '../achievement/achievement.service';
 
 jest.mock('@aws-sdk/client-s3', () => ({
   S3Client: jest.fn(),
@@ -16,6 +17,7 @@ describe('AdminService', () => {
   let service: AdminService;
   let mockPrismaService: any;
   let mockConfigService: any;
+  const mockAchievementService = { refreshBadges: jest.fn().mockResolvedValue(undefined) };
 
   beforeEach(async () => {
     mockPrismaService = {
@@ -41,6 +43,7 @@ describe('AdminService', () => {
         AdminService,
         { provide: PrismaService, useValue: mockPrismaService },
         { provide: ConfigService, useValue: mockConfigService },
+        { provide: AchievementService, useValue: mockAchievementService },
       ],
     }).compile();
 

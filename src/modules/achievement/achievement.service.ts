@@ -1,42 +1,53 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
+import { RedisService } from '../../infra/redis/redis.service';
+
+const BADGE_HASH_KEY = 'badges:title_to_id';
 
 @Injectable()
 export class AchievementService implements OnModuleInit {
   private readonly logger = new Logger(AchievementService.name);
-  private badgeIdByTitle = new Map<string, number>();
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly redis: RedisService,
+  ) {}
 
   async onModuleInit(): Promise<void> {
     await this.refreshBadges();
   }
 
-  /** 배지 메타가 바뀌면 호출(운영/테스트). 기본은 기동 시 1회 로드. */
+  /** DB에서 배지 목록을 읽어 Redis Hash에 동기화. 모든 인스턴스가 공유. */
   async refreshBadges(): Promise<void> {
     const rows = await this.prisma.badge.findMany({
       select: { id: true, title: true },
       orderBy: { id: 'asc' },
     });
-    const next = new Map<string, number>();
+
+    const client = this.redis.getClient();
+    const pipeline = client.pipeline();
+    pipeline.del(BADGE_HASH_KEY);
+
     const seenTitles = new Set<string>();
     for (const row of rows) {
       if (seenTitles.has(row.title)) {
         this.logger.warn(
-          `Duplicate badge title "${row.title}" (badge_id=${row.id}); Map keeps the first id seen for this title`,
+          `Duplicate badge title "${row.title}" (badge_id=${row.id}); Hash keeps the first id seen`,
         );
         continue;
       }
       seenTitles.add(row.title);
-      next.set(row.title, row.id);
+      pipeline.hset(BADGE_HASH_KEY, row.title, row.id.toString());
     }
-    this.badgeIdByTitle = next;
+    await pipeline.exec();
   }
 
-  /**
-   * 레슨/섹션 완료 후 호출. 동일 트랜잭션 내에서 실행할 것.
-   */
+  private async getBadgeIdByTitle(title: string): Promise<number | undefined> {
+    const val = await this.redis.getClient().hget(BADGE_HASH_KEY, title);
+    return val ? parseInt(val, 10) : undefined;
+  }
+
   async checkAndAward(tx: Prisma.TransactionClient, userId: bigint): Promise<void> {
     const stats = await tx.userStats.findUnique({ where: { userId } });
     if (!stats) return;
@@ -62,7 +73,7 @@ export class AchievementService implements OnModuleInit {
 
     for (const rule of rules) {
       if (!rule.condition()) continue;
-      const badgeId = this.badgeIdByTitle.get(rule.title);
+      const badgeId = await this.getBadgeIdByTitle(rule.title);
       if (badgeId === undefined || earnedIds.has(badgeId)) continue;
       try {
         await tx.userBadge.create({

@@ -1,23 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, ScrapType } from '@prisma/client';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AppException } from '../../common/exceptions/app.exception';
 import { HttpStatus } from '@nestjs/common';
 import { SectionProgressDto } from './dto/section-progress.dto';
 import { CreateScrapDto } from './dto/create-scrap.dto';
 import { CheckSectionQuestionDto } from './dto/check-section-question.dto';
-import { AchievementService } from '../achievement/achievement.service';
 import { normalizeQuizAnswer } from '../../common/utils/quiz-answer.util';
-
-function utcDateOnly(d: Date): Date {
-  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
-}
+import { SECTION_EVENT_QUEUE, SectionEventJobData } from './log-event.queue';
 
 @Injectable()
 export class LogService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly achievementService: AchievementService,
+    @InjectQueue(SECTION_EVENT_QUEUE)
+    private readonly sectionEventQueue: Queue<SectionEventJobData>,
   ) {}
 
   async getSectionMaterialsList(sectionId: number) {
@@ -163,7 +162,7 @@ export class LogService {
 
     const lessonSectionIds = section.lesson.sections.map((s) => s.id);
 
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       const completedBefore = await tx.userSectionLog.count({
         where: {
           userId,
@@ -194,22 +193,6 @@ export class LogService {
         },
       });
 
-      // completedAfter를 직접 계산: 이전 상태와 비교하여 DB 쿼리 1회 제거
-      const wasCompleted = beforeLog?.isCompleted ?? false;
-      const nowCompleted = log.isCompleted;
-      const completedAfter = completedBefore + (nowCompleted && !wasCompleted ? 1 : 0);
-
-      const totalLessonSections = lessonSectionIds.length;
-      if (
-        completedAfter === totalLessonSections &&
-        completedBefore < totalLessonSections
-      ) {
-        await tx.userStats.update({
-          where: { userId },
-          data: { totalCompletedLessons: { increment: 1 } },
-        });
-      }
-
       if (dto.stayTimeSeconds > 0) {
         await tx.userStats.update({
           where: { userId },
@@ -219,27 +202,19 @@ export class LogService {
         });
       }
 
-      let shouldCheckAward = !wasCompleted && nowCompleted;
+      const wasCompleted = beforeLog?.isCompleted ?? false;
+      const nowCompleted = log.isCompleted;
+      const isFirstCompletion = !wasCompleted && nowCompleted;
+      const completedAfter = completedBefore + (isFirstCompletion ? 1 : 0);
+      const isLessonCompleted =
+        completedAfter === lessonSectionIds.length &&
+        completedBefore < lessonSectionIds.length;
 
-      if (log.isCompleted) {
-        const today = utcDateOnly(new Date());
-        const existingAtt = await tx.userAttendance.findUnique({
-          where: {
-            userId_attendanceDate: { userId, attendanceDate: today },
-          },
+      if (isLessonCompleted) {
+        await tx.userStats.update({
+          where: { userId },
+          data: { totalCompletedLessons: { increment: 1 } },
         });
-
-        if (!existingAtt) {
-          await tx.userAttendance.create({
-            data: { userId, attendanceDate: today },
-          });
-          await this.recalculateStreak(tx, userId);
-          shouldCheckAward = true;
-        }
-      }
-
-      if (shouldCheckAward) {
-        await this.achievementService.checkAndAward(tx, userId);
       }
 
       const nextSection = await tx.section.findFirst({
@@ -251,74 +226,57 @@ export class LogService {
       });
 
       return {
-        sectionId,
-        log: {
-          currentPage: log.maxPageReached,
-          stayTimeSeconds: log.totalStaySeconds,
-          isCompleted: log.isCompleted,
-          difficulty: log.difficulty,
+        isFirstCompletion,
+        isLessonCompleted,
+        response: {
+          sectionId,
+          log: {
+            currentPage: log.maxPageReached,
+            stayTimeSeconds: log.totalStaySeconds,
+            isCompleted: log.isCompleted,
+            difficulty: log.difficulty,
+          },
+          nextSection: nextSection
+            ? {
+                courseId: section.lesson.courseId,
+                lessonId: section.lessonId,
+                sectionId: nextSection.id,
+                type: nextSection.type,
+                title: nextSection.title,
+              }
+            : null,
         },
-        nextSection: nextSection
-          ? {
-              courseId: section.lesson.courseId,
-              lessonId: section.lessonId,
-              sectionId: nextSection.id,
-              type: nextSection.type,
-              title: nextSection.title,
-            }
-          : null,
       };
     });
-  }
 
-  private async recalculateStreak(tx: Prisma.TransactionClient, userId: bigint): Promise<void> {
-    const stats = await tx.userStats.findUnique({ where: { userId } });
-    if (!stats) return;
-
-    const today = utcDateOnly(new Date());
-
-    // O(1) incremental streak: lastAttendanceDate 기반 비교
-    if (stats.lastAttendanceDate) {
-      const lastDate = utcDateOnly(stats.lastAttendanceDate);
-      if (lastDate.getTime() === today.getTime()) {
-        return; // 오늘 이미 처리됨
-      }
-      const yesterday = new Date(today);
-      yesterday.setUTCDate(yesterday.getUTCDate() - 1);
-      const isConsecutive = lastDate.getTime() === yesterday.getTime();
-      const newStreak = isConsecutive ? stats.currentStreak + 1 : 1;
-      const maxStreak = Math.max(stats.maxStreak, newStreak);
-      await tx.userStats.update({
-        where: { userId },
-        data: { currentStreak: newStreak, maxStreak, lastAttendanceDate: today },
-      });
-      return;
+    if (result.isFirstCompletion) {
+      await this.sectionEventQueue.add(
+        'section.completed',
+        {
+          type: 'section.completed',
+          userId: userId.toString(),
+          sectionId,
+          lessonSectionIds,
+          isFirstCompletion: result.isFirstCompletion,
+          totalStaySeconds: dto.stayTimeSeconds,
+        },
+        { attempts: 3, backoff: { type: 'exponential', delay: 2000 } },
+      );
     }
 
-    // 최초 호출 또는 lastAttendanceDate 없는 기존 사용자: 전체 재계산 (1회)
-    const rows = await tx.userAttendance.findMany({
-      where: { userId },
-      orderBy: { attendanceDate: 'desc' },
-      select: { attendanceDate: true },
-      take: 366,
-    });
-
-    let streak = 0;
-    let expected = today;
-    for (const row of rows) {
-      const d = utcDateOnly(row.attendanceDate);
-      if (d.getTime() !== expected.getTime()) break;
-      streak += 1;
-      const prev = new Date(expected);
-      prev.setUTCDate(prev.getUTCDate() - 1);
-      expected = prev;
+    if (result.isLessonCompleted) {
+      await this.sectionEventQueue.add(
+        'lesson.completed',
+        {
+          type: 'lesson.completed',
+          userId: userId.toString(),
+          lessonId: section.lessonId,
+        },
+        { attempts: 3, backoff: { type: 'exponential', delay: 2000 } },
+      );
     }
 
-    const maxStreak = Math.max(stats.maxStreak, streak);
-    await tx.userStats.update({
-      where: { userId },
-      data: { currentStreak: streak, maxStreak, lastAttendanceDate: today },
-    });
+    return result.response;
   }
 
   async getScrapsDashboard(userId: bigint) {

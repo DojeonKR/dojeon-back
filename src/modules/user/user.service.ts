@@ -12,6 +12,7 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { PresignedProfileImageDto } from './dto/presigned-profile-image.dto';
 import { LearningService } from '../learning/learning.service';
 import { buildS3ObjectPublicUrl } from '../../common/utils/public-asset-url.util';
+import { RedisService } from '../../infra/redis/redis.service';
 
 @Injectable()
 export class UserService {
@@ -22,6 +23,7 @@ export class UserService {
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
     private readonly learningService: LearningService,
+    private readonly redis: RedisService,
   ) {
     const region = this.configService.get<string>('aws.region');
     this.bucket = this.configService.get<string>('aws.s3Bucket') ?? '';
@@ -194,7 +196,14 @@ export class UserService {
       where: { id: userId },
       data: { passwordHash },
     });
+    await this.redis.del(`jwt:user:${userId}`);
     return { updated: true };
+  }
+
+  async deleteAccount(userId: bigint): Promise<{ deleted: boolean }> {
+    await this.redis.del(`jwt:user:${userId}`);
+    await this.prisma.user.delete({ where: { id: userId } });
+    return { deleted: true };
   }
 
   async getAchievementsList(userId: bigint) {

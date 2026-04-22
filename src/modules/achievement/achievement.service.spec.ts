@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AchievementService } from './achievement.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { RedisService } from '../../infra/redis/redis.service';
 
 describe('AchievementService', () => {
   let service: AchievementService;
@@ -26,10 +27,32 @@ describe('AchievementService', () => {
       },
     };
 
+    const mockPipeline = {
+      del: jest.fn().mockReturnThis(),
+      hset: jest.fn().mockReturnThis(),
+      exec: jest.fn().mockResolvedValue([]),
+    };
+    const mockRedisClient = {
+      pipeline: jest.fn(() => mockPipeline),
+      hget: jest.fn(async (_key: string, title: string) => {
+        const compact = title.replace(/\s/g, '');
+        const m: Record<string, string> = {
+          첫발걸음: '1',
+          '7일연속': '2',
+          '30일연속': '3',
+        };
+        return m[compact] ?? null;
+      }),
+    };
+    const mockRedisService = {
+      getClient: jest.fn(() => mockRedisClient),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AchievementService,
         { provide: PrismaService, useValue: mockPrismaService },
+        { provide: RedisService, useValue: mockRedisService },
       ],
     }).compile();
 

@@ -59,6 +59,7 @@ model User {
   userBadges   UserBadge[]
   sectionLogs  UserSectionLog[]
   scraps       Scrap[]
+  nlpJobs      NlpJob[]
 
   @@unique([socialProvider, socialUid], name: "uk_social")
   @@map("users")
@@ -271,4 +272,19 @@ model SubscriptionPlan {
   billingCycleMonths Int     @map("billing_cycle_months")
 
   @@map("subscription_plans")
+}
+
+model NlpJob {
+  id        String   @id @default(uuid()) @map("job_id")
+  userId    BigInt   @map("user_id")
+  inputText String   @map("input_text")
+  status    String   @default("pending")
+  result    Json?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@map("nlp_jobs")
 }

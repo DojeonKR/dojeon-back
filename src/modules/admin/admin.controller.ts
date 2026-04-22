@@ -140,6 +140,12 @@ export class AdminController {
     return this.adminService.deleteQuestion(questionId);
   }
 
+  @Post('badges/refresh')
+  @ApiOperation({ summary: '배지 캐시 갱신 (Redis Hash 재동기화)' })
+  refreshBadgeCache() {
+    return this.adminService.refreshBadgeCache();
+  }
+
   @Post('sections/:sectionId/audio-upload-url')
   @ApiOperation({ summary: '오디오 S3 presigned URL 발급' })
   presignedAudio(

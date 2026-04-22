@@ -24,11 +24,12 @@ RUN apt-get update -y && apt-get install -y openssl ca-certificates && rm -rf /v
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# production deps + prisma CLI (migrate deploy)
-RUN npm ci --omit=dev && npm install prisma@5.22.0 --no-save
+# production deps + prisma CLI (migrate deploy) + pm2
+RUN npm ci --omit=dev && npm install prisma@5.22.0 pm2 --no-save
 RUN npx prisma generate
 
 COPY --from=builder /app/dist ./dist
+COPY ecosystem.config.js ./
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

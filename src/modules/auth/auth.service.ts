@@ -6,7 +6,7 @@ import { randomBytes, randomInt } from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RedisService } from '../../infra/redis/redis.service';
-import { EmailService } from '../../infra/email/email.service';
+import { EmailQueueService } from '../../infra/email/email-queue.service';
 import { AppException } from '../../common/exceptions/app.exception';
 import { HttpStatus } from '@nestjs/common';
 import { SignupDto } from './dto/signup.dto';
@@ -30,7 +30,7 @@ export class AuthService {
     private readonly redis: RedisService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly emailService: EmailService,
+    private readonly emailQueue: EmailQueueService,
   ) {
     const clientId = this.configService.get<string>('google.clientId');
     this.googleClient = clientId ? new OAuth2Client(clientId) : null;
@@ -72,15 +72,8 @@ export class AuthService {
     const otpKey = `email:otp:${email}`;
     await this.redis.set(otpKey, code, OTP_TTL);
     await this.redis.set(cooldownKey, '1', OTP_COOLDOWN_SECONDS);
-    try {
-      const delivered = await this.sendEmailSafely(() => this.emailService.sendOtpEmail(email, code));
-      this.assertEmailDeliveredInProduction(delivered);
-      return { sent: this.effectiveSent(delivered) };
-    } catch (err) {
-      await this.redis.del(otpKey);
-      await this.redis.del(cooldownKey);
-      throw err;
-    }
+    await this.emailQueue.enqueueOtp(email, code);
+    return { sent: true };
   }
 
   async verifyEmailCode(email: string, code: string): Promise<{ verifyToken: string }> {
@@ -238,16 +231,15 @@ export class AuthService {
   }
 
   async refresh(refreshToken: string) {
-    const userIdStr = await this.redis.get(`refresh:${refreshToken}`);
+    // GET + DEL을 Lua로 원자 실행 — 동시 요청 시 토큰 중복 발급 방지
+    const userIdStr = await this.redis.getAndDel(`refresh:${refreshToken}`);
     if (!userIdStr) {
       throw new AppException('INVALID_TOKEN', '리프레시 토큰이 유효하지 않습니다.', HttpStatus.UNAUTHORIZED);
     }
     const user = await this.prisma.user.findUnique({ where: { id: BigInt(userIdStr) } });
     if (!user) {
-      await this.redis.del(`refresh:${refreshToken}`);
       throw new AppException('USER_NOT_FOUND', '사용자를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
     }
-    await this.redis.del(`refresh:${refreshToken}`);
     return this.issueTokens(user.id, user.email);
   }
 
@@ -282,15 +274,8 @@ export class AuthService {
     const otpKey = `pwdreset:otp:${email}`;
     await this.redis.set(otpKey, code, OTP_TTL);
     await this.redis.set(cooldownKey, '1', OTP_COOLDOWN_SECONDS);
-    try {
-      const delivered = await this.sendEmailSafely(() => this.emailService.sendOtpEmail(email, code));
-      this.assertEmailDeliveredInProduction(delivered);
-      return { sent: this.effectiveSent(delivered) };
-    } catch (err) {
-      await this.redis.del(otpKey);
-      await this.redis.del(cooldownKey);
-      throw err;
-    }
+    await this.emailQueue.enqueueOtp(email, code);
+    return { sent: true };
   }
 
   async passwordResetConfirm(dto: PasswordResetConfirmDto): Promise<{ reset: boolean }> {
@@ -330,38 +315,9 @@ export class AuthService {
     });
     await this.redis.del(`pwdreset:otp:${dto.email}`);
     await this.redis.del(`pwdreset:otp:fail:${dto.email}`);
+    // 비밀번호 재설정 후 기존 JWT 캐시 무효화 — 구 토큰이 5분간 유효한 보안 취약점 차단
+    await this.redis.del(`jwt:user:${user.id}`);
     return { reset: true };
-  }
-
-  /** SES/SMTP 예외를 AppException으로 바꿔 500 대신 원인 구분 가능하게 함 */
-  private async sendEmailSafely(send: () => Promise<boolean>): Promise<boolean> {
-    try {
-      return await send();
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      this.logger.error(`Email send threw: ${msg}`, err instanceof Error ? err.stack : undefined);
-      throw new AppException(
-        'EMAIL_SEND_FAILED',
-        '이메일 발송에 실패했습니다. SES 발신 검증·IAM 권한·SMTP 설정을 확인하거나 잠시 후 다시 시도하세요.',
-        HttpStatus.BAD_GATEWAY,
-      );
-    }
-  }
-
-  private effectiveSent(delivered: boolean): boolean {
-    const isProd = (this.configService.get<string>('nodeEnv') ?? '') === 'production';
-    return delivered || !isProd;
-  }
-
-  private assertEmailDeliveredInProduction(delivered: boolean): void {
-    const isProd = (this.configService.get<string>('nodeEnv') ?? '') === 'production';
-    if (isProd && !delivered) {
-      throw new AppException(
-        'EMAIL_NOT_CONFIGURED',
-        '이메일 발송이 설정되지 않았습니다. AWS SES 또는 SMTP(SMTP_HOST 등)를 구성하세요.',
-        HttpStatus.SERVICE_UNAVAILABLE,
-      );
-    }
   }
 
   async checkNicknameAvailable(nickname: string): Promise<{ available: boolean }> {

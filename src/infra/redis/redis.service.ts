@@ -38,13 +38,45 @@ export class RedisService implements OnModuleDestroy {
     await this.client.del(key);
   }
 
-  /** INCR 후 첫 호출이면 TTL 설정 (실패 횟수 카운터 등) */
+  /**
+   * INCR + TTL 설정을 단일 Lua 스크립트로 원자 실행.
+   * INCR과 EXPIRE 사이 크래시로 TTL 없는 키가 잔존하는 레이스 컨디션 방지.
+   */
   async incrWithTtlOnFirst(key: string, ttlSeconds: number): Promise<number> {
-    const n = await this.client.incr(key);
-    if (n === 1) {
-      await this.client.expire(key, ttlSeconds);
-    }
-    return n;
+    const script = `
+local n = redis.call('INCR', KEYS[1])
+if n == 1 then
+  redis.call('EXPIRE', KEYS[1], ARGV[1])
+end
+return n
+`;
+    const result = await this.client.eval(script, 1, key, ttlSeconds);
+    return Number(result);
+  }
+
+  /**
+   * SET NX + TTL (원자적). 키가 없을 때만 설정하고 성공 여부 반환.
+   * 분산 락·Idempotency 잠금 등에 사용.
+   */
+  async setNx(key: string, value: string, ttlSeconds: number): Promise<boolean> {
+    const result = await this.client.set(key, value, 'EX', ttlSeconds, 'NX');
+    return result === 'OK';
+  }
+
+  /**
+   * Lua 스크립트로 GET + DEL을 원자 실행. 리프레시 토큰 로테이션에 사용.
+   * 키가 없으면 null 반환, 있으면 값을 반환하고 즉시 삭제.
+   */
+  async getAndDel(key: string): Promise<string | null> {
+    const script = `
+local val = redis.call('GET', KEYS[1])
+if val then
+  redis.call('DEL', KEYS[1])
+end
+return val
+`;
+    const result = await this.client.eval(script, 1, key);
+    return typeof result === 'string' ? result : null;
   }
 
   async onModuleDestroy() {

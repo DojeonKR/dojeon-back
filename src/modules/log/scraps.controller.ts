@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Query, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ScrapType } from '@prisma/client';
 import { LogService } from './log.service';
@@ -6,6 +6,7 @@ import { CurrentUser, JwtPayloadUser } from '../../common/decorators/current-use
 import { CreateScrapDto } from './dto/create-scrap.dto';
 import { AppException } from '../../common/exceptions/app.exception';
 import { successExample, errorExample } from '../../common/swagger/swagger-response.helper';
+import { IdempotencyInterceptor } from '../../common/interceptors/idempotency.interceptor';
 
 @ApiTags('스크랩 (Scrap)')
 @ApiBearerAuth('access-token')
@@ -118,6 +119,7 @@ export class ScrapsController {
     description: '머티리얼 없음(GRAMMAR)',
     schema: { example: errorExample('머티리얼을 찾을 수 없습니다.', 404, 'MATERIAL_NOT_FOUND') },
   })
+  @UseInterceptors(IdempotencyInterceptor)
   @Post()
   async create(@CurrentUser() user: JwtPayloadUser, @Body() dto: CreateScrapDto) {
     return this.logService.createScrap(user.userId, dto);

@@ -4,7 +4,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { RedisService } from '../../infra/redis/redis.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { EmailService } from '../../infra/email/email.service';
+import { EmailQueueService } from '../../infra/email/email-queue.service';
 import { AppException } from '../../common/exceptions/app.exception';
 import * as bcrypt from 'bcrypt';
 
@@ -17,9 +17,9 @@ jest.mock('google-auth-library', () => {
   return {
     OAuth2Client: jest.fn().mockImplementation(() => ({
       verifyIdToken: jest.fn().mockResolvedValue({
-        getPayload: () => ({ email: 'google@test.com', sub: 'google_sub_123', name: 'GoogleUser' })
-      })
-    }))
+        getPayload: () => ({ email: 'google@test.com', sub: 'google_sub_123', name: 'GoogleUser' }),
+      }),
+    })),
   };
 });
 
@@ -29,7 +29,7 @@ describe('AuthService', () => {
   let mockRedisService: any;
   let mockJwtService: any;
   let mockConfigService: any;
-  let mockEmailService: any;
+  let mockEmailQueueService: any;
   let mockTx: any;
 
   beforeEach(async () => {
@@ -48,7 +48,7 @@ describe('AuthService', () => {
       },
       userStats: {
         create: jest.fn(),
-      }
+      },
     };
 
     mockRedisService = {
@@ -72,8 +72,8 @@ describe('AuthService', () => {
       }),
     };
 
-    mockEmailService = {
-      sendOtpEmail: jest.fn().mockResolvedValue(true),
+    mockEmailQueueService = {
+      enqueueOtp: jest.fn().mockResolvedValue(undefined),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -83,7 +83,7 @@ describe('AuthService', () => {
         { provide: RedisService, useValue: mockRedisService },
         { provide: JwtService, useValue: mockJwtService },
         { provide: ConfigService, useValue: mockConfigService },
-        { provide: EmailService, useValue: mockEmailService },
+        { provide: EmailQueueService, useValue: mockEmailQueueService },
       ],
     }).compile();
 
@@ -105,12 +105,12 @@ describe('AuthService', () => {
       expect(mockRedisService.get).toHaveBeenCalledWith('email:otp:cooldown:test@test.com');
     });
 
-    it('should set otp and send email', async () => {
+    it('should set otp and enqueue email', async () => {
       mockRedisService.get.mockResolvedValue(null);
       const res = await service.sendEmailCode('test@test.com');
       expect(res.sent).toBe(true);
       expect(mockRedisService.set).toHaveBeenCalledTimes(2);
-      expect(mockEmailService.sendOtpEmail).toHaveBeenCalled();
+      expect(mockEmailQueueService.enqueueOtp).toHaveBeenCalled();
     });
   });
 
@@ -125,32 +125,58 @@ describe('AuthService', () => {
       const res = await service.verifyEmailCode('test@test.com', '123456');
       expect(res.verifyToken).toBeDefined();
       expect(mockRedisService.del).toHaveBeenCalled();
-      expect(mockRedisService.set).toHaveBeenCalledWith(`signup:verify:${res.verifyToken}`, 'test@test.com', 1800);
+      expect(mockRedisService.set).toHaveBeenCalledWith(
+        `signup:verify:${res.verifyToken}`,
+        'test@test.com',
+        1800,
+      );
     });
   });
 
   describe('signup', () => {
     it('should throw if terms not agreed', async () => {
-      await expect(service.signup({ email: 'test@test.com', password: 'pw', isTermsAgreed: false, isPrivacyAgreed: true, isAgeVerified: true, verifyToken: 'token' })).rejects.toThrow(AppException);
+      await expect(
+        service.signup({
+          email: 'test@test.com',
+          password: 'pw',
+          isTermsAgreed: false,
+          isPrivacyAgreed: true,
+          isAgeVerified: true,
+          verifyToken: 'token',
+        }),
+      ).rejects.toThrow(AppException);
     });
 
     it('should throw if email not verified', async () => {
       mockRedisService.get.mockResolvedValue(null);
-      await expect(service.signup({ email: 'test@test.com', password: 'pw', isTermsAgreed: true, isPrivacyAgreed: true, isAgeVerified: true, verifyToken: 'invalid_token' })).rejects.toThrow(AppException);
+      await expect(
+        service.signup({
+          email: 'test@test.com',
+          password: 'pw',
+          isTermsAgreed: true,
+          isPrivacyAgreed: true,
+          isAgeVerified: true,
+          verifyToken: 'invalid_token',
+        }),
+      ).rejects.toThrow(AppException);
     });
 
     it('should signup a new user successfully', async () => {
       mockRedisService.get.mockResolvedValue('test@test.com');
       mockPrismaService.user.findUnique
-        .mockResolvedValueOnce(null) // no existing email
-        .mockResolvedValueOnce(null); // username generation
-      mockPrismaService.user.findFirst.mockResolvedValueOnce(null); // nickname generation
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null);
+      mockPrismaService.user.findFirst.mockResolvedValueOnce(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed_pw');
       mockTx.user.create.mockResolvedValue({ id: 1n, email: 'test@test.com' });
 
       const res = await service.signup({
-        email: 'test@test.com', password: 'pw', verifyToken: 'valid_token',
-        isTermsAgreed: true, isPrivacyAgreed: true, isAgeVerified: true
+        email: 'test@test.com',
+        password: 'pw',
+        verifyToken: 'valid_token',
+        isTermsAgreed: true,
+        isPrivacyAgreed: true,
+        isAgeVerified: true,
       });
 
       expect(res.accessToken).toBe('mock_jwt_token');
@@ -161,7 +187,11 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('should login and return tokens', async () => {
-      mockPrismaService.user.findUnique.mockResolvedValue({ id: 1n, email: 'test@test.com', passwordHash: 'hashed_pw' });
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: 1n,
+        email: 'test@test.com',
+        passwordHash: 'hashed_pw',
+      });
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
       const res = await service.login({ email: 'test@test.com', password: 'pw' });
@@ -170,7 +200,11 @@ describe('AuthService', () => {
     });
 
     it('should throw on invalid password', async () => {
-      mockPrismaService.user.findUnique.mockResolvedValue({ id: 1n, email: 'test@test.com', passwordHash: 'hashed_pw' });
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: 1n,
+        email: 'test@test.com',
+        passwordHash: 'hashed_pw',
+      });
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
       await expect(service.login({ email: 'test@test.com', password: 'wrong' })).rejects.toThrow(AppException);

@@ -3,6 +3,11 @@ export default () => ({
   port: parseInt(process.env.PORT ?? '3000', 10),
   /** production에서만 true일 때 Swagger UI 활성 (기본 비활성) */
   swaggerEnabled: process.env.SWAGGER_ENABLED === 'true',
+  /**
+   * OpenAPI `servers`에 추가할 절대 베이스 URL (예: https://api.example.com, 끝 슬래시 없음).
+   * 비우면 상대 서버 `/`만 등록되며, 보낸 OpenAPI 스펙과 Try it out이 문서를 연 호스트를 기준으로 동작합니다.
+   */
+  swaggerServerUrl: (process.env.SWAGGER_SERVER_URL ?? '').trim(),
   /** 쉼표로 구분된 허용 Origin (비우면 모든 Origin 허용 — 개발 편의). production에서는 필수. */
   corsOrigin: process.env.CORS_ORIGIN ?? '',
   databaseUrl: process.env.DATABASE_URL,
@@ -25,12 +30,6 @@ export default () => ({
   /** 설정 시 presigned 응답의 fileUrl 등 공개 읽기 URL에 사용 (예: https://d111111abcdef8.cloudfront.net, 끝 슬래시 없음 권장) */
   cloudfrontBaseUrl: process.env.CLOUDFRONT_BASE_URL ?? '',
   emailFrom: process.env.EMAIL_FROM ?? 'noreply@dojeon.local',
-  /** Gmail 등 SMTP (SMTP_HOST + SMTP_USER + SMTP_PASS 설정 시 nodemailer 사용) */
-  smtp: {
-    host: process.env.SMTP_HOST ?? '',
-    port: parseInt(process.env.SMTP_PORT ?? '587', 10),
-    secure: process.env.SMTP_SECURE === 'true' || process.env.SMTP_PORT === '465',
-    user: process.env.SMTP_USER ?? '',
-    pass: process.env.SMTP_PASS ?? '',
-  },
+  resendApiKey: process.env.RESEND_API_KEY ?? '',
+  nlpQueueUrl: process.env.NLP_QUEUE_URL ?? '',
 });

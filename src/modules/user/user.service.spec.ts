@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { LearningService } from '../learning/learning.service';
+import { RedisService } from '../../infra/redis/redis.service';
 import { AppException } from '../../common/exceptions/app.exception';
 import * as bcrypt from 'bcrypt';
 
@@ -24,6 +25,7 @@ describe('UserService', () => {
   let mockPrismaService: any;
   let mockConfigService: any;
   let mockLearningService: any;
+  const mockRedisService = { del: jest.fn().mockResolvedValue(undefined) };
 
   beforeEach(async () => {
     mockPrismaService = {
@@ -52,6 +54,7 @@ describe('UserService', () => {
         { provide: PrismaService, useValue: mockPrismaService },
         { provide: ConfigService, useValue: mockConfigService },
         { provide: LearningService, useValue: mockLearningService },
+        { provide: RedisService, useValue: mockRedisService },
       ],
     }).compile();
 
@@ -121,6 +124,7 @@ describe('UserService', () => {
       
       const res = await service.changePassword(1n, { currentPassword: 'pw', newPassword: 'new' });
       expect(res.updated).toBe(true);
+      expect(mockRedisService.del).toHaveBeenCalledWith('jwt:user:1');
     });
   });
 

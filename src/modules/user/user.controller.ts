@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CurrentUser, JwtPayloadUser } from '../../common/decorators/current-user.decorator';
@@ -119,6 +119,20 @@ export class UserController {
   @Patch('me/password')
   async changePassword(@CurrentUser() user: JwtPayloadUser, @Body() dto: ChangePasswordDto) {
     return this.userService.changePassword(user.userId, dto);
+  }
+
+  @ApiOperation({
+    summary: '회원 탈퇴',
+    description: '계정과 연관 데이터를 삭제합니다(Cascade). JWT 캐시 키를 정리합니다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '탈퇴 완료',
+    schema: { example: successExample({ deleted: true }) },
+  })
+  @Delete('me')
+  async deleteMe(@CurrentUser() user: JwtPayloadUser) {
+    return this.userService.deleteAccount(user.userId);
   }
 
   @ApiOperation({ summary: '업적(뱃지) 목록 조회', description: '전체 뱃지 목록과 획득 여부, 획득 날짜를 반환합니다.' })
