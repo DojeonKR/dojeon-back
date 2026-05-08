@@ -1,10 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { createOpenApiDocument } from './swagger/create-openapi-document';
 
 // JSON 직렬화 시 BigInt 지원
 (BigInt.prototype as unknown as { toJSON: () => string }).toJSON = function () {
@@ -63,35 +64,7 @@ async function bootstrap() {
 
   const swaggerEnabled = configService.get<boolean>('swaggerEnabled') === true;
   if (!isProd || swaggerEnabled) {
-    const swaggerServerUrl = configService.get<string>('swaggerServerUrl') ?? '';
-    const docBuilder = new DocumentBuilder()
-      .setTitle('DOJEON API')
-      .setDescription(
-        [
-          '외국인 대상 한국어 학습 플랫폼 API',
-          '',
-          '**응답 형식**',
-          '- 성공: `{ isSuccess, code, message, data, timestamp }`',
-          '- 실패: `{ isSuccess, code, message, data, errorCode?, timestamp }`',
-          '',
-          '**인증**',
-          '- 보호된 엔드포인트는 `Authorization: Bearer <accessToken>`',
-          '- Swagger에서는 우측 **Authorize**에 토큰만 넣으면 됩니다 (Bearer 접두어 없이).',
-          '',
-          '**프론트엔드용 스펙 파일**',
-          `- OpenAPI JSON: \`/docs-json\` (Postman·OpenAPI Generator 등에서 Import)`,
-          `- OpenAPI YAML: \`/docs-yaml\``,
-        ].join('\n'),
-      )
-      .setVersion('1.0')
-      .addServer('/', '문서를 연 호스트와 동일 (로컬·배포 공통)');
-    if (swaggerServerUrl) {
-      docBuilder.addServer(swaggerServerUrl.replace(/\/$/, ''), '고정 베이스 URL (SWAGGER_SERVER_URL)');
-    }
-    const swaggerConfig = docBuilder
-      .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'access-token')
-      .build();
-    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    const document = createOpenApiDocument(app);
     SwaggerModule.setup('docs', app, document, {
       customSiteTitle: 'DOJEON API',
       jsonDocumentUrl: 'docs-json',

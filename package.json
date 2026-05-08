@@ -22,7 +22,8 @@
     "prisma:seed": "node -r ts-node/register prisma/seed.ts",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
-    "dev:setup": "prisma migrate deploy && npm run prisma:seed"
+    "dev:setup": "prisma migrate deploy && npm run prisma:seed",
+    "openapi:export": "node -r ts-node/register scripts/export-openapi.ts"
   },
   "prisma": {
     "seed": "node -r ts-node/register prisma/seed.ts"

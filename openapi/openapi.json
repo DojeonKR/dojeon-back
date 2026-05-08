@@ -1,0 +1,4000 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "HealthController_health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "헬스 체크 (인증 불필요)",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/auth/email/send": {
+      "post": {
+        "description": "입력한 이메일로 6자리 인증 코드를 발송합니다. 실제 메일은 AWS SES 또는 SMTP(SMTP_HOST 등, Gmail은 앱 비밀번호) 설정 시 발송됩니다. NODE_ENV=production 인데 둘 다 없으면 503입니다. 개발 모드에서는 메일 대신 서버 로그에 코드가 남습니다.",
+        "operationId": "AuthController_sendCode",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendEmailCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "인증 코드 발송 처리 완료 (개발 모드는 로그에만 있을 수 있음)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "sent": true
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "OTP 재요청 쿨다운(60초) 또는 전역/라우트별 요청 제한",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "429",
+                    "message": "인증 코드는 60초에 한 번만 요청할 수 있습니다.",
+                    "data": null,
+                    "errorCode": "OTP_COOLDOWN",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "SES/SMTP 호출 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "502",
+                    "message": "이메일 발송에 실패했습니다. SES 발신 검증·IAM 권한·SMTP 설정을 확인하거나 잠시 후 다시 시도하세요.",
+                    "data": null,
+                    "errorCode": "EMAIL_SEND_FAILED",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "운영 환경에서 이메일(SES/SMTP) 미설정",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "503",
+                    "message": "이메일 발송이 설정되지 않았습니다.",
+                    "data": null,
+                    "errorCode": "EMAIL_NOT_CONFIGURED",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "이메일 인증 코드 발송",
+        "tags": [
+          "인증 (Auth)"
+        ]
+      }
+    },
+    "/auth/email/verify": {
+      "post": {
+        "description": "발송된 6자리 코드를 검증하고 verifyToken을 반환합니다.",
+        "operationId": "AuthController_verifyCode",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "인증 성공 — verifyToken만 반환(회원가입 시 동일 본문에 사용)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "verifyToken": "a3f9c2e1..."
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "코드 불일치 또는 만료",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "400",
+                    "message": "인증 코드가 올바르지 않거나 만료되었습니다.",
+                    "data": null,
+                    "errorCode": "INVALID_CODE",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "연속 오답 횟수 초과 — OTP 무효화, 코드 재발송 필요",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "429",
+                    "message": "인증 시도 횟수를 초과했습니다. 코드를 다시 요청하세요.",
+                    "data": null,
+                    "errorCode": "OTP_ATTEMPTS_EXCEEDED",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "이메일 인증 코드 확인",
+        "tags": [
+          "인증 (Auth)"
+        ]
+      }
+    },
+    "/auth/signup": {
+      "post": {
+        "description": "verifyToken + 이메일 + 비밀번호로 계정을 생성합니다. 닉네임은 온보딩 첫 화면에서 `PATCH /user/me`로 설정합니다. (Idempotency-Key 헤더 권장)",
+        "operationId": "AuthController_signup",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignupDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "회원가입 성공 — JWT 토큰 반환",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "userId": "1",
+                      "accessToken": "eyJhb...",
+                      "refreshToken": "eyJhb...",
+                      "tokenType": "Bearer",
+                      "expiresIn": "30m"
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "약관 미동의",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "400",
+                    "message": "필수 약관에 동의해야 가입할 수 있습니다.",
+                    "data": null,
+                    "errorCode": "TERMS_NOT_AGREED",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "이미 가입된 이메일",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "409",
+                    "message": "이미 가입된 이메일입니다.",
+                    "data": null,
+                    "errorCode": "EMAIL_EXISTS",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "회원가입",
+        "tags": [
+          "인증 (Auth)"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "description": "이메일/비밀번호로 로그인하고 JWT 토큰을 반환합니다.",
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "로그인 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "userId": "1",
+                      "accessToken": "eyJhb...",
+                      "refreshToken": "eyJhb...",
+                      "tokenType": "Bearer",
+                      "expiresIn": "30m"
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "이메일 또는 비밀번호 불일치",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "401",
+                    "message": "이메일 또는 비밀번호가 올바르지 않습니다.",
+                    "data": null,
+                    "errorCode": "INVALID_CREDENTIALS",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "이메일 로그인",
+        "tags": [
+          "인증 (Auth)"
+        ]
+      }
+    },
+    "/auth/google": {
+      "post": {
+        "description": "Google ID Token으로 로그인 또는 자동 회원가입을 처리합니다.",
+        "operationId": "AuthController_google",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleAuthDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "구글 로그인 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "userId": "1",
+                      "accessToken": "eyJhb...",
+                      "refreshToken": "eyJhb...",
+                      "tokenType": "Bearer",
+                      "expiresIn": "30m",
+                      "isNewUser": false
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "ID 토큰 검증 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "401",
+                    "message": "Google 토큰이 유효하지 않습니다.",
+                    "data": null,
+                    "errorCode": "INVALID_GOOGLE_TOKEN",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "GOOGLE_CLIENT_ID 미설정",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "503",
+                    "message": "Google OAuth가 설정되지 않았습니다.",
+                    "data": null,
+                    "errorCode": "GOOGLE_NOT_CONFIGURED",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "구글 소셜 로그인",
+        "tags": [
+          "인증 (Auth)"
+        ]
+      }
+    },
+    "/auth/reissue": {
+      "post": {
+        "description": "유효한 리프레시 토큰으로 새 액세스 토큰을 발급합니다.",
+        "operationId": "AuthController_reissue",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "토큰 재발급 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "userId": "1",
+                      "accessToken": "eyJhb...",
+                      "refreshToken": "eyJhb...",
+                      "tokenType": "Bearer",
+                      "expiresIn": "30m"
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "유효하지 않은 리프레시 토큰",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "401",
+                    "message": "리프레시 토큰이 유효하지 않습니다.",
+                    "data": null,
+                    "errorCode": "INVALID_TOKEN",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "리프레시는 유효했으나 사용자 레코드 없음(토큰 정리 후 발생 가능)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "404",
+                    "message": "사용자를 찾을 수 없습니다.",
+                    "data": null,
+                    "errorCode": "USER_NOT_FOUND",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "액세스 토큰 재발급",
+        "tags": [
+          "인증 (Auth)"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "description": "서버에 저장된 리프레시 토큰을 무효화합니다.",
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "로그아웃 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "loggedOut": true
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "로그아웃",
+        "tags": [
+          "인증 (Auth)"
+        ]
+      }
+    },
+    "/auth/password/reset-request": {
+      "post": {
+        "description": "이메일로 6자리 인증 코드를 발송합니다. 이후 `POST /auth/password/reset-confirm`으로 새 비밀번호를 설정하세요.",
+        "operationId": "AuthController_passwordReset",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "인증 코드 발송 완료",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "sent": true
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "OTP 쿨다운 또는 레이트 리밋",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "429",
+                    "message": "인증 코드는 60초에 한 번만 요청할 수 있습니다.",
+                    "data": null,
+                    "errorCode": "OTP_COOLDOWN",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "메일 발송 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "502",
+                    "message": "이메일 발송에 실패했습니다. SES 발신 검증·IAM 권한·SMTP 설정을 확인하거나 잠시 후 다시 시도하세요.",
+                    "data": null,
+                    "errorCode": "EMAIL_SEND_FAILED",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "production에서 SES/SMTP 미설정",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "503",
+                    "message": "이메일 발송이 설정되지 않았습니다. AWS SES 또는 SMTP(SMTP_HOST 등)를 구성하세요.",
+                    "data": null,
+                    "errorCode": "EMAIL_NOT_CONFIGURED",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "비밀번호 재설정 요청",
+        "tags": [
+          "인증 (Auth)"
+        ]
+      }
+    },
+    "/auth/password/reset-confirm": {
+      "post": {
+        "description": "이메일로 받은 OTP와 새 비밀번호로 계정 비밀번호를 변경합니다.",
+        "operationId": "AuthController_passwordResetConfirm",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetConfirmDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "비밀번호 변경 완료",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "reset": true
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "OTP 불일치·만료",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "400",
+                    "message": "인증 코드가 올바르지 않거나 만료되었습니다.",
+                    "data": null,
+                    "errorCode": "INVALID_CODE",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "이메일에 해당하는 로컬 비밀번호 계정 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "404",
+                    "message": "사용자를 찾을 수 없습니다.",
+                    "data": null,
+                    "errorCode": "USER_NOT_FOUND",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "연속 오답으로 OTP 무효화",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "429",
+                    "message": "인증 시도 횟수를 초과했습니다. 코드를 다시 요청하세요.",
+                    "data": null,
+                    "errorCode": "OTP_ATTEMPTS_EXCEEDED",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "비밀번호 재설정 확정",
+        "tags": [
+          "인증 (Auth)"
+        ]
+      }
+    },
+    "/auth/check-nickname": {
+      "get": {
+        "description": "닉네임 사용 가능 여부를 반환합니다.",
+        "operationId": "AuthController_checkNickname",
+        "parameters": [
+          {
+            "name": "nickname",
+            "required": true,
+            "in": "query",
+            "description": "확인할 닉네임",
+            "schema": {
+              "example": "도전이",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "중복 확인 결과",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "available": true
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "닉네임 중복 확인",
+        "tags": [
+          "인증 (Auth)"
+        ]
+      }
+    },
+    "/user/me": {
+      "get": {
+        "description": "사용자 프로필, 출석 달력, 통계, 최근 학습 코스를 반환합니다. year/month 미지정 시 현재 연월 기준.",
+        "operationId": "UserController_getMe",
+        "parameters": [
+          {
+            "name": "year",
+            "required": false,
+            "in": "query",
+            "description": "조회 연도 (기본: 현재 연도)",
+            "schema": {
+              "example": 2026,
+              "type": "string"
+            }
+          },
+          {
+            "name": "month",
+            "required": false,
+            "in": "query",
+            "description": "조회 월 (기본: 현재 월)",
+            "schema": {
+              "example": 4,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "내 정보 조회 성공. 실제 본문은 `profile`·`stats`·`attendance`·`recentCourse`(nullable)·`recentAchievements` 구조입니다. `userFirstName` 필드는 없고 닉네임은 `profile.nickname`입니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "profile": {
+                        "userId": "1",
+                        "email": "user@example.com",
+                        "nickname": "도전이",
+                        "username": "user_a1b2c",
+                        "phoneNumber": null,
+                        "birthday": null,
+                        "profileImgUrl": null,
+                        "motherLanguage": null,
+                        "proficiencyLevel": null,
+                        "ageGroup": null,
+                        "dailyGoalMin": 30,
+                        "learningGoal": null,
+                        "subscriptionTier": "FREE",
+                        "subscriptionPlanId": null,
+                        "subscriptionExpiresAt": null,
+                        "isPushNotificationOn": true,
+                        "isMarketingAgreed": false,
+                        "createdAt": "2026-04-01T00:00:00.000Z"
+                      },
+                      "stats": {
+                        "totalStudyMin": 120,
+                        "currentStreak": 3,
+                        "bestStreak": 7,
+                        "totalCompletedLessons": 2
+                      },
+                      "attendance": {
+                        "year": 2026,
+                        "month": 4,
+                        "activeDays": [
+                          1,
+                          3,
+                          5,
+                          7
+                        ]
+                      },
+                      "recentCourse": {
+                        "courseId": 1,
+                        "courseTitle": "한국어 기초",
+                        "lessonId": 2,
+                        "lessonTitle": "기초 문법 1",
+                        "sectionId": 5,
+                        "sectionTitle": "동사 활용",
+                        "sectionType": "GRAMMAR",
+                        "grammarPreview": "동사 + 아요/어요",
+                        "overallProgressPercent": 60
+                      },
+                      "recentAchievements": [
+                        {
+                          "badgeId": 1,
+                          "title": "첫 발걸음",
+                          "imageUrl": "https://...",
+                          "earnedAt": "2026-04-01T00:00:00.000Z"
+                        }
+                      ]
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "JWT와 불일치하는 사용자",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "404",
+                    "message": "사용자를 찾을 수 없습니다.",
+                    "data": null,
+                    "errorCode": "USER_NOT_FOUND",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "내 정보 조회",
+        "tags": [
+          "사용자 (User)"
+        ]
+      },
+      "patch": {
+        "description": "닉네임(온보딩 1단계), 모국어·수준·연령대·목표(온보딩 이후) 등을 수정합니다. 온보딩 단계에서도 이 API를 사용합니다.",
+        "operationId": "UserController_patchMe",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "정보 수정 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "updated": true
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "그 외 수정 실패",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "400",
+                    "message": "프로필 수정에 실패했습니다.",
+                    "data": null,
+                    "errorCode": "UPDATE_FAILED",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "닉네임·username 중복",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "409",
+                    "message": "이미 사용 중인 닉네임 또는 사용자명입니다.",
+                    "data": null,
+                    "errorCode": "DUPLICATE_ENTRY",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "내 정보 수정 / 온보딩 정보 저장",
+        "tags": [
+          "사용자 (User)"
+        ]
+      },
+      "delete": {
+        "description": "계정과 연관 데이터를 삭제합니다(Cascade). JWT 캐시 키를 정리합니다.",
+        "operationId": "UserController_deleteMe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "탈퇴 완료",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "deleted": true
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "회원 탈퇴",
+        "tags": [
+          "사용자 (User)"
+        ]
+      }
+    },
+    "/user/me/password": {
+      "patch": {
+        "description": "현재 비밀번호 확인 후 새 비밀번호로 변경합니다. 소셜 전용 계정은 사용할 수 없습니다.",
+        "operationId": "UserController_changePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "변경 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "updated": true
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "소셜 전용 계정",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "400",
+                    "message": "소셜 로그인 계정은 비밀번호가 없습니다.",
+                    "data": null,
+                    "errorCode": "PASSWORD_NOT_SET",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "현재 비밀번호 불일치",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "401",
+                    "message": "현재 비밀번호가 올바르지 않습니다.",
+                    "data": null,
+                    "errorCode": "INVALID_CURRENT_PASSWORD",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "비밀번호 변경 (로그인 상태)",
+        "tags": [
+          "사용자 (User)"
+        ]
+      }
+    },
+    "/user/me/achievement": {
+      "get": {
+        "description": "전체 뱃지 목록과 획득 여부, 획득 날짜를 반환합니다.",
+        "operationId": "UserController_getAchievements",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "업적 목록 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "totalEarned": 2,
+                      "badges": [
+                        {
+                          "badgeId": 1,
+                          "title": "첫 발걸음",
+                          "description": "첫 번째 섹션 완료",
+                          "imageUrl": "https://...",
+                          "isEarned": true,
+                          "earnedAt": "2026-04-01T00:00:00.000Z"
+                        },
+                        {
+                          "badgeId": 2,
+                          "title": "7일 연속",
+                          "description": "7일 연속 학습",
+                          "imageUrl": "https://...",
+                          "isEarned": false,
+                          "earnedAt": null
+                        }
+                      ]
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "업적(뱃지) 목록 조회",
+        "tags": [
+          "사용자 (User)"
+        ]
+      }
+    },
+    "/user/me/profileImage/presignedUrl": {
+      "post": {
+        "description": "S3 presigned PUT URL·객체 key·fileUrl을 반환합니다. presigned 만료는 서버에서 3600초로 고정이며, 응답 JSON에 `expiresIn` 필드는 없습니다.",
+        "operationId": "UserController_presignedProfileImage",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PresignedProfileImageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Presigned URL 발급 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "uploadUrl": "https://s3.amazonaws.com/bucket/key?X-Amz-Signature=...",
+                      "key": "profiles/1/uuid.jpg",
+                      "fileUrl": "https://bucket.s3.ap-northeast-2.amazonaws.com/profiles/1/uuid.jpg"
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "S3 버킷 미설정",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "503",
+                    "message": "S3가 설정되지 않았습니다.",
+                    "data": null,
+                    "errorCode": "S3_NOT_CONFIGURED",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "프로필 이미지 업로드 URL 발급",
+        "tags": [
+          "사용자 (User)"
+        ]
+      }
+    },
+    "/courses/dashboard": {
+      "get": {
+        "description": "진행 중인 코스 목록, 이어하기 배너, 전체 진도율을 반환합니다.",
+        "operationId": "LearningController_coursesDashboard",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "코스별로 `description`·`orderNum`·`totalSections`·`completedSections`·`totalStaySeconds`·레슨별 `subtitle`·`sectionCount`·`completedSectionCount`·`progressPercent` 등이 포함됩니다. `resumeBanner`는 미완료 섹션이 없으면 `null`일 수 있습니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "resumeBanner": {
+                        "courseId": 1,
+                        "courseTitle": "한국어 기초",
+                        "lessonId": 2,
+                        "lessonTitle": "기초 문법 1",
+                        "sectionId": 5,
+                        "sectionTitle": "동사 활용",
+                        "sectionType": "GRAMMAR",
+                        "grammarPreview": "동사 + 아요/어요",
+                        "overallProgressPercent": 60
+                      },
+                      "courses": [
+                        {
+                          "courseId": 1,
+                          "title": "한국어 기초",
+                          "description": "입문",
+                          "orderNum": 1,
+                          "isActive": true,
+                          "totalSections": 10,
+                          "completedSections": 4,
+                          "overallProgressPercent": 40,
+                          "totalStaySeconds": 3600,
+                          "lessons": [
+                            {
+                              "lessonId": 1,
+                              "title": "인사하기",
+                              "subtitle": null,
+                              "orderNum": 1,
+                              "sectionCount": 3,
+                              "completedSectionCount": 3,
+                              "progressPercent": 100,
+                              "isCompleted": true
+                            },
+                            {
+                              "lessonId": 2,
+                              "title": "기초 문법 1",
+                              "subtitle": null,
+                              "orderNum": 2,
+                              "sectionCount": 2,
+                              "completedSectionCount": 1,
+                              "progressPercent": 50,
+                              "isCompleted": false
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "코스 대시보드 조회",
+        "tags": [
+          "학습 (Learning)"
+        ]
+      }
+    },
+    "/lessons/{lessonId}/sections": {
+      "get": {
+        "description": "레슨 내 섹션 목록과 각 섹션의 진행 상태를 반환합니다.",
+        "operationId": "LearningController_lessonSections",
+        "parameters": [
+          {
+            "name": "lessonId",
+            "required": true,
+            "in": "path",
+            "description": "레슨 ID",
+            "schema": {
+              "example": 2,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "최상위 레슨 제목 필드명은 `title`(Swagger 예전 `lessonTitle` 아님). `siblingLessons`·섹션별 `totalPages`·`currentPage`·`progressPercent`·`hasContent`·`orderNum` 포함.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "courseId": 1,
+                      "lessonId": 2,
+                      "title": "기초 문법 1",
+                      "subtitle": null,
+                      "siblingLessons": [
+                        {
+                          "lessonId": 1,
+                          "title": "인사하기",
+                          "orderNum": 1
+                        },
+                        {
+                          "lessonId": 2,
+                          "title": "기초 문법 1",
+                          "orderNum": 2
+                        }
+                      ],
+                      "overallProgressPercent": 50,
+                      "sections": [
+                        {
+                          "sectionId": 5,
+                          "type": "GRAMMAR",
+                          "title": "동사 활용",
+                          "totalPages": 5,
+                          "orderNum": 1,
+                          "currentPage": 5,
+                          "progressPercent": 100,
+                          "isCompleted": true,
+                          "hasContent": true
+                        },
+                        {
+                          "sectionId": 6,
+                          "type": "VOCAB",
+                          "title": "단어 카드",
+                          "totalPages": 3,
+                          "orderNum": 2,
+                          "currentPage": 1,
+                          "progressPercent": 33,
+                          "isCompleted": false,
+                          "hasContent": true
+                        }
+                      ]
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "레슨 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "404",
+                    "message": "레슨을 찾을 수 없습니다.",
+                    "data": null,
+                    "errorCode": "LESSON_NOT_FOUND",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "레슨 섹션 목록 조회",
+        "tags": [
+          "학습 (Learning)"
+        ]
+      }
+    },
+    "/home/resume": {
+      "get": {
+        "description": "`userFirstName`에는 **닉네임 전체**가 들어갑니다(이름 파싱 없음). `lastLesson`은 학습 이력이 없으면 `null`입니다. 이론상 사용자 레코드가 없으면 `data`가 `null`일 수 있습니다.",
+        "operationId": "HomeController_resume",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "홈 정보 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "userFirstName": "도전이",
+                      "dailyStreak": 7,
+                      "todayGoal": {
+                        "targetMin": 30,
+                        "studiedMin": 15
+                      },
+                      "weekGoal": {
+                        "targetMin": 210,
+                        "studiedMin": 45
+                      },
+                      "weeklyAttendance": [
+                        true,
+                        true,
+                        false,
+                        false,
+                        false,
+                        false,
+                        false
+                      ],
+                      "lastLesson": {
+                        "courseId": 1,
+                        "lessonId": 2,
+                        "sectionId": 5,
+                        "lessonTitle": "기초 문법 1",
+                        "sectionTitle": "동사 활용",
+                        "sectionType": "GRAMMAR",
+                        "overallProgressPercent": 60,
+                        "grammarPreview": "동사 + 아요/어요"
+                      }
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "홈 화면 정보 조회",
+        "tags": [
+          "홈 (Home)"
+        ]
+      }
+    },
+    "/practice/topic": {
+      "get": {
+        "description": "활성화된 연습 토픽 목록을 반환합니다.",
+        "operationId": "PracticeController_topics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "토픽 목록 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "topics": [
+                        {
+                          "id": 1,
+                          "titleEn": "Basic conversation",
+                          "isActive": true
+                        }
+                      ]
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "연습 토픽 목록",
+        "tags": [
+          "연습 (Practice)"
+        ]
+      }
+    },
+    "/practice/topic/{topicId}/question": {
+      "get": {
+        "description": "특정 토픽의 연습 문제 목록을 반환합니다.",
+        "operationId": "PracticeController_questions",
+        "parameters": [
+          {
+            "name": "topicId",
+            "required": true,
+            "in": "path",
+            "description": "토픽 ID",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "문제 목록 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "topicId": 1,
+                      "questions": [
+                        {
+                          "id": 1,
+                          "type": "MCQ",
+                          "questionText": "다음 중 \"안녕하세요\"의 올바른 의미는?",
+                          "options": [
+                            "Hello",
+                            "Goodbye",
+                            "Thank you",
+                            "Sorry"
+                          ],
+                          "explanation": null
+                        }
+                      ]
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "토픽 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "404",
+                    "message": "토픽을 찾을 수 없습니다.",
+                    "data": null,
+                    "errorCode": "TOPIC_NOT_FOUND",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "토픽 문제 목록",
+        "tags": [
+          "연습 (Practice)"
+        ]
+      }
+    },
+    "/practice/topic/{topicId}/questions/check": {
+      "post": {
+        "description": "정답일 때만 correctAnswer·explanation이 포함됩니다. 목록 API에는 정답이 없습니다.",
+        "operationId": "PracticeController_checkQuestion",
+        "parameters": [
+          {
+            "name": "topicId",
+            "required": true,
+            "in": "path",
+            "description": "토픽 ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckPracticeQuestionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "채점 결과 — 오답 시 `{ correct: false }`만",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "correct": true,
+                      "correctAnswer": "Hello",
+                      "explanation": null
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "토픽 또는 토픽에 속하지 않는 questionId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "404",
+                    "message": "문제를 찾을 수 없습니다.",
+                    "data": null,
+                    "errorCode": "QUESTION_NOT_FOUND",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "연습 문제 채점",
+        "tags": [
+          "연습 (Practice)"
+        ]
+      }
+    },
+    "/subscription/plan": {
+      "get": {
+        "description": "DB `subscription_plan`의 `planId`·표시 필드 + 서버 하드코딩 `benefits` 맵(`free`·`basic`·`pro`·`annual`)을 합쳐 반환합니다. 플랜 id가 맵에 없으면 `benefits`는 빈 배열입니다. `title`·`priceText` 등은 DB 시드 값과 일치해야 합니다.",
+        "operationId": "SubscriptionController_plans",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "구독 플랜 목록 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "plans": [
+                        {
+                          "planId": "free",
+                          "title": "무료",
+                          "priceText": "₩0 / 월",
+                          "subText": null,
+                          "hasTrial": false,
+                          "billingCycleMonths": 1,
+                          "benefits": [
+                            "기본 레슨",
+                            "광고 포함"
+                          ]
+                        },
+                        {
+                          "planId": "pro",
+                          "title": "프리미엄",
+                          "priceText": "₩9,900 / 월",
+                          "subText": "첫 달 무료",
+                          "hasTrial": true,
+                          "billingCycleMonths": 1,
+                          "benefits": [
+                            "전체 레슨",
+                            "AI 분석",
+                            "우선 지원"
+                          ]
+                        }
+                      ]
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "구독 플랜 목록",
+        "tags": [
+          "구독 (Subscription)"
+        ]
+      }
+    },
+    "/section/{sectionId}/material": {
+      "get": {
+        "description": "섹션의 문법 자료(GRAMMAR_TABLE 등) 목록을 반환합니다.",
+        "operationId": "SectionsController_materials",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "description": "섹션 ID",
+            "schema": {
+              "example": 5,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "학습 자료 목록 — Prisma `SectionMaterial` 필드 그대로(`id`, `type`, `contentText`, `sequence` 등). `materialId`라는 이름은 사용하지 않습니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "sectionId": 5,
+                      "courseId": 1,
+                      "lessonId": 2,
+                      "materials": [
+                        {
+                          "id": 1,
+                          "type": "GRAMMAR_TABLE",
+                          "contentText": {
+                            "title": "동사 + 아요/어요",
+                            "rows": []
+                          },
+                          "sequence": 1
+                        }
+                      ]
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "섹션 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "404",
+                    "message": "섹션을 찾을 수 없습니다.",
+                    "data": null,
+                    "errorCode": "SECTION_NOT_FOUND",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "섹션 학습 자료 목록",
+        "tags": [
+          "섹션 (Section)"
+        ]
+      }
+    },
+    "/section/{sectionId}/card": {
+      "get": {
+        "description": "섹션의 단어 카드(앞면/뒷면/음원) 목록을 반환합니다.",
+        "operationId": "SectionsController_cards",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "description": "섹션 ID",
+            "schema": {
+              "example": 5,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "단어 카드 목록 — 최상위에 `sectionId` 포함",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "sectionId": 5,
+                      "cards": [
+                        {
+                          "id": 1,
+                          "wordFront": "사랑",
+                          "wordBack": "Love",
+                          "audioUrl": "https://cdn.example.com/audio/1.mp3",
+                          "sequence": 1,
+                          "isScraped": false,
+                          "scrapId": null
+                        }
+                      ]
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "섹션 단어 카드 목록",
+        "tags": [
+          "섹션 (Section)"
+        ]
+      }
+    },
+    "/section/{sectionId}/question": {
+      "get": {
+        "description": "섹션의 퀴즈/문제 목록을 반환합니다.",
+        "operationId": "SectionsController_questions",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "description": "섹션 ID",
+            "schema": {
+              "example": 5,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "문제 목록 — `answer` 필드는 포함되지 않음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "sectionId": 5,
+                      "questions": [
+                        {
+                          "id": 1,
+                          "type": "MCQ",
+                          "questionText": "다음 중 \"안녕하세요\"의 의미로 옳은 것은?",
+                          "options": [
+                            "Hello",
+                            "Goodbye",
+                            "Thank you",
+                            "Sorry"
+                          ],
+                          "explanation": null
+                        }
+                      ]
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "섹션 문제 목록",
+        "tags": [
+          "섹션 (Section)"
+        ]
+      }
+    },
+    "/section/{sectionId}/questions/check": {
+      "post": {
+        "description": "제출한 답을 서버에서 채점합니다. 정답일 때만 correctAnswer·explanation이 포함되고, 오답이면 { correct: false }만 반환합니다. 목록 API에는 정답이 없습니다.",
+        "operationId": "SectionsController_checkQuestion",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "description": "섹션 ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckSectionQuestionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "채점 결과 — 오답 시 `{ correct: false }`만",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "correct": true,
+                      "correctAnswer": "Hello",
+                      "explanation": null
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "섹션 또는 해당 섹션에 없는 questionId",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "404",
+                    "message": "문제를 찾을 수 없습니다.",
+                    "data": null,
+                    "errorCode": "QUESTION_NOT_FOUND",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "섹션 문제 채점",
+        "tags": [
+          "섹션 (Section)"
+        ]
+      }
+    },
+    "/section/{sectionId}/progress": {
+      "get": {
+        "description": "해당 섹션에 대한 사용자의 진행(현재 페이지, 완료 여부, 머문 시간)을 반환합니다.",
+        "operationId": "SectionsController_getProgress",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "description": "섹션 ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "섹션 학습 진행 조회",
+        "tags": [
+          "섹션 (Section)"
+        ]
+      },
+      "post": {
+        "description": "현재 페이지, 머문 시간, 난이도를 저장하고 다음 섹션 정보를 반환합니다. (Idempotency-Key 헤더 권장)",
+        "operationId": "SectionsController_progress",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "description": "섹션 ID",
+            "schema": {
+              "example": 5,
+              "type": "number"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "중복 요청 방지 키 (UUID 권장)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SectionProgressDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "진행 저장 성공 — 응답은 `sectionId`·`log`(currentPage, stayTimeSeconds, isCompleted, difficulty)·`nextSection`(마지막 섹션이면 null)입니다. 뱃지 획득 목록은 이 API 응답에 포함되지 않습니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "sectionId": 5,
+                      "log": {
+                        "currentPage": 5,
+                        "stayTimeSeconds": 120,
+                        "isCompleted": true,
+                        "difficulty": null
+                      },
+                      "nextSection": {
+                        "courseId": 1,
+                        "lessonId": 2,
+                        "sectionId": 6,
+                        "type": "VOCAB",
+                        "title": "단어 카드"
+                      }
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "섹션 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "404",
+                    "message": "섹션을 찾을 수 없습니다.",
+                    "data": null,
+                    "errorCode": "SECTION_NOT_FOUND",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "섹션 학습 진행 저장",
+        "tags": [
+          "섹션 (Section)"
+        ]
+      }
+    },
+    "/scrap/dashboard": {
+      "get": {
+        "description": "단어장 그룹 미리보기와 문법 스크랩 미리보기를 반환합니다.",
+        "operationId": "ScrapsController_dashboard",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "`vocabularyPreview`는 `{ groups: { courseId, courseTitle, words: string[] }[] }` 형태입니다. `grammarPreview`는 스크랩별 `scrapId`·`courseTitle`·`lessonTitle`·`grammarPoint` 배열입니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "userName": "도전이",
+                      "vocabularyPreview": {
+                        "groups": [
+                          {
+                            "courseId": 1,
+                            "courseTitle": "한국어 기초",
+                            "words": [
+                              "사랑",
+                              "감사"
+                            ]
+                          }
+                        ]
+                      },
+                      "grammarPreview": [
+                        {
+                          "scrapId": "10",
+                          "courseTitle": "한국어 기초",
+                          "lessonTitle": "기초 문법 1",
+                          "grammarPoint": "동사 + 아요/어요"
+                        }
+                      ]
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "스크랩 대시보드",
+        "tags": [
+          "스크랩 (Scrap)"
+        ]
+      }
+    },
+    "/scrap": {
+      "get": {
+        "description": "`type=VOCAB`이면 `{ targetType, groups: [{ courseId, courseTitle, items: [...] }], nextCursor }`, `type=GRAMMAR`이면 `{ targetType, items, nextCursor }`입니다. `hasMore` 필드는 없고 `nextCursor`가 null이 아니면 다음 페이지가 있습니다.",
+        "operationId": "ScrapsController_list",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "query",
+            "description": "스크랩 유형",
+            "schema": {
+              "enum": [
+                "VOCAB",
+                "GRAMMAR"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "description": "정렬 기준 (기본: recent)",
+            "schema": {
+              "enum": [
+                "recent"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "description": "이전 페이지의 마지막 scrapId (커서 페이지네이션)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "페이지당 개수 (기본: 20, 최대: 100)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GRAMMAR 목록 예시 (VOCAB은 groups 구조 — 위 설명 참고)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "targetType": "GRAMMAR",
+                      "items": [
+                        {
+                          "scrapId": "10",
+                          "sectionId": 5,
+                          "targetType": "GRAMMAR",
+                          "courseTitle": "한국어 기초",
+                          "lessonTitle": "기초 문법 1",
+                          "grammarPoint": "동사 + 아요/어요",
+                          "createdAt": "2026-04-05T00:00:00.000Z"
+                        }
+                      ],
+                      "nextCursor": "9"
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "type 쿼리 누락 또는 잘못된 값",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "400",
+                    "message": "type은 VOCAB 또는 GRAMMAR 여야 합니다.",
+                    "data": null,
+                    "errorCode": "INVALID_QUERY",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "스크랩 목록 조회",
+        "tags": [
+          "스크랩 (Scrap)"
+        ]
+      },
+      "post": {
+        "description": "VOCAB 타입은 cardId 필수, GRAMMAR 타입은 materialId 필수입니다.",
+        "operationId": "ScrapsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateScrapDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "스크랩 추가 성공 — Prisma `Scrap` + `card` 또는 `material` include 전체가 반환됩니다",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "id": "11",
+                      "userId": "1",
+                      "sectionId": 5,
+                      "type": "VOCAB",
+                      "cardId": 1,
+                      "materialId": null,
+                      "createdAt": "2026-04-05T00:00:00.000Z",
+                      "card": {
+                        "id": 1,
+                        "wordFront": "사랑",
+                        "wordBack": "Love",
+                        "audioUrl": null
+                      }
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "필드 누락",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "400",
+                    "message": "VOCAB 타입에는 cardId가 필요합니다.",
+                    "data": null,
+                    "errorCode": "INVALID_SCRAP",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "카드 없음(VOCAB)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "404",
+                    "message": "카드를 찾을 수 없습니다.",
+                    "data": null,
+                    "errorCode": "CARD_NOT_FOUND",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "스크랩 추가",
+        "tags": [
+          "스크랩 (Scrap)"
+        ]
+      }
+    },
+    "/scrap/{scrapId}": {
+      "delete": {
+        "description": "본인이 추가한 스크랩을 삭제합니다.",
+        "operationId": "ScrapsController_remove",
+        "parameters": [
+          {
+            "name": "scrapId",
+            "required": true,
+            "in": "path",
+            "description": "삭제할 스크랩 ID",
+            "schema": {
+              "example": "11",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "스크랩 삭제 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "deleted": true
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "스크랩을 찾을 수 없음(타인 스크랩 포함)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "404",
+                    "message": "스크랩을 찾을 수 없습니다.",
+                    "data": null,
+                    "errorCode": "SCRAP_NOT_FOUND",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "스크랩 삭제",
+        "tags": [
+          "스크랩 (Scrap)"
+        ]
+      }
+    },
+    "/admin/courses": {
+      "post": {
+        "operationId": "AdminController_createCourse",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCourseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "코스 생성",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      }
+    },
+    "/admin/courses/{courseId}": {
+      "patch": {
+        "operationId": "AdminController_patchCourse",
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchCourseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "코스 수정",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminController_deleteCourse",
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "코스 삭제",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      }
+    },
+    "/admin/courses/{courseId}/lessons": {
+      "post": {
+        "operationId": "AdminController_createLesson",
+        "parameters": [
+          {
+            "name": "courseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLessonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "레슨 생성",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      }
+    },
+    "/admin/lessons/{lessonId}": {
+      "patch": {
+        "operationId": "AdminController_patchLesson",
+        "parameters": [
+          {
+            "name": "lessonId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchLessonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "레슨 수정",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminController_deleteLesson",
+        "parameters": [
+          {
+            "name": "lessonId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "레슨 삭제",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      }
+    },
+    "/admin/lessons/{lessonId}/sections": {
+      "post": {
+        "operationId": "AdminController_createSection",
+        "parameters": [
+          {
+            "name": "lessonId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "섹션 생성",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      }
+    },
+    "/admin/sections/{sectionId}": {
+      "patch": {
+        "operationId": "AdminController_patchSection",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchSectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "섹션 수정",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminController_deleteSection",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "섹션 삭제",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      }
+    },
+    "/admin/sections/{sectionId}/cards": {
+      "post": {
+        "operationId": "AdminController_createCard",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCardDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "단어 카드 단건 추가",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      }
+    },
+    "/admin/sections/{sectionId}/cards/bulk": {
+      "post": {
+        "operationId": "AdminController_createCardsBulk",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkCardsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "단어 카드 일괄 추가",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      }
+    },
+    "/admin/cards/{cardId}": {
+      "patch": {
+        "operationId": "AdminController_patchCard",
+        "parameters": [
+          {
+            "name": "cardId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchCardDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "카드 수정",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminController_deleteCard",
+        "parameters": [
+          {
+            "name": "cardId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "카드 삭제",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      }
+    },
+    "/admin/sections/{sectionId}/materials": {
+      "post": {
+        "operationId": "AdminController_createMaterial",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMaterialDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "학습 자료 추가",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      }
+    },
+    "/admin/materials/{materialId}": {
+      "patch": {
+        "operationId": "AdminController_patchMaterial",
+        "parameters": [
+          {
+            "name": "materialId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchMaterialDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "학습 자료 수정",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminController_deleteMaterial",
+        "parameters": [
+          {
+            "name": "materialId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "학습 자료 삭제",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      }
+    },
+    "/admin/sections/{sectionId}/questions": {
+      "post": {
+        "operationId": "AdminController_createQuestion",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateQuestionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "문제 추가",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      }
+    },
+    "/admin/questions/{questionId}": {
+      "patch": {
+        "operationId": "AdminController_patchQuestion",
+        "parameters": [
+          {
+            "name": "questionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchQuestionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "문제 수정",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminController_deleteQuestion",
+        "parameters": [
+          {
+            "name": "questionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "문제 삭제",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      }
+    },
+    "/admin/badges/refresh": {
+      "post": {
+        "operationId": "AdminController_refreshBadgeCache",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "배지 캐시 갱신 (Redis Hash 재동기화)",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      }
+    },
+    "/admin/sections/{sectionId}/audio-upload-url": {
+      "post": {
+        "operationId": "AdminController_presignedAudio",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminAudioPresignedDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "오디오 S3 presigned URL 발급",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      }
+    },
+    "/nlp/analyze": {
+      "post": {
+        "description": "SQS에 작업을 넣고 jobId를 반환합니다.",
+        "operationId": "NlpController_analyze",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalyzeNlpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "작업 접수",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "jobId": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "큐 미설정",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "503",
+                    "message": "NLP 큐가 설정되지 않았습니다.",
+                    "data": null,
+                    "errorCode": "NLP_QUEUE_NOT_CONFIGURED",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "문장 분석 작업 요청",
+        "tags": [
+          "NLP"
+        ]
+      }
+    },
+    "/nlp/job/{jobId}": {
+      "get": {
+        "operationId": "NlpController_getJob",
+        "parameters": [
+          {
+            "name": "jobId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "작업 상태",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "jobId": "550e8400-e29b-41d4-a716-446655440000",
+                      "status": "done",
+                      "result": {
+                        "morphemes": []
+                      }
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "없는 작업 또는 타인 작업",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": false,
+                    "code": "404",
+                    "message": "작업을 찾을 수 없습니다.",
+                    "data": null,
+                    "errorCode": "NLP_JOB_NOT_FOUND",
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "NLP 작업 상태 조회",
+        "tags": [
+          "NLP"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "DOJEON API",
+    "description": "외국인 대상 한국어 학습 플랫폼 API\n\n**응답 형식**\n- 성공: `{ isSuccess, code, message, data, timestamp }`\n- 실패: `{ isSuccess, code, message, data, errorCode?, timestamp }`\n\n**인증**\n- 보호된 엔드포인트는 `Authorization: Bearer <accessToken>`\n- Swagger에서는 우측 **Authorize**에 토큰만 넣으면 됩니다 (Bearer 접두어 없이).\n\n**프론트엔드용 스펙 파일**\n- OpenAPI JSON: `/docs-json` (Postman·Orval 등)\n- OpenAPI YAML: `/docs-yaml`",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "/",
+      "description": "문서를 연 호스트와 동일 (로컬·배포 공통)"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "access-token": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "SendEmailCodeDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "이메일 주소",
+            "example": "user@example.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "VerifyEmailCodeDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "이메일 주소",
+            "example": "user@example.com"
+          },
+          "code": {
+            "type": "string",
+            "description": "6자리 인증 코드",
+            "example": "123456"
+          }
+        },
+        "required": [
+          "email",
+          "code"
+        ]
+      },
+      "SignupDto": {
+        "type": "object",
+        "properties": {
+          "verifyToken": {
+            "type": "string",
+            "description": "이메일 인증 후 발급된 verifyToken",
+            "example": "a3f9c..."
+          },
+          "email": {
+            "type": "string",
+            "description": "이메일 주소",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "비밀번호 (8자 이상, 대문자·소문자·숫자·특수문자 각 1개 이상)",
+            "example": "Password1!"
+          },
+          "isTermsAgreed": {
+            "type": "boolean",
+            "description": "이용약관 동의 (필수)",
+            "example": true
+          },
+          "isPrivacyAgreed": {
+            "type": "boolean",
+            "description": "개인정보 처리방침 동의 (필수)",
+            "example": true
+          },
+          "isAgeVerified": {
+            "type": "boolean",
+            "description": "만 14세 이상 확인 (필수)",
+            "example": true
+          },
+          "isMarketingAgreed": {
+            "type": "boolean",
+            "description": "마케팅 수신 동의 (선택)",
+            "example": false
+          }
+        },
+        "required": [
+          "verifyToken",
+          "email",
+          "password",
+          "isTermsAgreed",
+          "isPrivacyAgreed",
+          "isAgeVerified"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "이메일 주소",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "비밀번호",
+            "example": "password123!"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "GoogleAuthDto": {
+        "type": "object",
+        "properties": {
+          "idToken": {
+            "type": "string",
+            "description": "Google OAuth ID Token",
+            "example": "eyJhb..."
+          }
+        },
+        "required": [
+          "idToken"
+        ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "리프레시 토큰",
+            "example": "eyJhb..."
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "LogoutDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "로그아웃 처리할 리프레시 토큰",
+            "example": "eyJhb..."
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "PasswordResetRequestDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "비밀번호를 재설정할 이메일 주소",
+            "example": "user@example.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "PasswordResetConfirmDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "code": {
+            "type": "string",
+            "description": "이메일로 받은 6자리 인증 코드",
+            "example": "123456"
+          },
+          "newPassword": {
+            "type": "string",
+            "description": "새 비밀번호 (8자 이상, 대문자·소문자·숫자·특수문자 각 1개 이상)",
+            "example": "Password1!"
+          }
+        },
+        "required": [
+          "email",
+          "code",
+          "newPassword"
+        ]
+      },
+      "PatchUserDto": {
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "type": "string",
+            "description": "닉네임 (1~50자)",
+            "example": "도전이"
+          },
+          "username": {
+            "type": "string",
+            "description": "사용자명 (3~50자)",
+            "example": "user_a8x9"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "전화번호",
+            "example": "010-1234-5678"
+          },
+          "birthday": {
+            "type": "string",
+            "description": "생년월일 (YYYY-MM-DD)",
+            "example": "1995-03-15"
+          },
+          "motherLanguage": {
+            "type": "string",
+            "description": "모국어",
+            "example": "English"
+          },
+          "proficiencyLevel": {
+            "type": "string",
+            "description": "한국어 수준",
+            "example": "BEGINNER",
+            "enum": [
+              "BEGINNER",
+              "INTERMEDIATE",
+              "ADVANCED"
+            ]
+          },
+          "ageGroup": {
+            "type": "string",
+            "description": "연령대",
+            "example": "20s"
+          },
+          "dailyGoalMin": {
+            "type": "number",
+            "description": "하루 목표 학습 시간(분, 1~1440)",
+            "example": 30
+          },
+          "learningGoal": {
+            "type": "string",
+            "description": "학습 목표",
+            "example": "여행 회화"
+          },
+          "isPushNotificationOn": {
+            "type": "boolean",
+            "description": "푸시 알림 수신 여부",
+            "example": true
+          },
+          "isMarketingAgreed": {
+            "type": "boolean",
+            "description": "마케팅 수신 동의 여부",
+            "example": false
+          },
+          "deviceToken": {
+            "type": "string",
+            "description": "FCM 디바이스 토큰",
+            "example": "fcm-token-abc..."
+          },
+          "profileImgUrl": {
+            "type": "string",
+            "description": "프로필 이미지 URL (S3 presigned 업로드 완료 후 저장)",
+            "example": "https://bucket.s3.region.amazonaws.com/profiles/1/photo.jpg"
+          }
+        }
+      },
+      "ChangePasswordDto": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "description": "현재 비밀번호"
+          },
+          "newPassword": {
+            "type": "string",
+            "description": "새 비밀번호 (8자 이상, 대문자·소문자·숫자·특수문자 각 1개 이상)",
+            "example": "Password1!"
+          }
+        },
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ]
+      },
+      "PresignedProfileImageDto": {
+        "type": "object",
+        "properties": {
+          "contentType": {
+            "type": "string",
+            "description": "파일 MIME 타입",
+            "example": "image/jpeg"
+          },
+          "fileExtension": {
+            "type": "string",
+            "description": "파일 확장자",
+            "enum": [
+              "jpg",
+              "jpeg",
+              "png",
+              "webp"
+            ],
+            "example": "jpg"
+          }
+        },
+        "required": [
+          "contentType",
+          "fileExtension"
+        ]
+      },
+      "CheckPracticeQuestionDto": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "number",
+            "description": "문제 ID",
+            "example": 1
+          },
+          "userAnswer": {
+            "type": "string",
+            "description": "사용자가 제출한 답",
+            "example": "Hello"
+          }
+        },
+        "required": [
+          "questionId",
+          "userAnswer"
+        ]
+      },
+      "CheckSectionQuestionDto": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "number",
+            "description": "문제 ID",
+            "example": 1
+          },
+          "userAnswer": {
+            "type": "string",
+            "description": "사용자가 제출한 답 (선택지 텍스트 또는 빈칸 채우기 문자열)",
+            "example": "마시다"
+          }
+        },
+        "required": [
+          "questionId",
+          "userAnswer"
+        ]
+      },
+      "SectionProgressDto": {
+        "type": "object",
+        "properties": {
+          "currentPage": {
+            "type": "number",
+            "description": "현재까지 본 페이지 번호 (0-based)",
+            "example": 3
+          },
+          "stayTimeSeconds": {
+            "type": "number",
+            "description": "해당 섹션에서 머문 누적 시간(초)",
+            "example": 120
+          },
+          "forceComplete": {
+            "type": "boolean",
+            "description": "강제 완료 처리 여부",
+            "example": false
+          },
+          "difficulty": {
+            "type": "string",
+            "description": "학습 난이도 자가 평가",
+            "enum": [
+              "EASY",
+              "NORMAL",
+              "HARD"
+            ],
+            "example": "NORMAL"
+          }
+        },
+        "required": [
+          "currentPage",
+          "stayTimeSeconds"
+        ]
+      },
+      "CreateScrapDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "스크랩 유형",
+            "enum": [
+              "VOCAB",
+              "GRAMMAR"
+            ],
+            "example": "VOCAB"
+          },
+          "cardId": {
+            "type": "number",
+            "description": "VOCAB 타입일 때 필수 — 단어 카드 ID",
+            "example": 1
+          },
+          "materialId": {
+            "type": "number",
+            "description": "GRAMMAR 타입일 때 필수 — 학습 자료 ID",
+            "example": 1
+          },
+          "sectionId": {
+            "type": "number",
+            "description": "스크랩한 섹션 ID (선택)",
+            "example": 10
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "CreateCourseDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "orderNum": {
+            "type": "number"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "title",
+          "orderNum"
+        ]
+      },
+      "PatchCourseDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "orderNum": {
+            "type": "number"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CreateLessonDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "subtitle": {
+            "type": "string"
+          },
+          "orderNum": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "title",
+          "orderNum"
+        ]
+      },
+      "PatchLessonDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "subtitle": {
+            "type": "string"
+          },
+          "orderNum": {
+            "type": "number"
+          }
+        }
+      },
+      "CreateSectionDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "VOCAB",
+              "GRAMMAR",
+              "READING",
+              "LISTENING",
+              "QUIZ"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "totalPages": {
+            "type": "number"
+          },
+          "orderNum": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "totalPages",
+          "orderNum"
+        ]
+      },
+      "PatchSectionDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "VOCAB",
+              "GRAMMAR",
+              "READING",
+              "LISTENING",
+              "QUIZ"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "totalPages": {
+            "type": "number"
+          },
+          "orderNum": {
+            "type": "number"
+          }
+        }
+      },
+      "CreateCardDto": {
+        "type": "object",
+        "properties": {
+          "wordFront": {
+            "type": "string"
+          },
+          "wordBack": {
+            "type": "string"
+          },
+          "audioUrl": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "wordFront",
+          "wordBack",
+          "sequence"
+        ]
+      },
+      "BulkCardsItemDto": {
+        "type": "object",
+        "properties": {
+          "wordFront": {
+            "type": "string"
+          },
+          "wordBack": {
+            "type": "string"
+          },
+          "audioUrl": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "wordFront",
+          "wordBack",
+          "sequence"
+        ]
+      },
+      "BulkCardsDto": {
+        "type": "object",
+        "properties": {
+          "cards": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BulkCardsItemDto"
+            }
+          }
+        },
+        "required": [
+          "cards"
+        ]
+      },
+      "PatchCardDto": {
+        "type": "object",
+        "properties": {
+          "wordFront": {
+            "type": "string"
+          },
+          "wordBack": {
+            "type": "string"
+          },
+          "audioUrl": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "number"
+          }
+        }
+      },
+      "CreateMaterialDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "GRAMMAR_TABLE"
+          },
+          "sequence": {
+            "type": "number"
+          },
+          "isExtra": {
+            "type": "boolean"
+          },
+          "contentText": {
+            "type": "object",
+            "description": "JSON 본문 (예: 문법 표, 리스닝 audioUrl 등)"
+          }
+        },
+        "required": [
+          "type",
+          "sequence",
+          "contentText"
+        ]
+      },
+      "PatchMaterialDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "number"
+          },
+          "isExtra": {
+            "type": "boolean"
+          },
+          "contentText": {
+            "type": "object"
+          }
+        }
+      },
+      "CreateQuestionDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "MCQ"
+          },
+          "questionText": {
+            "type": "string"
+          },
+          "options": {
+            "type": "object",
+            "description": "선택지 등 JSON"
+          },
+          "answer": {
+            "type": "string"
+          },
+          "explanation": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "questionText",
+          "options",
+          "answer"
+        ]
+      },
+      "PatchQuestionDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "questionText": {
+            "type": "string"
+          },
+          "options": {
+            "type": "object"
+          },
+          "answer": {
+            "type": "string"
+          },
+          "explanation": {
+            "type": "string"
+          }
+        }
+      },
+      "AdminAudioPresignedDto": {
+        "type": "object",
+        "properties": {
+          "fileExtension": {
+            "type": "string",
+            "example": "mp3"
+          },
+          "contentType": {
+            "type": "string",
+            "example": "audio/mpeg"
+          }
+        },
+        "required": [
+          "fileExtension",
+          "contentType"
+        ]
+      },
+      "AnalyzeNlpDto": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "형태소 분석할 문장",
+            "example": "안녕하세요 반갑습니다."
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    }
+  }
+}
