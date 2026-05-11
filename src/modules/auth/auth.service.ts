@@ -313,10 +313,18 @@ export class AuthService {
       where: { id: user.id },
       data: { passwordHash },
     });
-    await this.redis.del(`pwdreset:otp:${dto.email}`);
-    await this.redis.del(`pwdreset:otp:fail:${dto.email}`);
-    // 비밀번호 재설정 후 기존 JWT 캐시 무효화 — 구 토큰이 5분간 유효한 보안 취약점 차단
-    await this.redis.del(`jwt:user:${user.id}`);
+
+    // 비밀번호 변경 후 해당 사용자의 모든 활성 세션 무효화
+    const userTokensKey = `user:tokens:${user.id}`;
+    const activeTokens = await this.redis.sMembers(userTokensKey);
+    await this.redis.delMany([
+      ...activeTokens.map((t) => `refresh:${t}`), // 리프레시 토큰 전체 삭제
+      `jwt:user:${user.id}`,                       // 액세스 토큰 캐시 무효화
+      userTokensKey,                               // 인덱스 정리
+      `pwdreset:otp:${dto.email}`,
+      `pwdreset:otp:fail:${dto.email}`,
+    ]);
+
     return { reset: true };
   }
 
@@ -335,7 +343,13 @@ export class AuthService {
     );
 
     const refreshToken = randomBytes(48).toString('hex');
-    await this.redis.set(`refresh:${refreshToken}`, userId.toString(), REFRESH_TTL_SECONDS);
+    const userTokensKey = `user:tokens:${userId}`;
+    await Promise.all([
+      this.redis.set(`refresh:${refreshToken}`, userId.toString(), REFRESH_TTL_SECONDS),
+      // 역방향 인덱스: 사용자별 활성 리프레시 토큰 집합 (비밀번호 재설정 시 일괄 무효화에 사용)
+      this.redis.sAdd(userTokensKey, refreshToken),
+      this.redis.expire(userTokensKey, REFRESH_TTL_SECONDS + 3600),
+    ]);
 
     return {
       userId: userId.toString(),

@@ -79,6 +79,30 @@ return val
     return typeof result === 'string' ? result : null;
   }
 
+  async sAdd(key: string, member: string): Promise<void> {
+    await this.client.sadd(key, member);
+  }
+
+  async sMembers(key: string): Promise<string[]> {
+    return this.client.smembers(key);
+  }
+
+  /**
+   * 여러 키를 파이프라인으로 한 번에 삭제. 키 목록이 빈 배열이면 no-op.
+   */
+  async delMany(keys: string[]): Promise<void> {
+    if (keys.length === 0) return;
+    const pipeline = this.client.pipeline();
+    for (const key of keys) {
+      pipeline.del(key);
+    }
+    await pipeline.exec();
+  }
+
+  async expire(key: string, ttlSeconds: number): Promise<void> {
+    await this.client.expire(key, ttlSeconds);
+  }
+
   async onModuleDestroy() {
     await this.client.quit();
   }
