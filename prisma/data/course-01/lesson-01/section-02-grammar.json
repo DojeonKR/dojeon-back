@@ -1,0 +1,92 @@
+{
+  "type": "GRAMMAR",
+  "title": "이에요/예요 & 은/는",
+  "orderNum": 2,
+  "totalPages": 2,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "이에요/예요",
+        "explanations": [
+          {
+            "lang": "en",
+            "text": "A noun marker used like 'Be' Verb, to tell that a noun IS something."
+          },
+          {
+            "lang": "he",
+            "text": "סימון שם עצם שמשתמשים בו כאשר רוצים לתאר ששם העצם הוא משהו."
+          }
+        ],
+        "imageUrl": "",
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "미국 사람이에요?", "en": "Are you american?", "he": "את/ה אמריקאי/ת?" },
+              { "speaker": "나", "ko": "네, 미국 사람이에요.", "en": "Yes, I'm american.", "he": "כן, אני אמריקאי/ת." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "가수예요?", "en": "Are you a singer?", "he": "את/ה זמר/ת?" },
+              { "speaker": "나", "ko": "네, 가수예요.", "en": "Yes, I am a singer.", "he": "כן, אני זמר/ת." }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "은/는",
+        "explanations": [
+          {
+            "lang": "en",
+            "text": "A noun marker that indicates the subject of the sentence."
+          },
+          {
+            "lang": "he",
+            "text": "סימון שם עצם אשר מצרפים אותו לנושא המשפט."
+          }
+        ],
+        "imageUrl": "",
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "선생님은 어느 나라 사람이에요?", "en": "Teacher, where are you from?", "he": "המורה, מאיפה את/ה?" },
+              { "speaker": "나", "ko": "저는 한국 사람이에요.", "en": "I'm Korean.", "he": "אני קוריאני/ת." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": [
+    {
+      "type": "CHOOSE_CORRECT",
+      "questionText": "이름이 뭐예요? 마이클______",
+      "options": ["이에요", "예요"],
+      "answer": "이에요",
+      "explanation": "받침이 있으면 이에요, 없으면 예요를 사용합니다."
+    },
+    {
+      "type": "CHOOSE_CORRECT",
+      "questionText": "이름이 뭐예요? 가수______",
+      "options": ["이에요", "예요"],
+      "answer": "예요",
+      "explanation": "가수는 받침이 없으므로 예요를 사용합니다."
+    },
+    {
+      "type": "FILL_BLANK",
+      "questionText": "나나코______",
+      "options": [],
+      "answer": "예요",
+      "explanation": null
+    }
+  ]
+}

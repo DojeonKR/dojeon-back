@@ -1,0 +1,13 @@
+{
+  "type": "VOCAB",
+  "title": "기본 인사 단어",
+  "orderNum": 1,
+  "totalPages": 3,
+  "cards": [
+    { "sequence": 1, "wordFront": "안녕하세요", "wordBack": "Hello (formal)", "audioUrl": null },
+    { "sequence": 2, "wordFront": "감사합니다", "wordBack": "Thank you", "audioUrl": null },
+    { "sequence": 3, "wordFront": "죄송합니다", "wordBack": "I'm sorry", "audioUrl": null }
+  ],
+  "materials": [],
+  "questions": []
+}

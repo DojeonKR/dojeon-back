@@ -24,7 +24,30 @@ export class SectionsController {
         sectionId: 5,
         courseId: 1,
         lessonId: 2,
-        materials: [{ id: 1, type: 'GRAMMAR_TABLE', contentText: { title: '동사 + 아요/어요', rows: [] }, sequence: 1 }],
+        materials: [
+          {
+            id: 1,
+            type: 'GRAMMAR_TABLE',
+            sequence: 1,
+            isExtra: false,
+            contentText: {
+              title: '동사 + 아요/어요',
+              explanations: [
+                { lang: 'en', text: 'A verb ending used to form polite present tense sentences.' },
+                { lang: 'he', text: 'סיומת פועל המשמשת ליצירת משפטים בזמן הווה מנומס.' },
+              ],
+              imageUrl: '',
+              dialogues: [
+                {
+                  lines: [
+                    { speaker: '가', ko: '뭐 해요?', en: 'What are you doing?', he: 'מה את/ה עושה?' },
+                    { speaker: '나', ko: '밥 먹어요.', en: "I'm eating.", he: 'אני אוכל/ת.' },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
       }),
     },
   })
