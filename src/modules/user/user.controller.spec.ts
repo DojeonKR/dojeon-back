@@ -45,7 +45,7 @@ describe('UserController', () => {
 
   it('should change password', async () => {
     mockUserService.changePassword.mockResolvedValue({ updated: true });
-    const res = await controller.changePassword({ userId: 1n } as any, { currentPassword: 'old', newPassword: 'new' });
+    const res = await controller.changePassword({ userId: 1n } as any, { newPassword: 'Password1!' });
     expect(res).toEqual({ updated: true });
   });
 

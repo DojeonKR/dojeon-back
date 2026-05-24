@@ -55,6 +55,8 @@ describe('AuthService', () => {
       get: jest.fn(),
       set: jest.fn(),
       del: jest.fn(),
+      sAdd: jest.fn().mockResolvedValue(1),
+      expire: jest.fn().mockResolvedValue(1),
       incrWithTtlOnFirst: jest.fn(),
     };
 

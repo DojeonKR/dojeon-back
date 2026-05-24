@@ -105,24 +105,11 @@ describe('UserService', () => {
   });
 
   describe('changePassword', () => {
-    it('should throw if password not set (social login)', async () => {
-      mockPrismaService.user.findUnique.mockResolvedValue({ id: 1n, passwordHash: null });
-      await expect(service.changePassword(1n, { currentPassword: 'pw', newPassword: 'new' })).rejects.toThrow(AppException);
-    });
-
-    it('should throw if current password incorrect', async () => {
-      mockPrismaService.user.findUnique.mockResolvedValue({ id: 1n, passwordHash: 'hash' });
-      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
-      await expect(service.changePassword(1n, { currentPassword: 'pw', newPassword: 'new' })).rejects.toThrow(AppException);
-    });
-
     it('should change password successfully', async () => {
-      mockPrismaService.user.findUnique.mockResolvedValue({ id: 1n, passwordHash: 'hash' });
-      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
       (bcrypt.hash as jest.Mock).mockResolvedValue('new_hash');
       mockPrismaService.user.update.mockResolvedValue({ id: 1n });
-      
-      const res = await service.changePassword(1n, { currentPassword: 'pw', newPassword: 'new' });
+
+      const res = await service.changePassword(1n, { newPassword: 'Password1!' });
       expect(res.updated).toBe(true);
       expect(mockRedisService.del).toHaveBeenCalledWith('jwt:user:1');
     });
