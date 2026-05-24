@@ -1,5 +1,28 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsInt, IsOptional, IsString, Length, Max, Min } from 'class-validator';
+import { IsBoolean, IsIn, IsInt, IsOptional, IsString, Length } from 'class-validator';
+
+export const PROFICIENCY_ONBOARDING = ['Nothing', 'Only hangul', 'Intermediate', 'Advanced'] as const;
+
+export const AGE_GROUP_ONBOARDING = [
+  '0-17',
+  '18-24',
+  '25-34',
+  '35-44',
+  '45-54',
+  '55-64',
+  '65-',
+] as const;
+
+export const DAILY_GOAL_MIN_ONBOARDING = [5, 15, 30, 60] as const;
+
+export const LEARNING_GOAL_ONBOARDING = [
+  'Fun',
+  'Tourism',
+  'Understanding Korean content',
+  'Study in Korea',
+  'Work in Korea',
+  'Others',
+] as const;
 
 export class PatchUserDto {
   @ApiPropertyOptional({ description: '닉네임 (1~50자)', example: '도전이' })
@@ -28,26 +51,41 @@ export class PatchUserDto {
   @IsString()
   motherLanguage?: string;
 
-  @ApiPropertyOptional({ description: '한국어 수준', example: 'BEGINNER', enum: ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'] })
+  @ApiPropertyOptional({
+    description: '한국어 수준 (온보딩 UI 선택지와 동일한 문자열)',
+    example: 'Intermediate',
+    enum: [...PROFICIENCY_ONBOARDING],
+  })
   @IsOptional()
-  @IsString()
+  @IsIn(PROFICIENCY_ONBOARDING)
   proficiencyLevel?: string;
 
-  @ApiPropertyOptional({ description: '연령대', example: '20s' })
+  @ApiPropertyOptional({
+    description: '연령대 (온보딩 UI 선택지와 동일한 문자열)',
+    example: '18-24',
+    enum: [...AGE_GROUP_ONBOARDING],
+  })
   @IsOptional()
-  @IsString()
+  @IsIn(AGE_GROUP_ONBOARDING)
   ageGroup?: string;
 
-  @ApiPropertyOptional({ description: '하루 목표 학습 시간(분, 1~1440)', example: 30 })
+  @ApiPropertyOptional({
+    description: '하루 목표 학습 시간(분, 온보딩에서 5·15·30·60 중 택일)',
+    example: 30,
+    enum: DAILY_GOAL_MIN_ONBOARDING,
+  })
   @IsOptional()
   @IsInt()
-  @Min(1)
-  @Max(1440)
+  @IsIn(DAILY_GOAL_MIN_ONBOARDING)
   dailyGoalMin?: number;
 
-  @ApiPropertyOptional({ description: '학습 목표', example: '여행 회화' })
+  @ApiPropertyOptional({
+    description: '학습 목표 (온보딩 UI 선택지와 동일한 문자열)',
+    example: 'Tourism',
+    enum: [...LEARNING_GOAL_ONBOARDING],
+  })
   @IsOptional()
-  @IsString()
+  @IsIn(LEARNING_GOAL_ONBOARDING)
   learningGoal?: string;
 
   @ApiPropertyOptional({ description: '푸시 알림 수신 여부', example: true })
@@ -69,4 +107,9 @@ export class PatchUserDto {
   @IsOptional()
   @IsString()
   profileImgUrl?: string;
+
+  @ApiPropertyOptional({ description: '온보딩 완료 여부. 온보딩 마지막 단계 완료 시 true로 전송.', example: true })
+  @IsOptional()
+  @IsBoolean()
+  isOnboarded?: boolean;
 }

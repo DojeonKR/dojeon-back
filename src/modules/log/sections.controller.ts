@@ -61,7 +61,11 @@ export class SectionsController {
     return this.logService.getSectionMaterialsList(sectionId);
   }
 
-  @ApiOperation({ summary: '섹션 단어 카드 목록', description: '섹션의 단어 카드(앞면/뒷면/음원) 목록을 반환합니다.' })
+  @ApiOperation({
+    summary: '섹션 단어 카드 목록',
+    description:
+      '섹션의 단어 카드 목록입니다. 한국어(`wordFront`), 기본 번역(`wordBack`, 영문), 보조 설명(`notes`), 로케일별 문자열(`locales`), 음원 URL을 포함합니다.',
+  })
   @ApiParam({ name: 'sectionId', description: '섹션 ID', example: 5 })
   @ApiResponse({
     status: 200,
@@ -72,8 +76,10 @@ export class SectionsController {
         cards: [
           {
             id: 1,
-            wordFront: '사랑',
-            wordBack: 'Love',
+            wordFront: '저',
+            wordBack: 'I / me',
+            notes: 'humble form used in polite speech',
+            locales: { he: { back: 'אני', notes: 'צורת "אני" מנומסת' } },
             audioUrl: 'https://cdn.example.com/audio/1.mp3',
             sequence: 1,
             isScraped: false,

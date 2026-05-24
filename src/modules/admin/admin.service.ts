@@ -148,6 +148,11 @@ export class AdminService {
         sectionId,
         wordFront: dto.wordFront,
         wordBack: dto.wordBack,
+        notes: dto.notes ?? null,
+        ...(dto.locales !== undefined && {
+          locales:
+            dto.locales === null ? Prisma.JsonNull : (dto.locales as Prisma.InputJsonValue),
+        }),
         audioUrl: dto.audioUrl ?? null,
         sequence: dto.sequence,
       },
@@ -161,6 +166,11 @@ export class AdminService {
         sectionId,
         wordFront: c.wordFront,
         wordBack: c.wordBack,
+        notes: c.notes ?? null,
+        ...(c.locales !== undefined && {
+          locales:
+            c.locales === null ? Prisma.JsonNull : (c.locales as Prisma.InputJsonValue),
+        }),
         audioUrl: c.audioUrl ?? null,
         sequence: c.sequence,
       })),
@@ -175,6 +185,11 @@ export class AdminService {
       data: {
         ...(dto.wordFront !== undefined && { wordFront: dto.wordFront }),
         ...(dto.wordBack !== undefined && { wordBack: dto.wordBack }),
+        ...(dto.notes !== undefined && { notes: dto.notes }),
+        ...(dto.locales !== undefined && {
+          locales:
+            dto.locales === null ? Prisma.JsonNull : (dto.locales as Prisma.InputJsonValue),
+        }),
         ...(dto.audioUrl !== undefined && { audioUrl: dto.audioUrl }),
         ...(dto.sequence !== undefined && { sequence: dto.sequence }),
       },

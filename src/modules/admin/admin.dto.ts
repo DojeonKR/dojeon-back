@@ -149,6 +149,20 @@ export class CreateCardDto {
   @IsString()
   wordBack!: string;
 
+  @ApiPropertyOptional({ description: '영문 노트(카드 뒷면 보조 설명)' })
+  @IsOptional()
+  @IsString()
+  notes?: string | null;
+
+  @ApiPropertyOptional({
+    description: '로케일별 번역·노트. 예: `{ "he": { "back": "…", "notes": "…" } }`',
+    type: 'object',
+    additionalProperties: true,
+  })
+  @IsOptional()
+  @Allow()
+  locales?: Record<string, unknown> | null;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
@@ -174,6 +188,20 @@ export class PatchCardDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  notes?: string | null;
+
+  @ApiPropertyOptional({
+    description: '`null`이면 저장된 locales 제거',
+    type: 'object',
+    additionalProperties: true,
+  })
+  @IsOptional()
+  @Allow()
+  locales?: Record<string, unknown> | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
   audioUrl?: string;
 
   @ApiPropertyOptional()
@@ -191,6 +219,16 @@ export class BulkCardsItemDto {
   @ApiProperty()
   @IsString()
   wordBack!: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  notes?: string | null;
+
+  @ApiPropertyOptional({ type: 'object', additionalProperties: true })
+  @IsOptional()
+  @Allow()
+  locales?: Record<string, unknown> | null;
 
   @ApiPropertyOptional()
   @IsOptional()

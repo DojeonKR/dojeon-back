@@ -25,21 +25,23 @@ export class UserController {
         profile: {
           userId: '1',
           email: 'user@example.com',
+          hasPassword: true,
           nickname: '도전이',
           username: 'user_a1b2c',
           phoneNumber: null,
           birthday: null,
           profileImgUrl: null,
-          motherLanguage: null,
-          proficiencyLevel: null,
-          ageGroup: null,
+          motherLanguage: 'English',
+          proficiencyLevel: 'Intermediate',
+          ageGroup: '18-24',
           dailyGoalMin: 30,
-          learningGoal: null,
+          learningGoal: 'Tourism',
           subscriptionTier: 'FREE',
           subscriptionPlanId: null,
           subscriptionExpiresAt: null,
           isPushNotificationOn: true,
           isMarketingAgreed: false,
+          isOnboarded: true,
           createdAt: '2026-04-01T00:00:00.000Z',
         },
         stats: {
@@ -99,22 +101,12 @@ export class UserController {
 
   @ApiOperation({
     summary: '비밀번호 변경 (로그인 상태)',
-    description: '현재 비밀번호 확인 후 새 비밀번호로 변경합니다. 소셜 전용 계정은 사용할 수 없습니다.',
+    description: '새 비밀번호로 변경합니다. 소셜 전용 계정(hasPassword: false)은 프론트에서 이 기능을 비활성화해야 합니다.',
   })
   @ApiResponse({
     status: 200,
     description: '변경 성공',
     schema: { example: successExample({ updated: true }) },
-  })
-  @ApiResponse({
-    status: 400,
-    description: '소셜 전용 계정',
-    schema: { example: errorExample('소셜 로그인 계정은 비밀번호가 없습니다.', 400, 'PASSWORD_NOT_SET') },
-  })
-  @ApiResponse({
-    status: 401,
-    description: '현재 비밀번호 불일치',
-    schema: { example: errorExample('현재 비밀번호가 올바르지 않습니다.', 401, 'INVALID_CURRENT_PASSWORD') },
   })
   @Patch('me/password')
   async changePassword(@CurrentUser() user: JwtPayloadUser, @Body() dto: ChangePasswordDto) {

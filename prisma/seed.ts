@@ -14,7 +14,7 @@
  *   - 기본 모드에서는 이미 콘텐츠가 있는 섹션은 건너뜁니다.
  */
 
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -26,6 +26,9 @@ interface CardData {
   sequence: number;
   wordFront: string;
   wordBack: string;
+  notes?: string | null;
+  /** e.g. `{ "he": { "back": "…", "notes": "…" } }` */
+  locales?: Record<string, { back: string; notes?: string | null }> | null;
   audioUrl: string | null;
 }
 
@@ -128,7 +131,18 @@ async function seedSection(lessonId: number, sectionData: SectionData) {
 
   if (sectionData.cards.length > 0) {
     await prisma.sectionCard.createMany({
-      data: sectionData.cards.map((c) => ({ ...c, sectionId: section.id })),
+      data: sectionData.cards.map((c) => ({
+        sectionId: section.id,
+        sequence: c.sequence,
+        wordFront: c.wordFront,
+        wordBack: c.wordBack,
+        notes: c.notes ?? null,
+        locales:
+          c.locales != null && Object.keys(c.locales).length > 0
+            ? (c.locales as Prisma.InputJsonValue)
+            : null,
+        audioUrl: c.audioUrl ?? null,
+      })),
     });
   }
 

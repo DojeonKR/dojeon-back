@@ -65,6 +65,8 @@ export class LogService {
         id: c.id,
         wordFront: c.wordFront,
         wordBack: c.wordBack,
+        notes: c.notes,
+        locales: c.locales,
         audioUrl: c.audioUrl,
         sequence: c.sequence,
         isScraped: scrapMap.has(c.id),
@@ -383,7 +385,7 @@ export class LogService {
         id: true,
         sectionId: true,
         createdAt: true,
-        card: { select: { id: true, wordFront: true, wordBack: true, audioUrl: true } },
+        card: { select: { id: true, wordFront: true, wordBack: true, notes: true, locales: true, audioUrl: true } },
         section: {
           select: {
             lesson: {
@@ -471,7 +473,7 @@ export class LogService {
           cardId: true,
           materialId: true,
           createdAt: true,
-          card: { select: { id: true, wordFront: true, wordBack: true, audioUrl: true, sequence: true } },
+          card: { select: { id: true, wordFront: true, wordBack: true, notes: true, locales: true, audioUrl: true, sequence: true } },
         },
       });
     }
@@ -523,7 +525,14 @@ export class LogService {
     id: bigint;
     sectionId: number | null;
     createdAt: Date;
-    card: { id: number; wordFront: string; wordBack: string; audioUrl: string | null } | null;
+    card: {
+      id: number;
+      wordFront: string;
+      wordBack: string;
+      notes: string | null;
+      locales: unknown;
+      audioUrl: string | null;
+    } | null;
   }) {
     return {
       scrapId: s.id.toString(),
@@ -534,6 +543,8 @@ export class LogService {
             cardId: s.card.id,
             front: s.card.wordFront,
             back: s.card.wordBack,
+            notes: s.card.notes,
+            locales: s.card.locales,
             audioUrl: s.card.audioUrl,
           }
         : null,

@@ -100,7 +100,15 @@ export class ScrapsController {
         cardId: 1,
         materialId: null,
         createdAt: '2026-04-05T00:00:00.000Z',
-        card: { id: 1, wordFront: '사랑', wordBack: 'Love', audioUrl: null },
+        card: {
+          id: 1,
+          wordFront: '저',
+          wordBack: 'I / me',
+          notes: 'humble form used in polite speech',
+          locales: { he: { back: 'אני', notes: 'צורת "אני" מנומסת' } },
+          audioUrl: null,
+          sequence: 1,
+        },
       }),
     },
   })

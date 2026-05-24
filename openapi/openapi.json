@@ -790,21 +790,23 @@
                       "profile": {
                         "userId": "1",
                         "email": "user@example.com",
+                        "hasPassword": true,
                         "nickname": "도전이",
                         "username": "user_a1b2c",
                         "phoneNumber": null,
                         "birthday": null,
                         "profileImgUrl": null,
-                        "motherLanguage": null,
-                        "proficiencyLevel": null,
-                        "ageGroup": null,
+                        "motherLanguage": "English",
+                        "proficiencyLevel": "Intermediate",
+                        "ageGroup": "18-24",
                         "dailyGoalMin": 30,
-                        "learningGoal": null,
+                        "learningGoal": "Tourism",
                         "subscriptionTier": "FREE",
                         "subscriptionPlanId": null,
                         "subscriptionExpiresAt": null,
                         "isPushNotificationOn": true,
                         "isMarketingAgreed": false,
+                        "isOnboarded": true,
                         "createdAt": "2026-04-01T00:00:00.000Z"
                       },
                       "stats": {
@@ -992,7 +994,7 @@
     },
     "/user/me/password": {
       "patch": {
-        "description": "현재 비밀번호 확인 후 새 비밀번호로 변경합니다. 소셜 전용 계정은 사용할 수 없습니다.",
+        "description": "새 비밀번호로 변경합니다. 소셜 전용 계정(hasPassword: false)은 프론트에서 이 기능을 비활성화해야 합니다.",
         "operationId": "UserController_changePassword",
         "parameters": [],
         "requestBody": {
@@ -1018,40 +1020,6 @@
                     "data": {
                       "updated": true
                     },
-                    "timestamp": "2026-04-05T00:00:00.000Z"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "소셜 전용 계정",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "example": {
-                    "isSuccess": false,
-                    "code": "400",
-                    "message": "소셜 로그인 계정은 비밀번호가 없습니다.",
-                    "data": null,
-                    "errorCode": "PASSWORD_NOT_SET",
-                    "timestamp": "2026-04-05T00:00:00.000Z"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "현재 비밀번호 불일치",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "example": {
-                    "isSuccess": false,
-                    "code": "401",
-                    "message": "현재 비밀번호가 올바르지 않습니다.",
-                    "data": null,
-                    "errorCode": "INVALID_CURRENT_PASSWORD",
                     "timestamp": "2026-04-05T00:00:00.000Z"
                   }
                 }
@@ -1729,11 +1697,40 @@
                         {
                           "id": 1,
                           "type": "GRAMMAR_TABLE",
+                          "sequence": 1,
+                          "isExtra": false,
                           "contentText": {
                             "title": "동사 + 아요/어요",
-                            "rows": []
-                          },
-                          "sequence": 1
+                            "explanations": [
+                              {
+                                "lang": "en",
+                                "text": "A verb ending used to form polite present tense sentences."
+                              },
+                              {
+                                "lang": "he",
+                                "text": "סיומת פועל המשמשת ליצירת משפטים בזמן הווה מנומס."
+                              }
+                            ],
+                            "imageUrl": "",
+                            "dialogues": [
+                              {
+                                "lines": [
+                                  {
+                                    "speaker": "가",
+                                    "ko": "뭐 해요?",
+                                    "en": "What are you doing?",
+                                    "he": "מה את/ה עושה?"
+                                  },
+                                  {
+                                    "speaker": "나",
+                                    "ko": "밥 먹어요.",
+                                    "en": "I'm eating.",
+                                    "he": "אני אוכל/ת."
+                                  }
+                                ]
+                              }
+                            ]
+                          }
                         }
                       ]
                     },
@@ -1774,7 +1771,7 @@
     },
     "/section/{sectionId}/card": {
       "get": {
-        "description": "섹션의 단어 카드(앞면/뒷면/음원) 목록을 반환합니다.",
+        "description": "섹션의 단어 카드 목록입니다. 한국어(`wordFront`), 기본 번역(`wordBack`, 영문), 보조 설명(`notes`), 로케일별 문자열(`locales`), 음원 URL을 포함합니다.",
         "operationId": "SectionsController_cards",
         "parameters": [
           {
@@ -1803,8 +1800,15 @@
                       "cards": [
                         {
                           "id": 1,
-                          "wordFront": "사랑",
-                          "wordBack": "Love",
+                          "wordFront": "저",
+                          "wordBack": "I / me",
+                          "notes": "humble form used in polite speech",
+                          "locales": {
+                            "he": {
+                              "back": "אני",
+                              "notes": "צורת \"אני\" מנומסת"
+                            }
+                          },
                           "audioUrl": "https://cdn.example.com/audio/1.mp3",
                           "sequence": 1,
                           "isScraped": false,
@@ -2289,9 +2293,17 @@
                       "createdAt": "2026-04-05T00:00:00.000Z",
                       "card": {
                         "id": 1,
-                        "wordFront": "사랑",
-                        "wordBack": "Love",
-                        "audioUrl": null
+                        "wordFront": "저",
+                        "wordBack": "I / me",
+                        "notes": "humble form used in polite speech",
+                        "locales": {
+                          "he": {
+                            "back": "אני",
+                            "notes": "צורת \"אני\" מנומסת"
+                          }
+                        },
+                        "audioUrl": null,
+                        "sequence": 1
                       }
                     },
                     "timestamp": "2026-04-05T00:00:00.000Z"
@@ -3485,28 +3497,52 @@
           },
           "proficiencyLevel": {
             "type": "string",
-            "description": "한국어 수준",
-            "example": "BEGINNER",
+            "description": "한국어 수준 (온보딩 UI 선택지와 동일한 문자열)",
+            "example": "Intermediate",
             "enum": [
-              "BEGINNER",
-              "INTERMEDIATE",
-              "ADVANCED"
+              "Nothing",
+              "Only hangul",
+              "Intermediate",
+              "Advanced"
             ]
           },
           "ageGroup": {
             "type": "string",
-            "description": "연령대",
-            "example": "20s"
+            "description": "연령대 (온보딩 UI 선택지와 동일한 문자열)",
+            "example": "18-24",
+            "enum": [
+              "0-17",
+              "18-24",
+              "25-34",
+              "35-44",
+              "45-54",
+              "55-64",
+              "65-"
+            ]
           },
           "dailyGoalMin": {
             "type": "number",
-            "description": "하루 목표 학습 시간(분, 1~1440)",
-            "example": 30
+            "description": "하루 목표 학습 시간(분, 온보딩에서 5·15·30·60 중 택일)",
+            "example": 30,
+            "enum": [
+              5,
+              15,
+              30,
+              60
+            ]
           },
           "learningGoal": {
             "type": "string",
-            "description": "학습 목표",
-            "example": "여행 회화"
+            "description": "학습 목표 (온보딩 UI 선택지와 동일한 문자열)",
+            "example": "Tourism",
+            "enum": [
+              "Fun",
+              "Tourism",
+              "Understanding Korean content",
+              "Study in Korea",
+              "Work in Korea",
+              "Others"
+            ]
           },
           "isPushNotificationOn": {
             "type": "boolean",
@@ -3527,16 +3563,17 @@
             "type": "string",
             "description": "프로필 이미지 URL (S3 presigned 업로드 완료 후 저장)",
             "example": "https://bucket.s3.region.amazonaws.com/profiles/1/photo.jpg"
+          },
+          "isOnboarded": {
+            "type": "boolean",
+            "description": "온보딩 완료 여부. 온보딩 마지막 단계 완료 시 true로 전송.",
+            "example": true
           }
         }
       },
       "ChangePasswordDto": {
         "type": "object",
         "properties": {
-          "currentPassword": {
-            "type": "string",
-            "description": "현재 비밀번호"
-          },
           "newPassword": {
             "type": "string",
             "description": "새 비밀번호 (8자 이상, 대문자·소문자·숫자·특수문자 각 1개 이상)",
@@ -3544,7 +3581,6 @@
           }
         },
         "required": [
-          "currentPassword",
           "newPassword"
         ]
       },
@@ -3810,6 +3846,15 @@
           "wordBack": {
             "type": "string"
           },
+          "notes": {
+            "type": "object",
+            "description": "영문 노트(카드 뒷면 보조 설명)"
+          },
+          "locales": {
+            "type": "object",
+            "description": "로케일별 번역·노트. 예: `{ \"he\": { \"back\": \"…\", \"notes\": \"…\" } }`",
+            "additionalProperties": true
+          },
           "audioUrl": {
             "type": "string"
           },
@@ -3831,6 +3876,13 @@
           },
           "wordBack": {
             "type": "string"
+          },
+          "notes": {
+            "type": "object"
+          },
+          "locales": {
+            "type": "object",
+            "additionalProperties": true
           },
           "audioUrl": {
             "type": "string"
@@ -3867,6 +3919,14 @@
           },
           "wordBack": {
             "type": "string"
+          },
+          "notes": {
+            "type": "object"
+          },
+          "locales": {
+            "type": "object",
+            "description": "`null`이면 저장된 locales 제거",
+            "additionalProperties": true
           },
           "audioUrl": {
             "type": "string"

@@ -21,3 +21,6 @@ Thumbs.db
 
 # 실수로 레포에 넣는 키 방지
 *.pem
+
+# 수업 시드 JSON (DB에 적재 후 서비스; IP 보호를 위해 Git 미포함)
+prisma/data/

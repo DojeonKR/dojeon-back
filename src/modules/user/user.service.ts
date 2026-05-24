@@ -45,6 +45,7 @@ export class UserService {
       select: {
         id: true,
         email: true,
+        passwordHash: true,
         nickname: true,
         username: true,
         phoneNumber: true,
@@ -60,6 +61,7 @@ export class UserService {
         subscriptionExpiresAt: true,
         isPushNotificationOn: true,
         isMarketingAgreed: true,
+        isOnboarded: true,
         createdAt: true,
         stats: true,
         userBadges: {
@@ -100,6 +102,7 @@ export class UserService {
       profile: {
         userId: user.id.toString(),
         email: user.email,
+        hasPassword: user.passwordHash !== null,
         nickname: user.nickname,
         username: user.username,
         phoneNumber: user.phoneNumber,
@@ -115,6 +118,7 @@ export class UserService {
         subscriptionExpiresAt: user.subscriptionExpiresAt?.toISOString() ?? null,
         isPushNotificationOn: user.isPushNotificationOn,
         isMarketingAgreed: user.isMarketingAgreed,
+        isOnboarded: user.isOnboarded,
         createdAt: user.createdAt,
       },
       stats: user.stats
@@ -155,6 +159,7 @@ export class UserService {
     if (dto.isMarketingAgreed !== undefined) data.isMarketingAgreed = dto.isMarketingAgreed;
     if (dto.deviceToken !== undefined) data.deviceToken = dto.deviceToken;
     if (dto.profileImgUrl !== undefined) data.profileImgUrl = dto.profileImgUrl;
+    if (dto.isOnboarded !== undefined) data.isOnboarded = dto.isOnboarded;
 
     try {
       await this.prisma.user.update({
@@ -175,22 +180,6 @@ export class UserService {
   }
 
   async changePassword(userId: bigint, dto: ChangePasswordDto) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user?.passwordHash) {
-      throw new AppException(
-        'PASSWORD_NOT_SET',
-        '소셜 로그인 계정은 비밀번호가 없습니다.',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const ok = await bcrypt.compare(dto.currentPassword, user.passwordHash);
-    if (!ok) {
-      throw new AppException(
-        'INVALID_CURRENT_PASSWORD',
-        '현재 비밀번호가 올바르지 않습니다.',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
     const passwordHash = await bcrypt.hash(dto.newPassword, 10);
     await this.prisma.user.update({
       where: { id: userId },

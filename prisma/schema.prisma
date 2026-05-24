@@ -50,6 +50,7 @@ model User {
   isTermsAgreed        Boolean @default(false) @map("is_terms_agreed")
   isPrivacyAgreed      Boolean @default(false) @map("is_privacy_agreed")
   isAgeVerified        Boolean @default(false) @map("is_age_verified")
+  isOnboarded          Boolean @default(false) @map("is_onboarded")
   role                 String   @default("user") @map("role")
   createdAt            DateTime @default(now()) @map("created_at")
   updatedAt            DateTime @updatedAt @map("updated_at")
@@ -163,6 +164,10 @@ model SectionCard {
   sectionId Int     @map("section_id")
   wordFront String  @map("word_front")
   wordBack  String  @map("word_back")
+  /// Primary (English) extra context shown on card back — additional locales use `locales`.
+  notes     String? @map("notes")
+  /// Locale map, e.g. `{ "he": { "back": "…", "notes": "…" } }`.
+  locales   Json?   @map("locales")
   audioUrl  String? @map("audio_url")
   sequence  Int
 
