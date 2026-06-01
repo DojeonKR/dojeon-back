@@ -86,7 +86,7 @@ export class AuthService {
     const otpKey = `email:otp:${email}`;
     await this.redis.set(otpKey, code, OTP_TTL);
     await this.redis.set(cooldownKey, '1', OTP_COOLDOWN_SECONDS);
-    await this.emailQueue.enqueueOtp(email, code);
+    await this.emailQueue.enqueueOtp(email, code, otpKey);
     return { sent: true };
   }
 
@@ -290,7 +290,7 @@ export class AuthService {
     const otpKey = `pwdreset:otp:${email}`;
     await this.redis.set(otpKey, code, OTP_TTL);
     await this.redis.set(cooldownKey, '1', OTP_COOLDOWN_SECONDS);
-    await this.emailQueue.enqueueOtp(email, code);
+    await this.emailQueue.enqueueOtp(email, code, otpKey);
     return { sent: true };
   }
 

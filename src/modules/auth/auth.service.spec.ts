@@ -131,7 +131,11 @@ describe('AuthService', () => {
       const res = await service.sendEmailCode('test@test.com');
       expect(res.sent).toBe(true);
       expect(mockRedisService.set).toHaveBeenCalledTimes(2);
-      expect(mockEmailQueueService.enqueueOtp).toHaveBeenCalled();
+      expect(mockEmailQueueService.enqueueOtp).toHaveBeenCalledWith(
+        'test@test.com',
+        expect.any(String),
+        'email:otp:test@test.com',
+      );
     });
   });
 
