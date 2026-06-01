@@ -24,15 +24,15 @@ flowchart TB
     R[(Redis)]
   end
 
-  subgraph aws["AWS"]
-    SES[SES 이메일]
+  subgraph external["외부 연동"]
+    Brevo[Brevo SMTP]
     S3[S3 Presigned 업로드]
   end
 
   APP -->|REST / Swagger| api
   MODULES -->|Prisma ORM| PG
   MODULES -->|세션 · 캐시 · Idempotency| R
-  MODULES -->|인증·비밀번호 메일| SES
+  MODULES -->|인증·비밀번호 메일| Brevo
   MODULES -->|프로필 이미지 · 관리자 오디오| S3
 ```
 
@@ -138,13 +138,13 @@ API 베이스 URL: `http://localhost:3000`
 
 - [x] Global 응답 래핑
 - [x] Redis (세션·캐시·idempotency)
-- [x] **EmailService** (AWS SES) — 인증 코드·임시 비밀번호 메일 (개발 시 로그 폴백)
+- [x] **EmailService** (Brevo SMTP) — 인증 코드·임시 비밀번호 메일 (`EMAIL_FROM=noreply@app.dojeonkr.com`, 개발·SMTP 미설정 시 로그 폴백)
 
 ### 배포·운영 연동 (저장소 밖 작업)
 
 - [ ] PostgreSQL에 `prisma migrate` 적용 및 운영 `DATABASE_URL` 설정
 - [ ] Redis, S3 버킷 등 AWS 리소스 연결
-- [ ] **AWS SES** 발신 도메인/주소 검증, Sandbox 해제(필요 시)
+- [ ] **Brevo SMTP** — `app.dojeonkr.com` 발신자(`noreply@app.dojeonkr.com`) 검증, SMTP key를 서버 `.env`에 설정
 - [ ] (선택) ECS/CI 파이프라인, 단위 테스트 추가
 
 ### 문서

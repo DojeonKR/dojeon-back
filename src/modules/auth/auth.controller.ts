@@ -23,7 +23,7 @@ export class AuthController {
   @ApiOperation({
     summary: '이메일 인증 코드 발송',
     description:
-      '입력한 이메일로 6자리 인증 코드를 발송합니다. 실제 메일은 AWS SES 또는 SMTP(SMTP_HOST 등, Gmail은 앱 비밀번호) 설정 시 발송됩니다. NODE_ENV=production 인데 둘 다 없으면 503입니다. 개발 모드에서는 메일 대신 서버 로그에 코드가 남습니다.',
+      '입력한 이메일로 6자리 인증 코드를 발송합니다. Brevo SMTP(SMTP_HOST=smtp-relay.brevo.com, SMTP_USER/PASS) 및 EMAIL_FROM=noreply@app.dojeonkr.com 설정 시 실제 발송됩니다. NODE_ENV=production 에서 SMTP 미설정 시 503입니다. 개발 모드·SMTP 미설정 시 서버 로그에 코드가 남습니다.',
   })
   @ApiResponse({
     status: 200,
@@ -32,7 +32,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 503,
-    description: '운영 환경에서 이메일(SES/SMTP) 미설정',
+    description: '운영 환경에서 Brevo SMTP 미설정',
     schema: { example: errorExample('이메일 발송이 설정되지 않았습니다.', 503, 'EMAIL_NOT_CONFIGURED') },
   })
   @ApiResponse({
@@ -42,8 +42,14 @@ export class AuthController {
   })
   @ApiResponse({
     status: 502,
-    description: 'SES/SMTP 호출 실패',
-    schema: { example: errorExample('이메일 발송에 실패했습니다. SES 발신 검증·IAM 권한·SMTP 설정을 확인하거나 잠시 후 다시 시도하세요.', 502, 'EMAIL_SEND_FAILED') },
+    description: 'Brevo SMTP 호출 실패',
+    schema: {
+      example: errorExample(
+        '이메일 발송에 실패했습니다. Brevo SMTP 설정·app.dojeonkr.com 발신자 검증을 확인하거나 잠시 후 다시 시도하세요.',
+        502,
+        'EMAIL_SEND_FAILED',
+      ),
+    },
   })
   @Public()
   @Throttle({ default: { limit: 5, ttl: 60000 } })
@@ -223,12 +229,24 @@ export class AuthController {
   @ApiResponse({
     status: 502,
     description: '메일 발송 실패',
-    schema: { example: errorExample('이메일 발송에 실패했습니다. SES 발신 검증·IAM 권한·SMTP 설정을 확인하거나 잠시 후 다시 시도하세요.', 502, 'EMAIL_SEND_FAILED') },
+    schema: {
+      example: errorExample(
+        '이메일 발송에 실패했습니다. Brevo SMTP 설정·app.dojeonkr.com 발신자 검증을 확인하거나 잠시 후 다시 시도하세요.',
+        502,
+        'EMAIL_SEND_FAILED',
+      ),
+    },
   })
   @ApiResponse({
     status: 503,
-    description: 'production에서 SES/SMTP 미설정',
-    schema: { example: errorExample('이메일 발송이 설정되지 않았습니다. AWS SES 또는 SMTP(SMTP_HOST 등)를 구성하세요.', 503, 'EMAIL_NOT_CONFIGURED') },
+    description: 'production에서 Brevo SMTP 미설정',
+    schema: {
+      example: errorExample(
+        '이메일 발송이 설정되지 않았습니다. Brevo SMTP(SMTP_HOST, SMTP_USER, SMTP_PASS)를 구성하세요.',
+        503,
+        'EMAIL_NOT_CONFIGURED',
+      ),
+    },
   })
   @Public()
   @Throttle({ default: { limit: 5, ttl: 60000 } })

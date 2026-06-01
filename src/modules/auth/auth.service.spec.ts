@@ -5,6 +5,7 @@ import { RedisService } from '../../infra/redis/redis.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { EmailQueueService } from '../../infra/email/email-queue.service';
+import { EmailService } from '../../infra/email/email.service';
 import { AppException } from '../../common/exceptions/app.exception';
 import * as bcrypt from 'bcrypt';
 
@@ -30,6 +31,7 @@ describe('AuthService', () => {
   let mockJwtService: any;
   let mockConfigService: any;
   let mockEmailQueueService: any;
+  let mockEmailService: any;
   let mockTx: any;
 
   beforeEach(async () => {
@@ -78,6 +80,10 @@ describe('AuthService', () => {
       enqueueOtp: jest.fn().mockResolvedValue(undefined),
     };
 
+    mockEmailService = {
+      isConfigured: jest.fn().mockReturnValue(true),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
@@ -86,6 +92,7 @@ describe('AuthService', () => {
         { provide: JwtService, useValue: mockJwtService },
         { provide: ConfigService, useValue: mockConfigService },
         { provide: EmailQueueService, useValue: mockEmailQueueService },
+        { provide: EmailService, useValue: mockEmailService },
       ],
     }).compile();
 
@@ -101,6 +108,18 @@ describe('AuthService', () => {
   });
 
   describe('sendEmailCode', () => {
+    it('should throw EMAIL_NOT_CONFIGURED in production when SMTP is not configured', async () => {
+      mockConfigService.get.mockImplementation((key: string) => {
+        if (key === 'nodeEnv') return 'production';
+        if (key === 'google.clientId') return 'mock-client-id';
+        return null;
+      });
+      mockEmailService.isConfigured.mockReturnValue(false);
+
+      await expect(service.sendEmailCode('test@test.com')).rejects.toThrow(AppException);
+      expect(mockEmailQueueService.enqueueOtp).not.toHaveBeenCalled();
+    });
+
     it('should throw if cooldown is active', async () => {
       mockRedisService.get.mockResolvedValue('1');
       await expect(service.sendEmailCode('test@test.com')).rejects.toThrow(AppException);

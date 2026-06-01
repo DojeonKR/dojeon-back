@@ -134,7 +134,7 @@
 | 항목 | 결과 |
 |------|------|
 | `recalculateStreak` 최적화 | 400회 DB 루프 → `findMany` 단일 쿼리 + JS 순회 |
-| AWS SES 이메일 발송 | `src/infra/email/email.service.ts`, `EmailModule` (Global) — dev는 로그, prod는 SES |
+| Brevo SMTP 이메일 발송 | `src/infra/email/email.service.ts`, `EmailModule` (Global) — dev·SMTP 미설정은 로그, prod는 SMTP 필수 |
 | Auth 이메일 연동 | `sendEmailCode`, `passwordResetRequest` 에서 `EmailService` 호출 |
 | Scrap Pagination | `GET /scrap?type=&cursor=&limit=` 커서 기반 (기본 20, 최대 100) |
 
@@ -172,12 +172,12 @@ npm run prisma:seed
 
 ---
 
-### 3-4. AWS SES 검증 (코드 완성 ✅ — AWS 콘솔 설정 필요)
+### 3-4. Brevo SMTP 검증 (코드 완성 ✅ — Brevo 콘솔 설정 필요)
 
-`EmailService`는 구현 완료. prod에서 실제 발송을 위해:
+`EmailService`는 Brevo SMTP(nodemailer)로 구현 완료. prod에서 실제 발송을 위해:
 
-- [ ] AWS SES에서 `EMAIL_FROM` 발신 주소 도메인 인증
-- [ ] SES Sandbox → Production 전환 (고객 요청)
+- [ ] Brevo에서 `app.dojeonkr.com` 발신자 `noreply@app.dojeonkr.com` 인증
+- [ ] SMTP key 생성 후 서버 `.env`에 `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS` 설정
 
 ---
 
@@ -202,7 +202,7 @@ npm run prisma:seed
 |------|------|------|
 | 스트릭 최적화 | ✅ 완료 | 단일 `findMany` + JS 순회로 교체 |
 | Scrap Pagination | ✅ 완료 | `cursor` / `limit` 쿼리 지원 |
-| 이메일 발송 | ✅ 완료 | SES, dev는 로그 출력 |
+| 이메일 발송 | ✅ 완료 | Brevo SMTP, dev·미설정 시 로그 |
 | 출석 로직 | ⚠️ 보완 권장 | `updatedAt` 기준 당일 학습시간 — 자정 넘어 공부 시 이전 날 로그가 오늘로 집계될 수 있음 |
 | Idempotency | 검토 필요 | `POST /scrap`·`POST /nlp/analyze`에도 적용 검토 |
 
@@ -219,7 +219,7 @@ npm run prisma:seed
 | Auth | `POST /auth/google` | ✅ |
 | Auth | `POST /auth/reissue` | ✅ |
 | Auth | `POST /auth/logout` | ✅ |
-| Auth | `POST /auth/password/reset-request` | ✅ (SES 연동 ✅, AWS 도메인 인증 필요) |
+| Auth | `POST /auth/password/reset-request` | ✅ (Brevo SMTP 연동 ✅, app.dojeonkr.com 발신자 검증 필요) |
 | Auth | `GET /auth/check-nickname` | ✅ |
 | User | `GET /user/me?year=&month=` | ✅ |
 | User | `PATCH /user/me` | ✅ |
@@ -265,11 +265,11 @@ dojeon-back/
 │   ├── app.module.ts           ← Home/Practice/Subscription/Email 모듈 등록
 │   ├── common/interceptors/response.interceptor.ts  ← __envelope 202 지원
 │   ├── infra/
-│   │   ├── email/              ← EmailModule (Global, AWS SES, dev=로그)
+│   │   ├── email/              ← EmailModule (Global, Brevo SMTP, dev=로그)
 │   │   ├── redis/              ← RedisModule
 │   │   └── sqs/                ← SqsModule
 │   └── modules/
-│       ├── auth/               ← 리네임, logout, reset-request, check-nickname, SES 연동
+│       ├── auth/               ← 리네임, logout, reset-request, check-nickname, Brevo SMTP 연동
 │       ├── learning/           ← resumeBanner, overallProgressPercent, getLastLessonResume
 │       ├── home/               ← 신규 (GET /home/resume)
 │       ├── practice/           ← 신규 (GET /practice/topic, /question)

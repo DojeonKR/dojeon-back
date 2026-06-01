@@ -17,6 +17,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
+import { seedDevDemoUser } from './seed-dev-demo';
 
 const prisma = new PrismaClient();
 const FORCE = process.argv.includes('--force');
@@ -244,6 +245,7 @@ async function seedStaticData() {
 async function main() {
   console.log(`🌱 시드 시작${FORCE ? ' (--force 모드)' : ''}\n`);
   await seedStaticData();
+  await seedDevDemoUser(prisma);
   console.log('');
   await seedCourses();
   console.log('\n🎉 시드 완료');

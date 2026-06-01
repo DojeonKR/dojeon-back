@@ -7,6 +7,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RedisService } from '../../infra/redis/redis.service';
 import { EmailQueueService } from '../../infra/email/email-queue.service';
+import { EmailService } from '../../infra/email/email.service';
 import { AppException } from '../../common/exceptions/app.exception';
 import { HttpStatus } from '@nestjs/common';
 import { SignupDto } from './dto/signup.dto';
@@ -31,6 +32,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly emailQueue: EmailQueueService,
+    private readonly emailService: EmailService,
   ) {
     const clientId = this.configService.get<string>('google.clientId');
     this.googleClient = clientId ? new OAuth2Client(clientId) : null;
@@ -51,7 +53,19 @@ export class AuthService {
     return `${local}_${Date.now().toString(36)}`;
   }
 
+  private assertEmailConfigured(): void {
+    const isProd = (this.configService.get<string>('nodeEnv') ?? '') === 'production';
+    if (isProd && !this.emailService.isConfigured()) {
+      throw new AppException(
+        'EMAIL_NOT_CONFIGURED',
+        '이메일 발송이 설정되지 않았습니다. Brevo SMTP(SMTP_HOST, SMTP_USER, SMTP_PASS)를 구성하세요.',
+        HttpStatus.SERVICE_UNAVAILABLE,
+      );
+    }
+  }
+
   async sendEmailCode(email: string): Promise<{ sent: boolean }> {
+    this.assertEmailConfigured();
     const cooldownKey = `email:otp:cooldown:${email}`;
     const existingCooldown = await this.redis.get(cooldownKey);
     if (existingCooldown) {
@@ -254,6 +268,8 @@ export class AuthService {
       this.logger.log(`[password-reset] no local account for ${email}`);
       return { sent: true };
     }
+
+    this.assertEmailConfigured();
 
     const cooldownKey = `pwdreset:otp:cooldown:${email}`;
     if (await this.redis.get(cooldownKey)) {

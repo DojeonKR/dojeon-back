@@ -29,7 +29,15 @@ export default () => ({
   },
   /** 설정 시 presigned 응답의 fileUrl 등 공개 읽기 URL에 사용 (예: https://d111111abcdef8.cloudfront.net, 끝 슬래시 없음 권장) */
   cloudfrontBaseUrl: process.env.CLOUDFRONT_BASE_URL ?? '',
-  emailFrom: process.env.EMAIL_FROM ?? 'noreply@dojeon.local',
-  resendApiKey: process.env.RESEND_API_KEY ?? '',
+  /** Wix/Brevo 인증 도메인 app.dojeonkr.com — 루트 @dojeonkr.com 발신 금지 */
+  emailFrom: process.env.EMAIL_FROM ?? 'noreply@app.dojeonkr.com',
+  emailFromName: process.env.EMAIL_FROM_NAME ?? 'DOJEON',
+  smtp: {
+    host: process.env.SMTP_HOST ?? '',
+    port: parseInt(process.env.SMTP_PORT ?? '587', 10),
+    secure: process.env.SMTP_SECURE === 'true',
+    user: process.env.SMTP_USER ?? '',
+    pass: process.env.SMTP_PASS ?? '',
+  },
   nlpQueueUrl: process.env.NLP_QUEUE_URL ?? '',
 });
