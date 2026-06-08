@@ -63,8 +63,10 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    # nginx(호스트)가 SSL 종료 후 프록시하므로 외부에 직접 노출하지 않고 localhost에만 바인딩.
+    # (보안그룹은 80/443만 열고 3000은 닫는다. 임시로 IP:3000 직접 테스트가 필요하면 '3000:3000'으로 변경)
     ports:
-      - '3000:3000'
+      - '127.0.0.1:3000:3000'
     env_file:
       - .env
     environment:

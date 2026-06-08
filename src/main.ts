@@ -12,17 +12,23 @@ import { createOpenApiDocument } from './swagger/create-openapi-document';
   return this.toString();
 };
 
+/** Origin 헤더는 스킴+호스트(+포트)만 보내고 경로/트레일링 슬래시가 없으므로, 설정값을 동일 형태로 정규화한다. */
+function normalizeOrigin(value: string): string {
+  return value.trim().replace(/\/+$/, '');
+}
+
 function buildCorsOptions(configService: ConfigService) {
   const raw = configService.get<string>('corsOrigin')?.trim() ?? '';
   if (!raw) {
     return { origin: true };
   }
-  const origins = raw
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
+  const origins = raw.split(',').map(normalizeOrigin).filter(Boolean);
   if (origins.length === 0) {
     return { origin: true };
+  }
+  // '*' 가 포함되면 요청 Origin을 그대로 반영(allow-all). credentials와 함께 쓸 수 있도록 origin:true 사용.
+  if (origins.includes('*')) {
+    return { origin: true, credentials: true };
   }
   return {
     origin: origins,
