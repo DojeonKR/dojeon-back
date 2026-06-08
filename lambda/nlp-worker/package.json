@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
-    "axios": "^1.7.9",
+    "axios": "^1.16.1",
     "ioredis": "^5.4.2"
   },
   "devDependencies": {
