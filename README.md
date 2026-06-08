@@ -73,6 +73,9 @@ npm run prisma:seed
 
 (또는 `npm run prisma:push`로 스키마만 동기화)
 
+**DB를 브라우저로 보기 (Prisma Studio)** — 로컬: `npm run studio:local` → http://localhost:5555  
+EC2 DB: SSH 터널 후 `npm run studio:remote` — 자세한 절차는 [`docs/PRISMA-STUDIO.md`](docs/PRISMA-STUDIO.md)
+
 5. 개발 서버
 
 ```bash
