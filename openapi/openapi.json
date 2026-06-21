@@ -1040,7 +1040,7 @@
     },
     "/user/me/achievement": {
       "get": {
-        "description": "전체 뱃지 목록과 획득 여부, 획득 날짜를 반환합니다.",
+        "description": "카테고리별 전체 뱃지 목록과 획득 여부, 획득 날짜를 반환합니다.",
         "operationId": "UserController_getAchievements",
         "parameters": [],
         "responses": {
@@ -1055,22 +1055,40 @@
                     "message": "요청이 성공했습니다.",
                     "data": {
                       "totalEarned": 2,
-                      "badges": [
+                      "categories": [
                         {
-                          "badgeId": 1,
-                          "title": "첫 발걸음",
-                          "description": "첫 번째 섹션 완료",
-                          "imageUrl": "https://...",
-                          "isEarned": true,
-                          "earnedAt": "2026-04-01T00:00:00.000Z"
+                          "category": "onboarding",
+                          "title": "Onboarding",
+                          "badges": [
+                            {
+                              "badgeId": 1,
+                              "key": "signed_up",
+                              "title": "Signed up",
+                              "description": "You joined DOJEON.",
+                              "imageUrl": "https://...",
+                              "category": "onboarding",
+                              "sortOrder": 1,
+                              "isEarned": true,
+                              "earnedAt": "2026-04-01T00:00:00.000Z"
+                            }
+                          ]
                         },
                         {
-                          "badgeId": 2,
-                          "title": "7일 연속",
-                          "description": "7일 연속 학습",
-                          "imageUrl": "https://...",
-                          "isEarned": false,
-                          "earnedAt": null
+                          "category": "daily_streak",
+                          "title": "Daily streak",
+                          "badges": [
+                            {
+                              "badgeId": 3,
+                              "key": "streak_3",
+                              "title": "3 days",
+                              "description": "3-day learning streak.",
+                              "imageUrl": "https://...",
+                              "category": "daily_streak",
+                              "sortOrder": 1,
+                              "isEarned": false,
+                              "earnedAt": null
+                            }
+                          ]
                         }
                       ]
                     },

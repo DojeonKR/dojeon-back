@@ -21,6 +21,7 @@ import { seedDevDemoUser } from './seed-dev-demo';
 
 const prisma = new PrismaClient();
 const FORCE = process.argv.includes('--force');
+const COURSES_ONLY = process.argv.includes('--courses-only');
 const DATA_DIR = path.join(__dirname, 'data');
 
 interface CardData {
@@ -141,7 +142,7 @@ async function seedSection(lessonId: number, sectionData: SectionData) {
         locales:
           c.locales != null && Object.keys(c.locales).length > 0
             ? (c.locales as Prisma.InputJsonValue)
-            : null,
+            : undefined,
         audioUrl: c.audioUrl ?? null,
       })),
     });
@@ -217,23 +218,103 @@ async function seedCourses() {
 }
 
 async function seedStaticData() {
-  // 뱃지
+  // 뱃지 (MVP 18종)
   const badges = [
-    { title: '첫 발걸음', description: '첫 레슨을 완료했습니다.', imageUrl: 'https://cdn.dojeon.local/badges/first.png' },
-    { title: '7일 연속', description: '7일 연속으로 학습했습니다.', imageUrl: 'https://cdn.dojeon.local/badges/streak7.png' },
-    { title: '30일 연속', description: '30일 연속으로 학습했습니다.', imageUrl: 'https://cdn.dojeon.local/badges/streak30.png' },
+    { key: 'signed_up', title: 'Signed up', description: 'You joined DOJEON.', category: 'onboarding', sortOrder: 1, imageUrl: 'https://cdn.dojeon.local/badges/signed_up.png' },
+    { key: 'first_start', title: 'First Start', description: 'You started your first lesson section.', category: 'onboarding', sortOrder: 2, imageUrl: 'https://cdn.dojeon.local/badges/first_start.png' },
+    { key: 'streak_3', title: '3 days', description: '3-day learning streak.', category: 'daily_streak', sortOrder: 1, imageUrl: 'https://cdn.dojeon.local/badges/streak_3.png' },
+    { key: 'streak_7', title: '7 days', description: '7-day learning streak.', category: 'daily_streak', sortOrder: 2, imageUrl: 'https://cdn.dojeon.local/badges/streak_7.png' },
+    { key: 'streak_14', title: '14 days', description: '14-day learning streak.', category: 'daily_streak', sortOrder: 3, imageUrl: 'https://cdn.dojeon.local/badges/streak_14.png' },
+    { key: 'streak_30', title: '30 days', description: '30-day learning streak.', category: 'daily_streak', sortOrder: 4, imageUrl: 'https://cdn.dojeon.local/badges/streak_30.png' },
+    { key: 'course_1', title: '1 course', description: 'Completed 1 course.', category: 'course_completed', sortOrder: 1, imageUrl: 'https://cdn.dojeon.local/badges/course_1.png' },
+    { key: 'course_2', title: '2 course', description: 'Completed 2 courses.', category: 'course_completed', sortOrder: 2, imageUrl: 'https://cdn.dojeon.local/badges/course_2.png' },
+    { key: 'course_3', title: '3 course', description: 'Completed 3 courses.', category: 'course_completed', sortOrder: 3, imageUrl: 'https://cdn.dojeon.local/badges/course_3.png' },
+    { key: 'course_4', title: '4 course', description: 'Completed 4 courses.', category: 'course_completed', sortOrder: 4, imageUrl: 'https://cdn.dojeon.local/badges/course_4.png' },
+    { key: 'lesson_first', title: 'First Lesson', description: 'Completed your first lesson.', category: 'lesson_completed', sortOrder: 1, imageUrl: 'https://cdn.dojeon.local/badges/lesson_first.png' },
+    { key: 'lesson_5', title: '5 Lesson', description: 'Completed 5 lessons.', category: 'lesson_completed', sortOrder: 2, imageUrl: 'https://cdn.dojeon.local/badges/lesson_5.png' },
+    { key: 'lesson_10', title: '10 Lesson', description: 'Completed 10 lessons.', category: 'lesson_completed', sortOrder: 3, imageUrl: 'https://cdn.dojeon.local/badges/lesson_10.png' },
+    { key: 'lesson_25', title: '25 Lesson', description: 'Completed 25 lessons.', category: 'lesson_completed', sortOrder: 4, imageUrl: 'https://cdn.dojeon.local/badges/lesson_25.png' },
+    { key: 'learned_10m', title: '10 minutes', description: 'Studied for 10 minutes.', category: 'learned', sortOrder: 1, imageUrl: 'https://cdn.dojeon.local/badges/learned_10m.png' },
+    { key: 'learned_1h', title: '1 hour', description: 'Studied for 1 hour.', category: 'learned', sortOrder: 2, imageUrl: 'https://cdn.dojeon.local/badges/learned_1h.png' },
+    { key: 'learned_5h', title: '5 hours', description: 'Studied for 5 hours.', category: 'learned', sortOrder: 3, imageUrl: 'https://cdn.dojeon.local/badges/learned_5h.png' },
+    { key: 'learned_10h', title: '10 hours', description: 'Studied for 10 hours.', category: 'learned', sortOrder: 4, imageUrl: 'https://cdn.dojeon.local/badges/learned_10h.png' },
   ];
   for (const b of badges) {
-    const existing = await prisma.badge.findFirst({ where: { title: b.title } });
-    if (!existing) await prisma.badge.create({ data: b });
+    await prisma.badge.upsert({
+      where: { key: b.key },
+      create: b,
+      update: {
+        title: b.title,
+        description: b.description,
+        category: b.category,
+        sortOrder: b.sortOrder,
+        imageUrl: b.imageUrl,
+      },
+    });
   }
 
   // 구독 플랜
   const plans = [
-    { id: 'free', title: 'Free', priceText: '₩0', subText: '기본 학습', hasTrial: false, billingCycleMonths: 0 },
-    { id: 'basic', title: 'Basic', priceText: '₩9,900/월', subText: null, hasTrial: true, billingCycleMonths: 1 },
-    { id: 'pro', title: 'Pro', priceText: '₩19,900/월', subText: '전체 콘텐츠', hasTrial: true, billingCycleMonths: 1 },
-    { id: 'annual', title: 'Annual', priceText: '₩199,000/년', subText: '2개월 무료', hasTrial: false, billingCycleMonths: 12 },
+    {
+      id: 'free',
+      title: 'Free',
+      priceText: '₩0',
+      subText: '기본 학습',
+      hasTrial: false,
+      billingCycleMonths: 0,
+      priceIls: null,
+      priceUsd: null,
+    },
+    {
+      id: 'basic',
+      title: 'Basic',
+      priceText: '₩9,900/월',
+      subText: null,
+      hasTrial: true,
+      billingCycleMonths: 1,
+      priceIls: null,
+      priceUsd: null,
+    },
+    {
+      id: 'pro',
+      title: 'Pro',
+      priceText: '₩19,900/월',
+      subText: '전체 콘텐츠',
+      hasTrial: true,
+      billingCycleMonths: 1,
+      priceIls: 50,
+      priceUsd: 15,
+    },
+    {
+      id: 'pro-3month',
+      title: 'Pro 3 Month',
+      priceText: '₩39,900/3개월',
+      subText: '전체 콘텐츠',
+      hasTrial: false,
+      billingCycleMonths: 3,
+      priceIls: 135,
+      priceUsd: 40,
+    },
+    {
+      id: 'pro-6month',
+      title: 'Pro 6 Month',
+      priceText: '₩69,900/6개월',
+      subText: '전체 콘텐츠',
+      hasTrial: false,
+      billingCycleMonths: 6,
+      priceIls: 240,
+      priceUsd: 70,
+    },
+    {
+      id: 'annual',
+      title: 'Annual',
+      priceText: '₩199,000/년',
+      subText: '2개월 무료',
+      hasTrial: false,
+      billingCycleMonths: 12,
+      priceIls: 420,
+      priceUsd: 120,
+    },
   ];
   for (const p of plans) {
     await prisma.subscriptionPlan.upsert({ where: { id: p.id }, create: p, update: p });
@@ -243,10 +324,12 @@ async function seedStaticData() {
 }
 
 async function main() {
-  console.log(`🌱 시드 시작${FORCE ? ' (--force 모드)' : ''}\n`);
-  await seedStaticData();
-  await seedDevDemoUser(prisma);
-  console.log('');
+  console.log(`🌱 시드 시작${FORCE ? ' (--force 모드)' : ''}${COURSES_ONLY ? ' (--courses-only)' : ''}\n`);
+  if (!COURSES_ONLY) {
+    await seedStaticData();
+    await seedDevDemoUser(prisma);
+    console.log('');
+  }
   await seedCourses();
   console.log('\n🎉 시드 완료');
 }

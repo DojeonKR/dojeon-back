@@ -5,6 +5,8 @@ const BENEFITS_BY_PLAN: Record<string, string[]> = {
   free: ['기본 레슨', '광고 포함'],
   basic: ['전체 레슨', '오프라인 다운로드'],
   pro: ['전체 레슨', 'AI 분석', '우선 지원'],
+  'pro-3month': ['전체 레슨', 'AI 분석', '우선 지원'],
+  'pro-6month': ['전체 레슨', 'AI 분석', '우선 지원'],
   annual: ['Pro와 동일', '연간 할인'],
 };
 
@@ -24,6 +26,8 @@ export class SubscriptionService {
         subText: p.subText,
         hasTrial: p.hasTrial,
         billingCycleMonths: p.billingCycleMonths,
+        priceIls: p.priceIls,
+        priceUsd: p.priceUsd,
         benefits: BENEFITS_BY_PLAN[p.id] ?? [],
       })),
     };

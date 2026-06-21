@@ -6,9 +6,11 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { IdempotencyInterceptor } from '../../common/interceptors/idempotency.interceptor';
+import { AchievementModule } from '../achievement/achievement.module';
 
 @Module({
   imports: [
+    AchievementModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

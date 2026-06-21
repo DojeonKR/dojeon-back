@@ -32,13 +32,14 @@ export class LogEventProcessor extends WorkerHost {
       const userId = BigInt(data.userId);
       await this.prisma.$transaction(async (tx) => {
         await this.recordAttendanceAndStreak(tx, userId);
-        await this.achievementService.checkAndAward(tx, userId);
+        await this.achievementService.checkStatBadges(tx, userId);
       });
       return;
     }
 
     if (data.type === 'lesson.completed') {
-      // 레슨 완료 시 추가 부가 작업 (알림, 리더보드 등)을 여기에 구현
+      const userId = BigInt(data.userId);
+      await this.handleLessonCompleted(userId, data.lessonId);
       return;
     }
 
@@ -107,6 +108,52 @@ export class LogEventProcessor extends WorkerHost {
     await tx.userStats.update({
       where: { userId },
       data: { currentStreak: streak, maxStreak, lastAttendanceDate: today },
+    });
+  }
+
+  private async handleLessonCompleted(userId: bigint, lessonId: number): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      const lesson = await tx.lesson.findUnique({
+        where: { id: lessonId },
+        select: { courseId: true },
+      });
+      if (!lesson) return;
+
+      const course = await tx.course.findUnique({
+        where: { id: lesson.courseId },
+        include: {
+          lessons: {
+            include: { sections: { select: { id: true } } },
+          },
+        },
+      });
+      if (!course) return;
+
+      const allSectionIds = course.lessons.flatMap((l) => l.sections.map((s) => s.id));
+      if (allSectionIds.length === 0) return;
+
+      const completedCount = await tx.userSectionLog.count({
+        where: {
+          userId,
+          sectionId: { in: allSectionIds },
+          isCompleted: true,
+        },
+      });
+      if (completedCount < allSectionIds.length) return;
+
+      const existing = await tx.userCourseCompletion.findUnique({
+        where: { userId_courseId: { userId, courseId: lesson.courseId } },
+      });
+      if (existing) return;
+
+      await tx.userCourseCompletion.create({
+        data: { userId, courseId: lesson.courseId },
+      });
+      await tx.userStats.update({
+        where: { userId },
+        data: { totalCompletedCourses: { increment: 1 } },
+      });
+      await this.achievementService.checkStatBadges(tx, userId);
     });
   }
 }

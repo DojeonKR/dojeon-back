@@ -116,14 +116,35 @@ describe('UserService', () => {
   });
 
   describe('getAchievementsList', () => {
-    it('should format earned and unearned badges', async () => {
-      mockPrismaService.badge.findMany.mockResolvedValue([{ id: 1 }, { id: 2 }]);
+    it('should format earned and unearned badges by category', async () => {
+      mockPrismaService.badge.findMany.mockResolvedValue([
+        {
+          id: 1,
+          key: 'signed_up',
+          title: 'Signed up',
+          description: 'You joined DOJEON.',
+          category: 'onboarding',
+          sortOrder: 1,
+          imageUrl: 'https://...',
+        },
+        {
+          id: 2,
+          key: 'first_start',
+          title: 'First Start',
+          description: 'Started learning.',
+          category: 'onboarding',
+          sortOrder: 2,
+          imageUrl: 'https://...',
+        },
+      ]);
       mockPrismaService.userBadge.findMany.mockResolvedValue([{ badgeId: 1, earnedAt: new Date() }]);
-      
+
       const res = await service.getAchievementsList(1n);
       expect(res.totalEarned).toBe(1);
-      expect(res.badges[0].isEarned).toBe(true);
-      expect(res.badges[1].isEarned).toBe(false);
+      expect(res.categories).toHaveLength(1);
+      expect(res.categories[0].category).toBe('onboarding');
+      expect(res.categories[0].badges[0].isEarned).toBe(true);
+      expect(res.categories[0].badges[1].isEarned).toBe(false);
     });
   });
 

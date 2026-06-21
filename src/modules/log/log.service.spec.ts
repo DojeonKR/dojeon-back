@@ -5,11 +5,13 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { SectionProgressDto } from './dto/section-progress.dto';
 import { AppException } from '../../common/exceptions/app.exception';
 import { SECTION_EVENT_QUEUE } from './log-event.queue';
+import { AchievementService } from '../achievement/achievement.service';
 
 describe('LogService - saveSectionProgress', () => {
   let service: LogService;
   let mockPrismaService: any;
   let mockSectionEventQueue: { add: jest.Mock };
+  let mockAchievementService: { awardByKey: jest.Mock; checkStatBadges: jest.Mock };
   let mockTx: any;
 
   beforeEach(async () => {
@@ -25,12 +27,17 @@ describe('LogService - saveSectionProgress', () => {
     };
 
     mockSectionEventQueue = { add: jest.fn().mockResolvedValue(undefined) };
+    mockAchievementService = {
+      awardByKey: jest.fn().mockResolvedValue(undefined),
+      checkStatBadges: jest.fn().mockResolvedValue(undefined),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         LogService,
         { provide: PrismaService, useValue: mockPrismaService },
         { provide: getQueueToken(SECTION_EVENT_QUEUE), useValue: mockSectionEventQueue },
+        { provide: AchievementService, useValue: mockAchievementService },
       ],
     }).compile();
 
@@ -74,6 +81,7 @@ describe('LogService - saveSectionProgress', () => {
       expect.any(Object),
     );
     expect(mockTx.userStats.update).toHaveBeenCalled();
+    expect(mockAchievementService.checkStatBadges).toHaveBeenCalledWith(mockTx, 1n);
   });
 
   it('should NOT enqueue section.completed if log was already completed before', async () => {

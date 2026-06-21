@@ -50,9 +50,9 @@ describe('UserController', () => {
   });
 
   it('should get achievements', async () => {
-    mockUserService.getAchievementsList.mockResolvedValue({ badges: [] });
+    mockUserService.getAchievementsList.mockResolvedValue({ categories: [], totalEarned: 0 });
     const res = await controller.getAchievements({ userId: 1n } as any);
-    expect(res).toEqual({ badges: [] });
+    expect(res).toEqual({ categories: [], totalEarned: 0 });
   });
 
   it('should get presigned url', async () => {

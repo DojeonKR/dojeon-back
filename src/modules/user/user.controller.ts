@@ -62,7 +62,7 @@ export class UserController {
           grammarPreview: '동사 + 아요/어요',
           overallProgressPercent: 60,
         },
-        recentAchievements: [{ badgeId: 1, title: '첫 발걸음', imageUrl: 'https://...', earnedAt: '2026-04-01T00:00:00.000Z' }],
+        recentAchievements: [{ badgeId: 1, title: 'Signed up', imageUrl: 'https://...', earnedAt: '2026-04-01T00:00:00.000Z' }],
       }),
     },
   })
@@ -127,16 +127,48 @@ export class UserController {
     return this.userService.deleteAccount(user.userId);
   }
 
-  @ApiOperation({ summary: '업적(뱃지) 목록 조회', description: '전체 뱃지 목록과 획득 여부, 획득 날짜를 반환합니다.' })
+  @ApiOperation({ summary: '업적(뱃지) 목록 조회', description: '카테고리별 전체 뱃지 목록과 획득 여부, 획득 날짜를 반환합니다.' })
   @ApiResponse({
     status: 200,
     description: '업적 목록 조회 성공',
     schema: {
       example: successExample({
         totalEarned: 2,
-        badges: [
-          { badgeId: 1, title: '첫 발걸음', description: '첫 번째 섹션 완료', imageUrl: 'https://...', isEarned: true, earnedAt: '2026-04-01T00:00:00.000Z' },
-          { badgeId: 2, title: '7일 연속', description: '7일 연속 학습', imageUrl: 'https://...', isEarned: false, earnedAt: null },
+        categories: [
+          {
+            category: 'onboarding',
+            title: 'Onboarding',
+            badges: [
+              {
+                badgeId: 1,
+                key: 'signed_up',
+                title: 'Signed up',
+                description: 'You joined DOJEON.',
+                imageUrl: 'https://...',
+                category: 'onboarding',
+                sortOrder: 1,
+                isEarned: true,
+                earnedAt: '2026-04-01T00:00:00.000Z',
+              },
+            ],
+          },
+          {
+            category: 'daily_streak',
+            title: 'Daily streak',
+            badges: [
+              {
+                badgeId: 3,
+                key: 'streak_3',
+                title: '3 days',
+                description: '3-day learning streak.',
+                imageUrl: 'https://...',
+                category: 'daily_streak',
+                sortOrder: 1,
+                isEarned: false,
+                earnedAt: null,
+              },
+            ],
+          },
         ],
       }),
     },

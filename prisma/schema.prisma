@@ -55,12 +55,13 @@ model User {
   createdAt            DateTime @default(now()) @map("created_at")
   updatedAt            DateTime @updatedAt @map("updated_at")
 
-  stats        UserStats?
-  attendances  UserAttendance[]
-  userBadges   UserBadge[]
-  sectionLogs  UserSectionLog[]
-  scraps       Scrap[]
-  nlpJobs      NlpJob[]
+  stats               UserStats?
+  attendances         UserAttendance[]
+  userBadges          UserBadge[]
+  sectionLogs         UserSectionLog[]
+  scraps              Scrap[]
+  nlpJobs             NlpJob[]
+  courseCompletions   UserCourseCompletion[]
 
   @@unique([socialProvider, socialUid], name: "uk_social")
   @@map("users")
@@ -73,6 +74,7 @@ model UserStats {
   currentStreak         Int      @default(0) @map("current_streak")
   maxStreak             Int      @default(0) @map("max_streak")
   totalCompletedLessons Int      @default(0) @map("total_completed_lessons")
+  totalCompletedCourses Int      @default(0) @map("total_completed_courses")
   lastAttendanceDate    DateTime? @db.Date @map("last_attendance_date")
   updatedAt             DateTime @updatedAt @map("updated_at")
 
@@ -93,14 +95,29 @@ model UserAttendance {
 
 model Badge {
   id          Int      @id @default(autoincrement()) @map("badge_id")
+  key         String   @unique @map("badge_key")
   title       String
   description String?
+  category    String
+  sortOrder   Int      @default(0) @map("sort_order")
   imageUrl    String   @map("image_url")
   createdAt   DateTime @default(now()) @map("created_at")
 
   userBadges UserBadge[]
 
   @@map("badges")
+}
+
+model UserCourseCompletion {
+  userId      BigInt   @map("user_id")
+  courseId    Int      @map("course_id")
+  completedAt DateTime @default(now()) @map("completed_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@id([userId, courseId])
+  @@map("user_course_completions")
 }
 
 model UserBadge {
@@ -123,7 +140,8 @@ model Course {
   isActive    Boolean  @default(true) @map("is_active")
   orderNum    Int      @map("order_num")
 
-  lessons Lesson[]
+  lessons           Lesson[]
+  userCompletions   UserCourseCompletion[]
 
   @@map("courses")
 }
@@ -275,6 +293,8 @@ model SubscriptionPlan {
   subText            String? @map("sub_text")
   hasTrial           Boolean @default(false) @map("has_trial")
   billingCycleMonths Int     @map("billing_cycle_months")
+  priceIls           Int?    @map("price_ils")
+  priceUsd           Int?    @map("price_usd")
 
   @@map("subscription_plans")
 }

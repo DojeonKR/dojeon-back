@@ -83,6 +83,43 @@ describe('LearningService', () => {
       expect(res.courses[0].overallProgressPercent).toBe(100);
       expect(res.resumeBanner).toBeNull();
     });
+
+    it('should return inactive courses with empty lessons (placeholder)', async () => {
+      mockPrismaService.course.findMany.mockResolvedValue([
+        {
+          id: 1,
+          title: 'Course 1',
+          description: 'Active',
+          orderNum: 1,
+          isActive: true,
+          lessons: [
+            {
+              id: 1,
+              title: 'Lesson 1',
+              subtitle: 'Vocabulary',
+              orderNum: 1,
+              sections: [{ id: 1 }, { id: 2 }],
+            },
+          ],
+        },
+        {
+          id: 3,
+          title: 'Course 3',
+          description: 'Coming soon',
+          orderNum: 3,
+          isActive: false,
+          lessons: [{ id: 99, title: 'Should not appear', orderNum: 1, sections: [{ id: 99 }] }],
+        },
+      ]);
+      mockPrismaService.userSectionLog.findMany.mockResolvedValue([]);
+      mockPrismaService.userSectionLog.findFirst.mockResolvedValue(null);
+
+      const res = await service.getCoursesDashboard(1n);
+      expect(res.courses).toHaveLength(2);
+      expect(res.courses[0].lessons).toHaveLength(1);
+      expect(res.courses[1].isActive).toBe(false);
+      expect(res.courses[1].lessons).toEqual([]);
+    });
   });
 
   describe('getLessonSections', () => {

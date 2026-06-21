@@ -14,6 +14,7 @@ import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { GoogleAuthDto } from './dto/google-auth.dto';
 import { PasswordResetConfirmDto } from './dto/password-reset-confirm.dto';
+import { AchievementService } from '../achievement/achievement.service';
 
 const OTP_TTL = 300;
 const VERIFY_TTL = 1800;
@@ -33,6 +34,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly emailQueue: EmailQueueService,
     private readonly emailService: EmailService,
+    private readonly achievementService: AchievementService,
   ) {
     const clientId = this.configService.get<string>('google.clientId');
     this.googleClient = clientId ? new OAuth2Client(clientId) : null;
@@ -158,6 +160,7 @@ export class AuthService {
       await tx.userStats.create({
         data: { userId: u.id },
       });
+      await this.achievementService.awardByKey(tx, u.id, 'signed_up');
       return u;
     });
     await this.redis.del(`signup:verify:${dto.verifyToken}`);
@@ -235,6 +238,7 @@ export class AuthService {
             },
           });
           await tx.userStats.create({ data: { userId: u.id } });
+          await this.achievementService.awardByKey(tx, u.id, 'signed_up');
           return u;
         });
         isNewUser = true;

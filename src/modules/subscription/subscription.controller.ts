@@ -12,7 +12,7 @@ export class SubscriptionController {
   @ApiOperation({
     summary: '구독 플랜 목록',
     description:
-      'DB `subscription_plan`의 `planId`·표시 필드 + 서버 하드코딩 `benefits` 맵(`free`·`basic`·`pro`·`annual`)을 합쳐 반환합니다. 플랜 id가 맵에 없으면 `benefits`는 빈 배열입니다. `title`·`priceText` 등은 DB 시드 값과 일치해야 합니다.',
+      'DB `subscription_plan`의 `planId`·표시 필드 + 서버 하드코딩 `benefits` 맵(`free`·`basic`·`pro`·`pro-3month`·`pro-6month`·`annual`)을 합쳐 반환합니다. 플랜 id가 맵에 없으면 `benefits`는 빈 배열입니다. `title`·`priceText`·`priceIls`·`priceUsd` 등은 DB 시드 값과 일치해야 합니다.',
   })
   @ApiResponse({
     status: 200,
@@ -27,6 +27,8 @@ export class SubscriptionController {
             subText: null,
             hasTrial: false,
             billingCycleMonths: 1,
+            priceIls: null,
+            priceUsd: null,
             benefits: ['기본 레슨', '광고 포함'],
           },
           {
@@ -36,6 +38,8 @@ export class SubscriptionController {
             subText: '첫 달 무료',
             hasTrial: true,
             billingCycleMonths: 1,
+            priceIls: 50,
+            priceUsd: 15,
             benefits: ['전체 레슨', 'AI 분석', '우선 지원'],
           },
         ],

@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { EmailQueueService } from '../../infra/email/email-queue.service';
 import { EmailService } from '../../infra/email/email.service';
+import { AchievementService } from '../achievement/achievement.service';
 import { AppException } from '../../common/exceptions/app.exception';
 import * as bcrypt from 'bcrypt';
 
@@ -32,6 +33,7 @@ describe('AuthService', () => {
   let mockConfigService: any;
   let mockEmailQueueService: any;
   let mockEmailService: any;
+  let mockAchievementService: any;
   let mockTx: any;
 
   beforeEach(async () => {
@@ -84,6 +86,10 @@ describe('AuthService', () => {
       isConfigured: jest.fn().mockReturnValue(true),
     };
 
+    mockAchievementService = {
+      awardByKey: jest.fn().mockResolvedValue(undefined),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
@@ -93,6 +99,7 @@ describe('AuthService', () => {
         { provide: ConfigService, useValue: mockConfigService },
         { provide: EmailQueueService, useValue: mockEmailQueueService },
         { provide: EmailService, useValue: mockEmailService },
+        { provide: AchievementService, useValue: mockAchievementService },
       ],
     }).compile();
 

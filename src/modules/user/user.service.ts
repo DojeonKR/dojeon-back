@@ -14,6 +14,22 @@ import { LearningService } from '../learning/learning.service';
 import { buildS3ObjectPublicUrl } from '../../common/utils/public-asset-url.util';
 import { RedisService } from '../../infra/redis/redis.service';
 
+const ACHIEVEMENT_CATEGORY_ORDER = [
+  'onboarding',
+  'daily_streak',
+  'course_completed',
+  'lesson_completed',
+  'learned',
+] as const;
+
+const ACHIEVEMENT_CATEGORY_TITLES: Record<string, string> = {
+  onboarding: 'Onboarding',
+  daily_streak: 'Daily streak',
+  course_completed: 'Course completed',
+  lesson_completed: 'Lesson completed',
+  learned: 'Learned',
+};
+
 @Injectable()
 export class UserService {
   private readonly s3: S3Client;
@@ -196,25 +212,43 @@ export class UserService {
   }
 
   async getAchievementsList(userId: bigint) {
-    const badges = await this.prisma.badge.findMany({ orderBy: { id: 'asc' } });
+    const badges = await this.prisma.badge.findMany({
+      orderBy: [{ category: 'asc' }, { sortOrder: 'asc' }],
+    });
     const earned = await this.prisma.userBadge.findMany({
       where: { userId },
       select: { badgeId: true, earnedAt: true },
     });
     const earnedMap = new Map(earned.map((e) => [e.badgeId, e.earnedAt]));
 
-    const badgesList = badges.map((b) => ({
-      badgeId: b.id,
-      title: b.title,
-      description: b.description,
-      imageUrl: b.imageUrl,
-      isEarned: earnedMap.has(b.id),
-      earnedAt: earnedMap.get(b.id) ?? null,
+    const badgesByCategory = new Map<string, typeof badges>();
+    for (const badge of badges) {
+      const list = badgesByCategory.get(badge.category) ?? [];
+      list.push(badge);
+      badgesByCategory.set(badge.category, list);
+    }
+
+    const categories = ACHIEVEMENT_CATEGORY_ORDER.filter((category) =>
+      badgesByCategory.has(category),
+    ).map((category) => ({
+      category,
+      title: ACHIEVEMENT_CATEGORY_TITLES[category] ?? category,
+      badges: (badgesByCategory.get(category) ?? []).map((b) => ({
+        badgeId: b.id,
+        key: b.key,
+        title: b.title,
+        description: b.description,
+        imageUrl: b.imageUrl,
+        category: b.category,
+        sortOrder: b.sortOrder,
+        isEarned: earnedMap.has(b.id),
+        earnedAt: earnedMap.get(b.id) ?? null,
+      })),
     }));
 
     const totalEarned = earned.length;
 
-    return { badges: badgesList, totalEarned };
+    return { categories, totalEarned };
   }
 
   async createProfileImagePresignedUrl(userId: bigint, dto: PresignedProfileImageDto) {

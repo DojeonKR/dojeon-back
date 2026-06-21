@@ -8,14 +8,20 @@ describe('AchievementService', () => {
   let mockPrismaService: any;
   let mockTx: any;
 
+  const badgeKeyMap: Record<string, number> = {
+    signed_up: 1,
+    first_start: 2,
+    lesson_first: 10,
+    streak_7: 5,
+    learned_10m: 15,
+  };
+
   beforeEach(async () => {
     mockPrismaService = {
       badge: {
-        findMany: jest.fn().mockResolvedValue([
-          { id: 1, title: '첫 발걸음' },
-          { id: 2, title: '7일 연속' },
-          { id: 3, title: '30일 연속' },
-        ]),
+        findMany: jest.fn().mockResolvedValue(
+          Object.entries(badgeKeyMap).map(([key, id]) => ({ id, key })),
+        ),
       },
     };
 
@@ -34,14 +40,9 @@ describe('AchievementService', () => {
     };
     const mockRedisClient = {
       pipeline: jest.fn(() => mockPipeline),
-      hget: jest.fn(async (_key: string, title: string) => {
-        const compact = title.replace(/\s/g, '');
-        const m: Record<string, string> = {
-          첫발걸음: '1',
-          '7일연속': '2',
-          '30일연속': '3',
-        };
-        return m[compact] ?? null;
+      hget: jest.fn(async (_key: string, badgeKey: string) => {
+        const id = badgeKeyMap[badgeKey];
+        return id ? String(id) : null;
       }),
     };
     const mockRedisService = {
@@ -57,7 +58,6 @@ describe('AchievementService', () => {
     }).compile();
 
     service = module.get<AchievementService>(AchievementService);
-    // Initialize module to populate the internal badgeIdByTitle map
     await service.onModuleInit();
   });
 
@@ -65,38 +65,54 @@ describe('AchievementService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('checkAndAward', () => {
-    it('should do nothing if userStats is null', async () => {
-      mockTx.userStats.findUnique.mockResolvedValue(null);
-      await service.checkAndAward(mockTx, 1n);
-      expect(mockTx.userBadge.findMany).not.toHaveBeenCalled();
-    });
-
-    it('should award "첫 발걸음" when conditions are met and not already earned', async () => {
-      mockTx.userStats.findUnique.mockResolvedValue({
-        totalCompletedLessons: 1,
-        currentStreak: 1,
-      });
-      // No badges earned yet
-      mockTx.userBadge.findMany.mockResolvedValue([]);
-      
-      await service.checkAndAward(mockTx, 1n);
-
-      expect(mockTx.userBadge.create).toHaveBeenCalledTimes(1);
+  describe('awardByKey', () => {
+    it('should award badge by key', async () => {
+      await service.awardByKey(mockTx, 1n, 'signed_up');
       expect(mockTx.userBadge.create).toHaveBeenCalledWith({
         data: { userId: 1n, badgeId: 1 },
       });
     });
 
-    it('should not award "첫 발걸음" if already earned', async () => {
+    it('should ignore unknown badge key', async () => {
+      await service.awardByKey(mockTx, 1n, 'unknown_key');
+      expect(mockTx.userBadge.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('checkStatBadges', () => {
+    it('should do nothing if userStats is null', async () => {
+      mockTx.userStats.findUnique.mockResolvedValue(null);
+      await service.checkStatBadges(mockTx, 1n);
+      expect(mockTx.userBadge.findMany).not.toHaveBeenCalled();
+    });
+
+    it('should award lesson_first when conditions are met and not already earned', async () => {
       mockTx.userStats.findUnique.mockResolvedValue({
         totalCompletedLessons: 1,
+        totalCompletedCourses: 0,
         currentStreak: 1,
+        totalStudyMin: 0,
       });
-      // Badge 1 is already earned
-      mockTx.userBadge.findMany.mockResolvedValue([{ badgeId: 1 }]);
-      
-      await service.checkAndAward(mockTx, 1n);
+      mockTx.userBadge.findMany.mockResolvedValue([]);
+
+      await service.checkStatBadges(mockTx, 1n);
+
+      expect(mockTx.userBadge.create).toHaveBeenCalledTimes(1);
+      expect(mockTx.userBadge.create).toHaveBeenCalledWith({
+        data: { userId: 1n, badgeId: 10 },
+      });
+    });
+
+    it('should not award lesson_first if already earned', async () => {
+      mockTx.userStats.findUnique.mockResolvedValue({
+        totalCompletedLessons: 1,
+        totalCompletedCourses: 0,
+        currentStreak: 1,
+        totalStudyMin: 0,
+      });
+      mockTx.userBadge.findMany.mockResolvedValue([{ badgeId: 10 }]);
+
+      await service.checkStatBadges(mockTx, 1n);
 
       expect(mockTx.userBadge.create).not.toHaveBeenCalled();
     });
@@ -104,15 +120,18 @@ describe('AchievementService', () => {
     it('should award multiple badges if multiple conditions are met', async () => {
       mockTx.userStats.findUnique.mockResolvedValue({
         totalCompletedLessons: 5,
-        currentStreak: 7, // Meets both 1 lesson and 7-day streak
+        totalCompletedCourses: 0,
+        currentStreak: 7,
+        totalStudyMin: 15,
       });
       mockTx.userBadge.findMany.mockResolvedValue([]);
-      
-      await service.checkAndAward(mockTx, 1n);
 
-      expect(mockTx.userBadge.create).toHaveBeenCalledTimes(2);
-      expect(mockTx.userBadge.create).toHaveBeenCalledWith({ data: { userId: 1n, badgeId: 1 } });
-      expect(mockTx.userBadge.create).toHaveBeenCalledWith({ data: { userId: 1n, badgeId: 2 } });
+      await service.checkStatBadges(mockTx, 1n);
+
+      expect(mockTx.userBadge.create).toHaveBeenCalledTimes(3);
+      expect(mockTx.userBadge.create).toHaveBeenCalledWith({ data: { userId: 1n, badgeId: 10 } });
+      expect(mockTx.userBadge.create).toHaveBeenCalledWith({ data: { userId: 1n, badgeId: 5 } });
+      expect(mockTx.userBadge.create).toHaveBeenCalledWith({ data: { userId: 1n, badgeId: 15 } });
     });
   });
 });

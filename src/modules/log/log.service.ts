@@ -10,6 +10,7 @@ import { CreateScrapDto } from './dto/create-scrap.dto';
 import { CheckSectionQuestionDto } from './dto/check-section-question.dto';
 import { normalizeQuizAnswer } from '../../common/utils/quiz-answer.util';
 import { SECTION_EVENT_QUEUE, SectionEventJobData } from './log-event.queue';
+import { AchievementService } from '../achievement/achievement.service';
 
 @Injectable()
 export class LogService {
@@ -17,6 +18,7 @@ export class LogService {
     private readonly prisma: PrismaService,
     @InjectQueue(SECTION_EVENT_QUEUE)
     private readonly sectionEventQueue: Queue<SectionEventJobData>,
+    private readonly achievementService: AchievementService,
   ) {}
 
   async getSectionMaterialsList(sectionId: number) {
@@ -177,6 +179,9 @@ export class LogService {
         where: { userId_sectionId: { userId, sectionId } },
       });
 
+      const isFirstEverSectionStart =
+        !beforeLog && (await tx.userSectionLog.count({ where: { userId } })) === 0;
+
       const log = await tx.userSectionLog.upsert({
         where: { userId_sectionId: { userId, sectionId } },
         create: {
@@ -218,6 +223,11 @@ export class LogService {
           data: { totalCompletedLessons: { increment: 1 } },
         });
       }
+
+      if (isFirstEverSectionStart) {
+        await this.achievementService.awardByKey(tx, userId, 'first_start');
+      }
+      await this.achievementService.checkStatBadges(tx, userId);
 
       const nextSection = await tx.section.findFirst({
         where: {
