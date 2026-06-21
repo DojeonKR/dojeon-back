@@ -1,0 +1,42 @@
+{
+  "type": "READING",
+  "title": "읽기",
+  "orderNum": 4,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "READING_PASSAGE",
+      "isExtra": false,
+      "contentText": {
+        "title": "읽기",
+        "body": "태우: 안녕하세요. 이름이 뭐예요?\n엠마: 저는 엠마예요.\n태우: 엠마 씨는 어느 나라 사람이에요?\n엠마: 저는 프랑스 사람이에요.\n태우: 직업이 뭐예요?\n엠마: 저는 간호사예요.\n태우: 만나서 반갑습니다.\n엠마: 네, 만나서 반갑습니다.",
+        "dialogue": [
+          { "speaker": "태우", "ko": "안녕하세요. 이름이 뭐예요?" },
+          { "speaker": "엠마", "ko": "저는 엠마예요." },
+          { "speaker": "태우", "ko": "엠마 씨는 어느 나라 사람이에요?" },
+          { "speaker": "엠마", "ko": "저는 프랑스 사람이에요." },
+          { "speaker": "태우", "ko": "직업이 뭐예요?" },
+          { "speaker": "엠마", "ko": "저는 간호사예요." },
+          { "speaker": "태우", "ko": "만나서 반갑습니다." },
+          { "speaker": "엠마", "ko": "네, 만나서 반갑습니다." }
+        ],
+        "questions": [
+          {
+            "kind": "choose",
+            "questionText": "엠마 씨는 어느 나라 사람이에요?",
+            "options": ["프랑스", "미국", "독일", "한국"],
+            "answer": "프랑스"
+          },
+          {
+            "kind": "free",
+            "questionText": "엠마 씨는 어느 나라 사람이에요?",
+            "sample": "엠마 씨는 프랑스 사람이에요."
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

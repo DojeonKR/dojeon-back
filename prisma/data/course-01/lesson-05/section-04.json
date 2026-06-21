@@ -1,0 +1,32 @@
+{
+  "type": "LISTENING",
+  "title": "Listening",
+  "orderNum": 4,
+  "totalPages": 2,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "LISTENING_AUDIO",
+      "isExtra": false,
+      "contentText": {
+        "title": "Listening 5",
+        "audioUrl": "https://cdn.example.com/audio/lesson-5.mp3",
+        "transcript": "안녕하세요"
+      }
+    }
+  ],
+  "questions": [
+    {
+      "type": "MULTIPLE_CHOICE",
+      "questionText": "What did you hear?",
+      "options": [
+        "Hello",
+        "Goodbye",
+        "Thank you"
+      ],
+      "answer": "Hello",
+      "explanation": null
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "type": "GRAMMAR",
+  "title": "은/는",
+  "orderNum": 3,
+  "totalPages": 6,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "은/는",
+        "imageUrl": "",
+        "explanations": [
+          {
+            "lang": "en",
+            "text": "A noun marker that indicates the subject of the sentence."
+          },
+          {
+            "lang": "he",
+            "text": "סימון שם עצם אשר מצרפים אותו לנושא המשפט."
+          }
+        ],
+        "table": {
+          "headers": ["받침", "형태", "예시"],
+          "rows": [
+            {
+              "condition": "받침 O",
+              "form": "N은",
+              "examples": ["학생은", "선생님은"]
+            },
+            {
+              "condition": "받침 X",
+              "form": "N는",
+              "examples": ["저는", "친구는"]
+            }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              {
+                "speaker": "가",
+                "ko": "선생님은 어느 나라 사람이에요?",
+                "en": "Teacher, where are you from?",
+                "he": "המורה, מאיפה את/ה?"
+              },
+              {
+                "speaker": "나",
+                "ko": "저는 한국 사람이에요.",
+                "en": "I'm Korean.",
+                "he": "אני קוריאני/ת."
+              }
+            ]
+          },
+          {
+            "lines": [
+              {
+                "speaker": "가",
+                "ko": "민호 씨는 가수예요?",
+                "en": "Is Minho-sshi a singer?",
+                "he": "האם מינהו זמר?"
+              },
+              {
+                "speaker": "나",
+                "ko": "네, 민호 씨는 가수예요.",
+                "en": "Yes, Minho is a singer.",
+                "he": "כן, מינהו זמר."
+              }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "fill",
+            "label": "Practice1",
+            "fixedQuestion": null,
+            "items": [
+              {
+                "prompt": "엠마 씨는 어느 나라 사람이에요?\n____ 씨는 ____ 사람이에요.",
+                "answers": ["엠마", "프랑스"]
+              },
+              {
+                "prompt": "베른 씨는 어느 나라 사람이에요?\n____ 씨는 ____ 사람이에요.",
+                "answers": ["베른", "독일"]
+              },
+              {
+                "prompt": "나나코 씨는 어느 나라 사람이에요?\n____ 씨는 ____ 사람이에요.",
+                "answers": ["나나코", "일본"]
+              },
+              {
+                "prompt": "마이클 씨는 어느 나라 사람이에요?\n____ 씨는 ____ 사람이에요.",
+                "answers": ["마이클", "미국"]
+              },
+              {
+                "prompt": "태우 씨는 어느 나라 사람이에요?\n____ 씨는 ____ 사람이에요.",
+                "answers": ["태우", "한국"]
+              },
+              {
+                "prompt": "리신 씨는 어느 나라 사람이에요?\n____ 씨는 ____ 사람이에요.",
+                "answers": ["리신", "중국"]
+              }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice3",
+            "fixedQuestion": null,
+            "items": [
+              {
+                "prompt": "엠마 씨는 어느 나라 사람이에요? (엠마 / 프랑스)",
+                "sample": "엠마 씨는 프랑스 사람이에요."
+              },
+              {
+                "prompt": "베른 씨는 어느 나라 사람이에요? (베른 / 독일)",
+                "sample": "베른 씨는 독일 사람이에요."
+              },
+              {
+                "prompt": "나나코 씨는 어느 나라 사람이에요? (나나코 / 일본)",
+                "sample": "나나코 씨는 일본 사람이에요."
+              },
+              {
+                "prompt": "마이클 씨는 어느 나라 사람이에요? (마이클 / 미국)",
+                "sample": "마이클 씨는 미국 사람이에요."
+              },
+              {
+                "prompt": "태우 씨는 어느 나라 사람이에요? (태우 / 한국)",
+                "sample": "태우 씨는 한국 사람이에요."
+              },
+              {
+                "prompt": "리신 씨는 어느 나라 사람이에요? (리신 / 중국)",
+                "sample": "리신 씨는 중국 사람이에요."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

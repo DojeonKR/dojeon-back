@@ -1,0 +1,31 @@
+{
+  "type": "READING",
+  "title": "Reading",
+  "orderNum": 3,
+  "totalPages": 2,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "READING_PASSAGE",
+      "isExtra": false,
+      "contentText": {
+        "title": "Reading 2",
+        "body": "안녕하세요. 저는 학생입니다. (Lesson 2)"
+      }
+    }
+  ],
+  "questions": [
+    {
+      "type": "MULTIPLE_CHOICE",
+      "questionText": "What does the passage say?",
+      "options": [
+        "I am a student",
+        "I am a teacher",
+        "I am happy"
+      ],
+      "answer": "I am a student",
+      "explanation": "저는 학생입니다 means I am a student."
+    }
+  ]
+}

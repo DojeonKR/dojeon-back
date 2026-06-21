@@ -1,0 +1,274 @@
+{
+  "type": "VOCAB",
+  "title": "Vocabulary",
+  "orderNum": 1,
+  "totalPages": 33,
+  "cards": [
+    {
+      "sequence": 1,
+      "wordFront": "안녕하세요",
+      "wordBack": "Hello",
+      "notes": null,
+      "locales": { "he": { "back": "שלום", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 2,
+      "wordFront": "이름",
+      "wordBack": "name",
+      "notes": null,
+      "locales": { "he": { "back": "שם", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 3,
+      "wordFront": "뭐",
+      "wordBack": "what",
+      "notes": null,
+      "locales": { "he": { "back": "מה", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 4,
+      "wordFront": "뭐예요",
+      "wordBack": "what is it?",
+      "notes": null,
+      "locales": { "he": { "back": "מה זה?", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 5,
+      "wordFront": "저",
+      "wordBack": "I / me",
+      "notes": "humble form used in polite speech",
+      "locales": { "he": { "back": "אני", "notes": "צורת \"אני\" מנומסת" } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 6,
+      "wordFront": "씨",
+      "wordBack": "Mr./Ms.",
+      "notes": "common respectful title after names",
+      "locales": { "he": { "back": "מר / גב׳", "notes": "תואר נימוס נפוץ אחרי שם" } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 7,
+      "wordFront": "어느",
+      "wordBack": "which",
+      "notes": null,
+      "locales": { "he": { "back": "איזה", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 8,
+      "wordFront": "나라",
+      "wordBack": "country",
+      "notes": null,
+      "locales": { "he": { "back": "מדינה", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 9,
+      "wordFront": "어느 나라",
+      "wordBack": "which country",
+      "notes": null,
+      "locales": { "he": { "back": "איזו מדינה", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 10,
+      "wordFront": "사람",
+      "wordBack": "person",
+      "notes": null,
+      "locales": { "he": { "back": "אדם", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 11,
+      "wordFront": "미국",
+      "wordBack": "United States",
+      "notes": null,
+      "locales": { "he": { "back": "ארצות הברית", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 12,
+      "wordFront": "미국 사람",
+      "wordBack": "American person",
+      "notes": null,
+      "locales": { "he": { "back": "אמריקאי", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 13,
+      "wordFront": "베트남",
+      "wordBack": "Vietnam",
+      "notes": null,
+      "locales": { "he": { "back": "וייטנאם", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 14,
+      "wordFront": "베트남 사람",
+      "wordBack": "Vietnamese person",
+      "notes": null,
+      "locales": { "he": { "back": "וייטנאמי", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 15,
+      "wordFront": "중국",
+      "wordBack": "China",
+      "notes": null,
+      "locales": { "he": { "back": "סין", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 16,
+      "wordFront": "중국 사람",
+      "wordBack": "Chinese person",
+      "notes": null,
+      "locales": { "he": { "back": "סיני", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 17,
+      "wordFront": "한국",
+      "wordBack": "Korea",
+      "notes": null,
+      "locales": { "he": { "back": "קוריאה", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 18,
+      "wordFront": "한국 사람",
+      "wordBack": "Korean person",
+      "notes": null,
+      "locales": { "he": { "back": "קוריאני", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 19,
+      "wordFront": "일본",
+      "wordBack": "Japan",
+      "notes": null,
+      "locales": { "he": { "back": "יפן", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 20,
+      "wordFront": "일본 사람",
+      "wordBack": "Japanese person",
+      "notes": null,
+      "locales": { "he": { "back": "יפני", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 21,
+      "wordFront": "프랑스",
+      "wordBack": "France",
+      "notes": null,
+      "locales": { "he": { "back": "צרפת", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 22,
+      "wordFront": "프랑스 사람",
+      "wordBack": "French person",
+      "notes": null,
+      "locales": { "he": { "back": "צרפתי", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 23,
+      "wordFront": "독일",
+      "wordBack": "Germany",
+      "notes": null,
+      "locales": { "he": { "back": "גרמניה", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 24,
+      "wordFront": "독일 사람",
+      "wordBack": "German person",
+      "notes": null,
+      "locales": { "he": { "back": "גרמני", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 25,
+      "wordFront": "만나서 반갑습니다",
+      "wordBack": "nice to meet you",
+      "notes": null,
+      "locales": { "he": { "back": "נעים להכיר", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 26,
+      "wordFront": "네",
+      "wordBack": "yes",
+      "notes": null,
+      "locales": { "he": { "back": "כן", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 27,
+      "wordFront": "직업",
+      "wordBack": "job / occupation",
+      "notes": null,
+      "locales": { "he": { "back": "מקצוע", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 28,
+      "wordFront": "선생님",
+      "wordBack": "teacher",
+      "notes": null,
+      "locales": { "he": { "back": "מורה", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 29,
+      "wordFront": "의사",
+      "wordBack": "doctor",
+      "notes": null,
+      "locales": { "he": { "back": "רופא", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 30,
+      "wordFront": "가수",
+      "wordBack": "singer",
+      "notes": null,
+      "locales": { "he": { "back": "זמר", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 31,
+      "wordFront": "회사원",
+      "wordBack": "office worker",
+      "notes": null,
+      "locales": { "he": { "back": "עובד משרד", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 32,
+      "wordFront": "간호사",
+      "wordBack": "nurse",
+      "notes": null,
+      "locales": { "he": { "back": "אחות", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 33,
+      "wordFront": "선수",
+      "wordBack": "athlete",
+      "notes": null,
+      "locales": { "he": { "back": "ספורטאי", "notes": null } },
+      "audioUrl": null
+    }
+  ],
+  "materials": [],
+  "questions": []
+}

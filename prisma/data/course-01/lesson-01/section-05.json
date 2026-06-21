@@ -1,0 +1,40 @@
+{
+  "type": "LISTENING",
+  "title": "듣기",
+  "orderNum": 5,
+  "totalPages": 4,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "LISTENING_AUDIO",
+      "isExtra": false,
+      "contentText": {
+        "title": "듣기",
+        "audioUrl": "",
+        "transcript": "안녕하세요. 저는 베른이에요.\n저는 독일 사람이에요.\n저는 회사원이에요.",
+        "questions": [
+          {
+            "kind": "choose",
+            "questionText": "이름이 뭐예요?",
+            "options": ["베른", "필립", "리신", "나나코"],
+            "answer": "베른"
+          },
+          {
+            "kind": "choose",
+            "questionText": "어느 나라 사람이에요?",
+            "options": ["독일", "중국", "미국", "베트남"],
+            "answer": "독일"
+          },
+          {
+            "kind": "choose",
+            "questionText": "직업이 뭐예요?",
+            "options": ["가수", "선수", "회사원", "의사"],
+            "answer": "회사원"
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

@@ -1,0 +1,41 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar",
+  "orderNum": 2,
+  "totalPages": 2,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "Lesson 2 grammar",
+        "explanations": [
+          {
+            "lang": "en",
+            "text": "A verb ending used to form polite present tense sentences."
+          }
+        ],
+        "imageUrl": "",
+        "dialogues": [
+          {
+            "lines": [
+              {
+                "speaker": "가",
+                "ko": "뭐 해요?",
+                "en": "What are you doing?"
+              },
+              {
+                "speaker": "나",
+                "ko": "공부해요.",
+                "en": "I am studying."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

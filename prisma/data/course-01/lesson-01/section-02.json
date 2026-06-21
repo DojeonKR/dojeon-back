@@ -1,0 +1,196 @@
+{
+  "type": "GRAMMAR",
+  "title": "이에요/예요",
+  "orderNum": 2,
+  "totalPages": 8,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "이에요/예요",
+        "imageUrl": "",
+        "explanations": [
+          {
+            "lang": "en",
+            "text": "A noun marker used like \"Be\" Verb, to tell that a noun IS something."
+          },
+          {
+            "lang": "he",
+            "text": "סימון שם עצם שמשתמשים בו כאשר רוצים לתאר ששם העצם הוא משהו. ליודעי אנגלית, זה מקביל לפועל be (כלומר: am/is/are)"
+          }
+        ],
+        "table": {
+          "headers": ["받침", "형태", "예시"],
+          "rows": [
+            {
+              "condition": "받침 O",
+              "form": "N이에요",
+              "examples": ["선생님이에요", "회사원이에요", "마이클이에요"]
+            },
+            {
+              "condition": "받침 X",
+              "form": "N예요",
+              "examples": ["가수예요", "의사예요", "엠마예요"]
+            }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              {
+                "speaker": "가",
+                "ko": "미국 사람이에요?",
+                "en": "Are you american?",
+                "he": "את/ה אמריקאי/ת?"
+              },
+              {
+                "speaker": "나",
+                "ko": "네, 미국 사람이에요.",
+                "en": "Yes, I'm american.",
+                "he": "כן, אני אמריקאי/ת."
+              }
+            ]
+          },
+          {
+            "lines": [
+              {
+                "speaker": "가",
+                "ko": "가수예요?",
+                "en": "Are you a singer?",
+                "he": "את/ה זמר/ת?"
+              },
+              {
+                "speaker": "나",
+                "ko": "네, 가수예요.",
+                "en": "Yes, I am a singer.",
+                "he": "כן, אני זמר/ת."
+              }
+            ]
+          },
+          {
+            "lines": [
+              {
+                "speaker": "가",
+                "ko": "어느 나라 사람이에요?",
+                "en": "Where are you from?",
+                "he": "מאיפה את/ה?"
+              },
+              {
+                "speaker": "나",
+                "ko": "한국 사람이에요.",
+                "en": "I'm Korean.",
+                "he": "אני קוריאני/ת."
+              }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice1",
+            "fixedQuestion": "이름이 뭐예요?",
+            "items": [
+              {
+                "prompt": "마이클______",
+                "options": ["이에요", "예요"],
+                "answers": ["이에요"]
+              },
+              {
+                "prompt": "민안______",
+                "options": ["이에요", "예요"],
+                "answers": ["이에요"]
+              },
+              {
+                "prompt": "리신______",
+                "options": ["이에요", "예요"],
+                "answers": ["이에요"]
+              },
+              {
+                "prompt": "태우______",
+                "options": ["이에요", "예요"],
+                "answers": ["예요"]
+              },
+              {
+                "prompt": "나나코______",
+                "options": ["이에요", "예요"],
+                "answers": ["예요"]
+              },
+              {
+                "prompt": "엠마______",
+                "options": ["이에요", "예요"],
+                "answers": ["예요"]
+              }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice2",
+            "fixedQuestion": "이름이 뭐예요?",
+            "items": [
+              { "prompt": "마이클______", "answers": ["이에요"] },
+              { "prompt": "민안______", "answers": ["이에요"] },
+              { "prompt": "리신______", "answers": ["이에요"] },
+              { "prompt": "태우______", "answers": ["예요"] },
+              { "prompt": "나나코______", "answers": ["예요"] },
+              { "prompt": "엠마______", "answers": ["예요"] }
+            ]
+          },
+          {
+            "kind": "choose",
+            "label": "Practice1",
+            "fixedQuestion": "직업이 뭐예요?",
+            "items": [
+              {
+                "prompt": "선생님______",
+                "options": ["이에요", "예요"],
+                "answers": ["이에요"]
+              },
+              {
+                "prompt": "의사______",
+                "options": ["이에요", "예요"],
+                "answers": ["예요"]
+              },
+              {
+                "prompt": "가수______",
+                "options": ["이에요", "예요"],
+                "answers": ["예요"]
+              },
+              {
+                "prompt": "회사원______",
+                "options": ["이에요", "예요"],
+                "answers": ["이에요"]
+              },
+              {
+                "prompt": "간호사______",
+                "options": ["이에요", "예요"],
+                "answers": ["예요"]
+              },
+              {
+                "prompt": "선수______",
+                "options": ["이에요", "예요"],
+                "answers": ["예요"]
+              }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice2",
+            "fixedQuestion": "직업이 뭐예요?",
+            "items": [
+              { "prompt": "선생님______", "answers": ["이에요"] },
+              { "prompt": "의사______", "answers": ["예요"] },
+              { "prompt": "가수______", "answers": ["예요"] },
+              { "prompt": "회사원______", "answers": ["이에요"] },
+              { "prompt": "간호사______", "answers": ["예요"] },
+              { "prompt": "선수______", "answers": ["예요"] }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}
