@@ -1,8 +1,8 @@
 {
   "type": "GRAMMAR",
-  "title": "Grammar",
+  "title": "이/그/저",
   "orderNum": 2,
-  "totalPages": 2,
+  "totalPages": 10,
   "cards": [],
   "materials": [
     {
@@ -10,27 +10,159 @@
       "type": "GRAMMAR_TABLE",
       "isExtra": false,
       "contentText": {
-        "title": "Lesson 2 grammar",
+        "title": "이 그 저",
+        "imageUrl": "",
         "explanations": [
           {
+            "lang": "he",
+            "text": "המילה 것 משמעותה \"דבר\". אנו נשתמש במילים אלו על מנת להגיד \"זה\". המילה שנשתמש בה תשתנה לפי מיקום החפץ. א. 이것 - קרוב לדובר. ב. 그것 - קרוב לשומע. ג. 저것 - רחוק משניהם."
+          },
+          {
             "lang": "en",
-            "text": "A verb ending used to form polite present tense sentences."
+            "text": "The word 것 means \"thing.\" We use the following words to say \"this\" or \"that.\" a. 이것 – close to the speaker. b. 그것 – close to the listener. c. 저것 – far from both."
           }
         ],
-        "imageUrl": "",
+        "table": {
+          "headers": ["형태", "의미", "위치"],
+          "rows": [
+            { "condition": "이것", "form": "this", "examples": ["이것은 책이에요"] },
+            { "condition": "그것", "form": "that", "examples": ["그것은 시계예요"] },
+            { "condition": "저것", "form": "that (over there)", "examples": ["저것은 의자예요"] }
+          ]
+        },
         "dialogues": [
           {
             "lines": [
+              { "speaker": "가", "ko": "이것은 뭐예요?", "en": "What is this?", "he": "מה זה?" },
+              { "speaker": "나", "ko": "그것은 책이에요.", "en": "That is a book.", "he": "זה ספר." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "그것은 뭐예요?", "en": "What is that?", "he": "מה זה?" },
+              { "speaker": "나", "ko": "이것은 시계예요.", "en": "This is a watch.", "he": "זה שעון." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "저것은 뭐예요?", "en": "What is that over there?", "he": "מה זה שם?" },
+              { "speaker": "나", "ko": "저것은 의자예요.", "en": "That over there is a chair.", "he": "זה כיסא." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice1",
+            "fixedQuestion": "이것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
               {
-                "speaker": "가",
-                "ko": "뭐 해요?",
-                "en": "What are you doing?"
+                "prompt": "1. 그것은 ____예요.",
+                "options": ["의자", "가방", "책", "시계", "커피", "볼펜"],
+                "answers": ["의자"]
               },
               {
-                "speaker": "나",
-                "ko": "공부해요.",
-                "en": "I am studying."
+                "prompt": "2. 그것은 ____이에요.",
+                "options": ["의자", "가방", "책", "시계", "커피", "볼펜"],
+                "answers": ["가방"]
               }
+            ]
+          },
+          {
+            "kind": "choose",
+            "label": "Practice1",
+            "fixedQuestion": "그것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              {
+                "prompt": "1. 이것은 ____이에요.",
+                "options": ["핸드폰", "시계", "안경", "커피", "문", "책상"],
+                "answers": ["핸드폰"]
+              },
+              {
+                "prompt": "2. 이것은 _____예요.",
+                "options": ["핸드폰", "시계", "안경", "커피", "문", "책상"],
+                "answers": ["시계"]
+              }
+            ]
+          },
+          {
+            "kind": "choose",
+            "label": "Practice1",
+            "fixedQuestion": "저것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              {
+                "prompt": "1. 저것은 _____이에요.",
+                "options": ["안경", "커피", "의자", "컴퓨터", "지갑", "창문"],
+                "answers": ["안경"]
+              },
+              {
+                "prompt": "2. 저것은 _____예요.",
+                "options": ["안경", "커피", "의자", "컴퓨터", "지갑", "창문"],
+                "answers": ["커피"]
+              }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice2",
+            "fixedQuestion": "이것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              { "prompt": "1. 그것은 ____예요.", "answers": ["의자"] },
+              { "prompt": "2. 그것은 ____이에요.", "answers": ["가방"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice2",
+            "fixedQuestion": "그것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              { "prompt": "1. 이것은 ____이에요.", "answers": ["핸드폰"] },
+              { "prompt": "2. 이것은 _____예요.", "answers": ["시계"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice2",
+            "fixedQuestion": "저것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              { "prompt": "1. 저것은 _____이에요.", "answers": ["안경"] },
+              { "prompt": "2. 저것은 _____예요.", "answers": ["커피"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice3",
+            "fixedQuestion": "이것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              { "prompt": "1. __________", "sample": "그것은 의자예요." },
+              { "prompt": "2. __________", "sample": "그것은 가방이에요." }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice3",
+            "fixedQuestion": "그것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              { "prompt": "1. ________", "sample": "이것은 핸드폰이에요." },
+              { "prompt": "2. __________", "sample": "이것은 시계예요." }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice3",
+            "fixedQuestion": "저것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              { "prompt": "1. ____________", "sample": "저것은 안경이에요." },
+              { "prompt": "2. _____________", "sample": "저것은 커피예요." }
             ]
           }
         ]

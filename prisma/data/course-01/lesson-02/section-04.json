@@ -1,32 +1,129 @@
 {
-  "type": "LISTENING",
-  "title": "Listening",
+  "type": "GRAMMAR",
+  "title": "의",
   "orderNum": 4,
-  "totalPages": 2,
+  "totalPages": 8,
   "cards": [],
   "materials": [
     {
       "sequence": 1,
-      "type": "LISTENING_AUDIO",
+      "type": "GRAMMAR_TABLE",
       "isExtra": false,
       "contentText": {
-        "title": "Listening 2",
-        "audioUrl": "https://cdn.example.com/audio/lesson-2.mp3",
-        "transcript": "안녕하세요"
+        "title": "의",
+        "imageUrl": "",
+        "explanations": [
+          {
+            "lang": "he",
+            "text": "\"של\" - סיומת שייכות. מצרפים אותה לשם עצם כדי לציין שייכות."
+          },
+          {
+            "lang": "en",
+            "text": "\"of\" - a possession marker. It is attached to a noun to indicate possession."
+          }
+        ],
+        "table": {
+          "headers": ["형태", "의미", "예시"],
+          "rows": [
+            { "condition": "N + 의", "form": "of / 's", "examples": ["선생님의 책", "리신의 볼펜", "마이클의 컴퓨터"] }
+          ]
+        },
+        "irregulars": {
+          "title": "불규칙",
+          "titleHe": "יוצאי דופן",
+          "titleEn": "Exceptions",
+          "rows": [
+            { "from": "저의", "to": "제" },
+            { "from": "나의", "to": "내" },
+            { "from": "너의", "to": "네" }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "이것은 누구의 책이에요?", "en": "Whose book is this?", "he": "של מי הספר הזה?" },
+              { "speaker": "나", "ko": "그것은 선생님의 책이에요.", "en": "That is the teacher's book.", "he": "זה הספר של המורה." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "그것은 리신의 볼펜이에요?", "en": "Is that Rishin's pen?", "he": "זה העט של רישין?" },
+              { "speaker": "나", "ko": "네, 이것은 리신의 볼펜이에요.", "en": "Yes, that is Rishin's pen.", "he": "כן, זה העט של רישין." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "저것은 누구의 컴퓨터예요?", "en": "Whose computer is that?", "he": "של מי המחשב הזה?" },
+              { "speaker": "나", "ko": "저것은 마이클의 컴퓨터예요.", "en": "That is Michael's computer.", "he": "זה המחשב של מייקל." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "fill",
+            "label": "Practice2",
+            "fixedQuestion": null,
+            "items": [
+              {
+                "prompt": "1. 질문: 이것은 누구의 시계예요? (나나코)\n그것은 _______ 시계예요.",
+                "answers": ["나나코의"]
+              },
+              {
+                "prompt": "2. 질문: 이것은 누구의 볼펜이에요? (태우)\n그것은 _______ 볼펜이에요.",
+                "answers": ["태우의"]
+              },
+              {
+                "prompt": "3. 질문: 이것은 누구의 커피예요? (동생)\n그것은 _______ 커피예요.",
+                "answers": ["동생의"]
+              },
+              {
+                "prompt": "4. 질문: 이것은 누구의 책이에요? (형)\n그것은 _______ 책이에요.",
+                "answers": ["형의"]
+              },
+              {
+                "prompt": "5. 질문: 이것은 누구의 가방이에요? (선생님)\n그것은 _______ 가방이에요.",
+                "answers": ["선생님의"]
+              },
+              {
+                "prompt": "6. 질문: 이것은 누구의 안경이에요? (엠마)\n그것은 _______ 안경이에요.",
+                "answers": ["엠마의"]
+              }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice3",
+            "fixedQuestion": null,
+            "items": [
+              {
+                "prompt": "1. 질문: 이것은 누구의 시계예요? (나나코)",
+                "sample": "그것은 나나코의 시계예요."
+              },
+              {
+                "prompt": "2. 질문: 이것은 누구의 볼펜이에요? (태우)",
+                "sample": "그것은 태우의 볼펜이에요."
+              },
+              {
+                "prompt": "3. 질문: 이것은 누구의 커피예요? (동생)",
+                "sample": "그것은 동생의 커피예요."
+              },
+              {
+                "prompt": "4. 질문: 이것은 누구의 책이에요? (형)",
+                "sample": "그것은 형의 책이에요."
+              },
+              {
+                "prompt": "5. 질문: 이것은 누구의 가방이에요? (선생님)",
+                "sample": "그것은 선생님의 가방이에요."
+              },
+              {
+                "prompt": "6. 질문: 이것은 누구의 안경이에요? (엠마)",
+                "sample": "그것은 엠마의 안경이에요."
+              }
+            ]
+          }
+        ]
       }
     }
   ],
-  "questions": [
-    {
-      "type": "MULTIPLE_CHOICE",
-      "questionText": "What did you hear?",
-      "options": [
-        "Hello",
-        "Goodbye",
-        "Thank you"
-      ],
-      "answer": "Hello",
-      "explanation": null
-    }
-  ]
+  "questions": []
 }

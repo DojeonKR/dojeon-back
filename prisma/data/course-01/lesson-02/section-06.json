@@ -1,0 +1,40 @@
+{
+  "type": "LISTENING",
+  "title": "듣기",
+  "orderNum": 6,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "LISTENING_AUDIO",
+      "isExtra": false,
+      "contentText": {
+        "title": "듣기",
+        "audioUrl": "",
+        "transcript": "가: 이것은 뭐예요?\n나: 그것은 안경이에요.\n가: 누구의 안경이에요?\n나: 리신의 안경이에요.",
+        "dialogue": [
+          { "speaker": "가", "ko": "이것은 뭐예요?" },
+          { "speaker": "나", "ko": "그것은 안경이에요." },
+          { "speaker": "가", "ko": "누구의 안경이에요?" },
+          { "speaker": "나", "ko": "리신의 안경이에요." }
+        ],
+        "questions": [
+          {
+            "kind": "choose",
+            "questionText": "저것은 뭐예요?",
+            "options": ["안경", "책", "볼펜", "지갑"],
+            "answer": "안경"
+          },
+          {
+            "kind": "choose",
+            "questionText": "누구의 안경이에요?",
+            "options": ["리신", "민안", "마이클", "선생님"],
+            "answer": "리신"
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

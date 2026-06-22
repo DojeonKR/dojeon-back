@@ -2,27 +2,166 @@
   "type": "VOCAB",
   "title": "Vocabulary",
   "orderNum": 1,
-  "totalPages": 3,
+  "totalPages": 20,
   "cards": [
     {
       "sequence": 1,
-      "wordFront": "안녕하세요",
-      "wordBack": "Hello",
-      "notes": "polite greeting",
+      "wordFront": "이것",
+      "wordBack": "this (thing)",
+      "notes": "close to speaker",
+      "locales": { "he": { "back": "זה", "notes": "קרוב לדובר" } },
       "audioUrl": null
     },
     {
       "sequence": 2,
-      "wordFront": "감사합니다",
-      "wordBack": "Thank you",
-      "notes": null,
+      "wordFront": "그것",
+      "wordBack": "that (thing)",
+      "notes": "close to listener",
+      "locales": { "he": { "back": "זה", "notes": "קרוב לשומע" } },
       "audioUrl": null
     },
     {
       "sequence": 3,
-      "wordFront": "단어2",
-      "wordBack": "Word 2",
-      "notes": "demo vocabulary",
+      "wordFront": "저것",
+      "wordBack": "that (over there)",
+      "notes": "far from both",
+      "locales": { "he": { "back": "זה שם", "notes": "רחוק משניהם" } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 4,
+      "wordFront": "것",
+      "wordBack": "thing",
+      "notes": "used in 이것/그것/저것",
+      "locales": { "he": { "back": "דבר", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 5,
+      "wordFront": "책",
+      "wordBack": "book",
+      "notes": null,
+      "locales": { "he": { "back": "ספר", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 6,
+      "wordFront": "시계",
+      "wordBack": "watch / clock",
+      "notes": null,
+      "locales": { "he": { "back": "שעון", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 7,
+      "wordFront": "의자",
+      "wordBack": "chair",
+      "notes": null,
+      "locales": { "he": { "back": "כיסא", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 8,
+      "wordFront": "가방",
+      "wordBack": "bag",
+      "notes": null,
+      "locales": { "he": { "back": "תיק", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 9,
+      "wordFront": "핸드폰",
+      "wordBack": "phone",
+      "notes": null,
+      "locales": { "he": { "back": "טלפון", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 10,
+      "wordFront": "안경",
+      "wordBack": "glasses",
+      "notes": null,
+      "locales": { "he": { "back": "משקפיים", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 11,
+      "wordFront": "커피",
+      "wordBack": "coffee",
+      "notes": null,
+      "locales": { "he": { "back": "קפה", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 12,
+      "wordFront": "볼펜",
+      "wordBack": "pen",
+      "notes": null,
+      "locales": { "he": { "back": "עט", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 13,
+      "wordFront": "문",
+      "wordBack": "door",
+      "notes": null,
+      "locales": { "he": { "back": "דלת", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 14,
+      "wordFront": "책상",
+      "wordBack": "desk",
+      "notes": null,
+      "locales": { "he": { "back": "שולחן כתיבה", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 15,
+      "wordFront": "컴퓨터",
+      "wordBack": "computer",
+      "notes": null,
+      "locales": { "he": { "back": "מחשב", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 16,
+      "wordFront": "지갑",
+      "wordBack": "wallet",
+      "notes": null,
+      "locales": { "he": { "back": "ארנק", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 17,
+      "wordFront": "창문",
+      "wordBack": "window",
+      "notes": null,
+      "locales": { "he": { "back": "חלון", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 18,
+      "wordFront": "누구",
+      "wordBack": "who",
+      "notes": "question word",
+      "locales": { "he": { "back": "מי", "notes": null } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 19,
+      "wordFront": "형",
+      "wordBack": "older brother (male speaker)",
+      "notes": "family term",
+      "locales": { "he": { "back": "אח גדול", "notes": "נאמר ע״י בן" } },
+      "audioUrl": null
+    },
+    {
+      "sequence": 20,
+      "wordFront": "제",
+      "wordBack": "my (formal)",
+      "notes": "from 저의",
+      "locales": { "he": { "back": "שלי", "notes": "צורה מנומסת" } },
       "audioUrl": null
     }
   ],

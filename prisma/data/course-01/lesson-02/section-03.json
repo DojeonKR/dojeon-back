@@ -1,31 +1,193 @@
 {
-  "type": "READING",
-  "title": "Reading",
+  "type": "GRAMMAR",
+  "title": "이/가",
   "orderNum": 3,
-  "totalPages": 2,
+  "totalPages": 10,
   "cards": [],
   "materials": [
     {
       "sequence": 1,
-      "type": "READING_PASSAGE",
+      "type": "GRAMMAR_TABLE",
       "isExtra": false,
       "contentText": {
-        "title": "Reading 2",
-        "body": "안녕하세요. 저는 학생입니다. (Lesson 2)"
+        "title": "이/가",
+        "imageUrl": "",
+        "explanations": [
+          {
+            "lang": "he",
+            "text": "סימון עצם שמסמן נושא משפט."
+          },
+          {
+            "lang": "en",
+            "text": "It is used to mark a noun as the sentence's subject."
+          }
+        ],
+        "table": {
+          "headers": ["받침", "형태", "예시"],
+          "rows": [
+            { "condition": "받침 O", "form": "N이", "examples": ["볼펜이", "문이", "책상이"] },
+            { "condition": "받침 X", "form": "N가", "examples": ["컴퓨터가", "지갑가", "의자가", "창문가"] }
+          ]
+        },
+        "irregulars": {
+          "title": "불규칙",
+          "titleHe": "יוצאי דופן",
+          "titleEn": "Exceptions",
+          "rows": [
+            { "from": "누구 + 가", "to": "누가" },
+            { "from": "저 + 가", "to": "제가" },
+            { "from": "나 + 가", "to": "내가" },
+            { "from": "너 + 가", "to": "네가" }
+          ]
+        },
+        "extraNotes": [
+          {
+            "lang": "he",
+            "text": "הצורה הזו (이/가) דומה מאוד ל־은/는 שלמדנו בשיעור הקודם. משתמשים ב־이/가 בעיקר עם פעלים ותארים. 이것이 책이에요 = 이것은 책이에요."
+          },
+          {
+            "lang": "en",
+            "text": "This form (이/가) is very similar to 은/는 from the previous lesson. We often use 이/가 with verbs and adjectives. 이것이 책이에요 = 이것은 책이에요."
+          }
+        ],
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "이것은 뭐예요?", "en": "What is this?", "he": "מה זה?" },
+              { "speaker": "나", "ko": "그것이 볼펜이에요.", "en": "That is a pen.", "he": "זה עט." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "그것은 뭐예요?", "en": "What is that?", "he": "מה זה?" },
+              { "speaker": "나", "ko": "이것이 문이에요.", "en": "This is a door.", "he": "זו דלת." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "저것은 뭐예요?", "en": "What is that over there?", "he": "מה זה שם?" },
+              { "speaker": "나", "ko": "저것이 책상이에요.", "en": "That over there is a desk.", "he": "זה שולחן עבודה." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice1",
+            "fixedQuestion": "이것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              {
+                "prompt": "1. 그것이 ____예요.",
+                "options": ["컴퓨터", "지갑", "볼펜", "책상", "의자", "창문"],
+                "answers": ["컴퓨터"]
+              },
+              {
+                "prompt": "2. 그것이 ____이에요.",
+                "options": ["컴퓨터", "지갑", "볼펜", "책상", "의자", "창문"],
+                "answers": ["지갑"]
+              }
+            ]
+          },
+          {
+            "kind": "choose",
+            "label": "Practice1",
+            "fixedQuestion": "그것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              {
+                "prompt": "1. 이것이 ____이에요.",
+                "options": ["볼펜", "책상", "컴퓨터", "지갑", "의자", "창문"],
+                "answers": ["볼펜"]
+              },
+              {
+                "prompt": "2. 이것이 _____예요.",
+                "options": ["볼펜", "책상", "컴퓨터", "지갑", "의자", "창문"],
+                "answers": ["책상"]
+              }
+            ]
+          },
+          {
+            "kind": "choose",
+            "label": "Practice1",
+            "fixedQuestion": "저것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              {
+                "prompt": "1. 저것이 _____이에요.",
+                "options": ["의자", "창문", "볼펜", "책상", "컴퓨터", "지갑"],
+                "answers": ["의자"]
+              },
+              {
+                "prompt": "2. 저것이 _____예요.",
+                "options": ["의자", "창문", "볼펜", "책상", "컴퓨터", "지갑"],
+                "answers": ["창문"]
+              }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice2",
+            "fixedQuestion": "이것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              { "prompt": "1. 그것이 ____예요.", "answers": ["컴퓨터"] },
+              { "prompt": "2. 그것이 ____이에요.", "answers": ["지갑"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice2",
+            "fixedQuestion": "그것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              { "prompt": "1. 이것이 ____이에요.", "answers": ["볼펜"] },
+              { "prompt": "2. 이것이 _____예요.", "answers": ["책상"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice2",
+            "fixedQuestion": "저것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              { "prompt": "1. 저것이 _____이에요.", "answers": ["의자"] },
+              { "prompt": "2. 저것이 _____예요.", "answers": ["창문"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice3",
+            "fixedQuestion": "이것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              { "prompt": "1. __________", "sample": "그것이 컴퓨터예요." },
+              { "prompt": "2. __________", "sample": "그것이 지갑이에요." }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice3",
+            "fixedQuestion": "그것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              { "prompt": "1. ________", "sample": "이것이 볼펜이에요." },
+              { "prompt": "2. __________", "sample": "이것이 책상이에요." }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice3",
+            "fixedQuestion": "저것은 뭐예요?",
+            "imagePlaceholder": true,
+            "items": [
+              { "prompt": "1. ____________", "sample": "저것이 의자예요." },
+              { "prompt": "2. _____________", "sample": "저것이 창문이에요." }
+            ]
+          }
+        ]
       }
     }
   ],
-  "questions": [
-    {
-      "type": "MULTIPLE_CHOICE",
-      "questionText": "What does the passage say?",
-      "options": [
-        "I am a student",
-        "I am a teacher",
-        "I am happy"
-      ],
-      "answer": "I am a student",
-      "explanation": "저는 학생입니다 means I am a student."
-    }
-  ]
+  "questions": []
 }

@@ -1,0 +1,32 @@
+{
+  "type": "READING",
+  "title": "읽기",
+  "orderNum": 5,
+  "totalPages": 2,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "READING_PASSAGE",
+      "isExtra": false,
+      "contentText": {
+        "title": "읽기",
+        "body": "선생님: 그것은 뭐예요?\n민안: 이것이 컴퓨터예요.\n선생님: 누구의 컴퓨터예요?\n민안: 제 컴퓨터예요.",
+        "dialogue": [
+          { "speaker": "선생님", "ko": "그것은 뭐예요?" },
+          { "speaker": "민안", "ko": "이것이 컴퓨터예요." },
+          { "speaker": "선생님", "ko": "누구의 컴퓨터예요?" },
+          { "speaker": "민안", "ko": "제 컴퓨터예요." }
+        ],
+        "questions": [
+          {
+            "kind": "free",
+            "questionText": "컴퓨터가 누구의 컴퓨터예요?",
+            "sample": "민안의 컴퓨터예요."
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}
