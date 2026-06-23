@@ -194,10 +194,18 @@ export class AuthService {
     if (!this.googleClient) {
       throw new AppException('GOOGLE_NOT_CONFIGURED', 'Google OAuth가 설정되지 않았습니다.', HttpStatus.SERVICE_UNAVAILABLE);
     }
-    const ticket = await this.googleClient.verifyIdToken({
-      idToken: dto.idToken,
-      audience: this.configService.get<string>('google.clientId'),
-    });
+    let ticket;
+    try {
+      ticket = await this.googleClient.verifyIdToken({
+        idToken: dto.idToken,
+        audience: this.configService.get<string>('google.clientId'),
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Google ID token verification failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      throw new AppException('INVALID_GOOGLE_TOKEN', 'Google 토큰이 유효하지 않습니다.', HttpStatus.UNAUTHORIZED);
+    }
     const payload = ticket.getPayload();
     if (!payload?.email || !payload.sub) {
       throw new AppException('INVALID_GOOGLE_TOKEN', 'Google 토큰이 유효하지 않습니다.', HttpStatus.UNAUTHORIZED);
