@@ -1,31 +1,94 @@
 {
-  "type": "READING",
-  "title": "Reading",
+  "type": "GRAMMAR",
+  "title": "Grammar 2",
   "orderNum": 3,
-  "totalPages": 2,
+  "totalPages": 8,
   "cards": [],
   "materials": [
     {
       "sequence": 1,
-      "type": "READING_PASSAGE",
+      "type": "GRAMMAR_TABLE",
       "isExtra": false,
       "contentText": {
-        "title": "Reading 5",
-        "body": "안녕하세요. 저는 학생입니다. (Lesson 5)"
+        "title": "‘ㅂ’ 불규칙",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "כאשר העיצור הסופי של פועל או שם תואר הוא ㅂ, הוא נשמט ומוחלף ב־우, ואז מוסיפים את הסיומת הרגילה. החוק חל במקרים רבים אך לא בכולם, למשל 입다 ו־잡다 אינם משתנים לפי כלל זה." },
+          { "lang": "en", "text": "When the final consonant of a verb or adjective is ㅂ, it drops and is replaced by 우 before the regular ending is added. This applies in many cases, but not all; 입다 and 잡다 are examples of exceptions." }
+        ],
+        "table": {
+          "headers": ["Dictionary form", "Stem", "+ 우 + 어요", "Result"],
+          "rows": [
+            { "condition": "쉽다", "form": "쉬", "steps": "쉬 + 우 + 어요", "examples": ["쉬워요"] },
+            { "condition": "어렵다", "form": "어려", "steps": "어려 + 우 + 어요", "examples": ["어려워요"] },
+            { "condition": "덥다", "form": "더", "steps": "더 + 우 + 어요", "examples": ["더워요"] },
+            { "condition": "춥다", "form": "추", "steps": "추 + 우 + 어요", "examples": ["추워요"] },
+            { "condition": "맵다", "form": "매", "steps": "매 + 우 + 어요", "examples": ["매워요"] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "한국어가 어때요?", "en": "How is Korean?", "he": "איך הקוריאנית?" },
+              { "speaker": "나", "ko": "조금 어려워요. 그렇지만 재미있어요!", "en": "It's a little difficult. But it's interesting!", "he": "קצת קשה. אבל מעניין!" }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "오늘 날씨가 어때요?", "en": "How's the weather today?", "he": "איך מזג האוויר היום?" },
+              { "speaker": "나", "ko": "너무 더워요!", "en": "It's too hot!", "he": "חם מדי!" }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "김치가 어때요?", "en": "How is the kimchi?", "he": "איך הקימצ'י?" },
+              { "speaker": "나", "ko": "맛있어요! 그런데 조금 매워요.", "en": "It's delicious! But a little spicy.", "he": "טעים! אבל קצת חריף." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 4",
+            "fixedQuestion": "보기: 한국어가 어때요? → 어려워요.",
+            "items": [
+              { "prompt": "오늘 날씨가 어때요?", "options": ["덥어요", "덥해요", "더워요", "더우어요"], "answers": ["더워요"] },
+              { "prompt": "김치가 어때요?", "options": ["맵어요", "매워요", "맵해요", "매우어요"], "answers": ["매워요"] },
+              { "prompt": "이 책이 어때요?", "options": ["쉽어요", "쉽해요", "쉬워요", "쉬우어요"], "answers": ["쉬워요"] },
+              { "prompt": "오늘 날씨가 어때요?", "options": ["춥어요", "춥해요", "추워요", "추우어요"], "answers": ["추워요"] },
+              { "prompt": "이 가방이 어때요?", "options": ["무겁어요", "무겁해요", "무거워요", "무거우어요"], "answers": ["무거워요"] },
+              { "prompt": "이 고양이가 어때요?", "options": ["귀엽어요", "귀엽해요", "귀여워요", "귀여우어요"], "answers": ["귀여워요"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 5",
+            "fixedQuestion": "보기: 한국어가 어때요? → ______. (어렵다)",
+            "items": [
+              { "prompt": "오늘 날씨가 어때요? → ______. (덥다)", "answers": ["더워요"] },
+              { "prompt": "김치가 어때요? → ______. (맵다)", "answers": ["매워요"] },
+              { "prompt": "이 책이 어때요? → ______. (쉽다)", "answers": ["쉬워요"] },
+              { "prompt": "오늘 날씨가 어때요? → ______. (춥다)", "answers": ["추워요"] },
+              { "prompt": "이 가방이 어때요? → ______. (무겁다)", "answers": ["무거워요"] },
+              { "prompt": "이 고양이가 어때요? → ______. (귀엽다)", "answers": ["귀여워요"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 6",
+            "fixedQuestion": "보기: 한국어 / 어렵다 → 한국어가 어려워요.",
+            "items": [
+              { "prompt": "오늘 날씨 / 덥다", "sample": "오늘 날씨가 더워요." },
+              { "prompt": "김치 / 맵다", "sample": "김치가 매워요." },
+              { "prompt": "이 책 / 쉽다", "sample": "이 책이 쉬워요." },
+              { "prompt": "오늘 날씨 / 춥다", "sample": "오늘 날씨가 추워요." },
+              { "prompt": "이 가방 / 무겁다", "sample": "이 가방이 무거워요." },
+              { "prompt": "이 고양이 / 귀엽다", "sample": "이 고양이가 귀여워요." }
+            ]
+          }
+        ]
       }
     }
   ],
-  "questions": [
-    {
-      "type": "MULTIPLE_CHOICE",
-      "questionText": "What does the passage say?",
-      "options": [
-        "I am a student",
-        "I am a teacher",
-        "I am happy"
-      ],
-      "answer": "I am a student",
-      "explanation": "저는 학생입니다 means I am a student."
-    }
-  ]
+  "questions": []
 }

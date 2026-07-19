@@ -1,32 +1,23 @@
 {
-  "type": "LISTENING",
-  "title": "Listening",
+  "type": "READING",
+  "title": "Reading",
   "orderNum": 4,
-  "totalPages": 2,
+  "totalPages": 3,
   "cards": [],
   "materials": [
     {
       "sequence": 1,
-      "type": "LISTENING_AUDIO",
+      "type": "READING_PASSAGE",
       "isExtra": false,
       "contentText": {
-        "title": "Listening 5",
-        "audioUrl": "https://cdn.example.com/audio/lesson-5.mp3",
-        "transcript": "안녕하세요"
+        "title": "읽기",
+        "body": "어제 자영 씨를 만났어요. 같이 김치찌개를 먹었어요. 맛있었어요! 그런데 조금 매웠어요. 자영 씨는 안 매웠어요. 왜냐하면 한국 사람이에요!",
+        "questions": [
+          { "kind": "free", "questionText": "어제 누구를 만났어요?", "sample": "자영 씨를 만났어요." },
+          { "kind": "free", "questionText": "김치찌개가 어땠어요?", "sample": "맛있었어요. 그런데 조금 매웠어요." }
+        ]
       }
     }
   ],
-  "questions": [
-    {
-      "type": "MULTIPLE_CHOICE",
-      "questionText": "What did you hear?",
-      "options": [
-        "Hello",
-        "Goodbye",
-        "Thank you"
-      ],
-      "answer": "Hello",
-      "explanation": null
-    }
-  ]
+  "questions": []
 }

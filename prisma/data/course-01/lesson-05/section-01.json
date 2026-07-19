@@ -2,29 +2,32 @@
   "type": "VOCAB",
   "title": "Vocabulary",
   "orderNum": 1,
-  "totalPages": 3,
+  "totalPages": 24,
   "cards": [
-    {
-      "sequence": 1,
-      "wordFront": "안녕하세요",
-      "wordBack": "Hello",
-      "notes": "polite greeting",
-      "audioUrl": null
-    },
-    {
-      "sequence": 2,
-      "wordFront": "감사합니다",
-      "wordBack": "Thank you",
-      "notes": null,
-      "audioUrl": null
-    },
-    {
-      "sequence": 3,
-      "wordFront": "단어5",
-      "wordBack": "Word 5",
-      "notes": "demo vocabulary",
-      "audioUrl": null
-    }
+    { "sequence": 1, "wordFront": "어제", "wordBack": "yesterday", "notes": null, "locales": { "he": { "back": "אתמול", "notes": null } }, "audioUrl": null },
+    { "sequence": 2, "wordFront": "친구", "wordBack": "friend", "notes": null, "locales": { "he": { "back": "חבר/ה", "notes": null } }, "audioUrl": null },
+    { "sequence": 3, "wordFront": "만나다", "wordBack": "to meet", "notes": null, "locales": { "he": { "back": "לפגוש", "notes": null } }, "audioUrl": null },
+    { "sequence": 4, "wordFront": "그리고", "wordBack": "and / and then", "notes": null, "locales": { "he": { "back": "וגם", "notes": null } }, "audioUrl": null },
+    { "sequence": 5, "wordFront": "그렇지만", "wordBack": "but / however", "notes": null, "locales": { "he": { "back": "אבל", "notes": null } }, "audioUrl": null },
+    { "sequence": 6, "wordFront": "그런데", "wordBack": "but / by the way", "notes": null, "locales": { "he": { "back": "אבל / אגב", "notes": null } }, "audioUrl": null },
+    { "sequence": 7, "wordFront": "왜냐하면", "wordBack": "because / the reason is", "notes": null, "locales": { "he": { "back": "כי / מכיוון ש", "notes": null } }, "audioUrl": null },
+    { "sequence": 8, "wordFront": "같이", "wordBack": "together", "notes": null, "locales": { "he": { "back": "ביחד", "notes": null } }, "audioUrl": null },
+    { "sequence": 9, "wordFront": "어때요", "wordBack": "how is it?", "notes": "from 어떻다", "locales": { "he": { "back": "איך (זה)?", "notes": null } }, "audioUrl": null },
+    { "sequence": 10, "wordFront": "날씨", "wordBack": "weather", "notes": null, "locales": { "he": { "back": "מזג אוויר", "notes": null } }, "audioUrl": null },
+    { "sequence": 11, "wordFront": "너무", "wordBack": "too / very", "notes": null, "locales": { "he": { "back": "יותר מדי", "notes": null } }, "audioUrl": null },
+    { "sequence": 12, "wordFront": "조금", "wordBack": "a little", "notes": null, "locales": { "he": { "back": "קצת", "notes": null } }, "audioUrl": null },
+    { "sequence": 13, "wordFront": "김치찌개", "wordBack": "kimchi stew", "notes": "찌개 = stew", "locales": { "he": { "back": "קימצ'י צ'יגה", "notes": null } }, "audioUrl": null },
+    { "sequence": 14, "wordFront": "맛있다", "wordBack": "to be delicious", "notes": null, "locales": { "he": { "back": "טעים", "notes": null } }, "audioUrl": null },
+    { "sequence": 15, "wordFront": "술", "wordBack": "alcohol", "notes": null, "locales": { "he": { "back": "אלכוהול", "notes": null } }, "audioUrl": null },
+    { "sequence": 16, "wordFront": "수영하다", "wordBack": "to swim", "notes": null, "locales": { "he": { "back": "לשחות", "notes": null } }, "audioUrl": null },
+    { "sequence": 17, "wordFront": "힘들다", "wordBack": "to be hard / tiring", "notes": null, "locales": { "he": { "back": "קשה / מתיש", "notes": null } }, "audioUrl": null },
+    { "sequence": 18, "wordFront": "쉽다", "wordBack": "to be easy", "notes": null, "locales": { "he": { "back": "קל", "notes": null } }, "audioUrl": null },
+    { "sequence": 19, "wordFront": "어렵다", "wordBack": "to be difficult", "notes": null, "locales": { "he": { "back": "קשה", "notes": null } }, "audioUrl": null },
+    { "sequence": 20, "wordFront": "덥다", "wordBack": "to be hot", "notes": null, "locales": { "he": { "back": "חם (מזג אוויר)", "notes": null } }, "audioUrl": null },
+    { "sequence": 21, "wordFront": "춥다", "wordBack": "to be cold", "notes": null, "locales": { "he": { "back": "קר (מזג אוויר)", "notes": null } }, "audioUrl": null },
+    { "sequence": 22, "wordFront": "맵다", "wordBack": "to be spicy", "notes": null, "locales": { "he": { "back": "חריף", "notes": null } }, "audioUrl": null },
+    { "sequence": 23, "wordFront": "무겁다", "wordBack": "to be heavy", "notes": null, "locales": { "he": { "back": "כבד", "notes": null } }, "audioUrl": null },
+    { "sequence": 24, "wordFront": "귀엽다", "wordBack": "to be cute", "notes": null, "locales": { "he": { "back": "חמוד", "notes": null } }, "audioUrl": null }
   ],
   "materials": [],
   "questions": []

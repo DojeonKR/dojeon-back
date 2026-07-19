@@ -2,7 +2,7 @@
   "type": "GRAMMAR",
   "title": "Grammar 1",
   "orderNum": 2,
-  "totalPages": 2,
+  "totalPages": 8,
   "cards": [],
   "materials": [
     {
@@ -10,27 +10,78 @@
       "type": "GRAMMAR_TABLE",
       "isExtra": false,
       "contentText": {
-        "title": "Lesson 5 grammar",
-        "explanations": [
-          {
-            "lang": "en",
-            "text": "A verb ending used to form polite present tense sentences."
-          }
-        ],
+        "title": "아/어/했어요",
         "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "סיומת של זמן עבר. היא פועלת כמו זמן הווה, אך עם עיצור סופי ㅆ. לעיתים קרובות שתי התנועות מתמזגות ומתקצרות, למשל 가+았어요 → 갔어요." },
+          { "lang": "en", "text": "The past-tense ending works like the present tense, but adds the final consonant ㅆ. Vowels often contract, for example 가+았어요 → 갔어요." }
+        ],
+        "table": {
+          "headers": ["규칙", "형태", "예시"],
+          "rows": [
+            { "condition": "어간의 마지막 모음이 ㅏ 또는 ㅗ", "form": "았어요", "examples": ["가다 → 갔어요", "보다 → 봤어요"] },
+            { "condition": "그 밖의 모음", "form": "었어요", "examples": ["먹다 → 먹었어요", "읽다 → 읽었어요", "쓰다 → 썼어요"] },
+            { "condition": "하다", "form": "했어요", "examples": ["공부하다 → 공부했어요", "수영하다 → 수영했어요"] }
+          ]
+        },
         "dialogues": [
           {
             "lines": [
-              {
-                "speaker": "가",
-                "ko": "뭐 해요?",
-                "en": "What are you doing?"
-              },
-              {
-                "speaker": "나",
-                "ko": "공부해요.",
-                "en": "I am studying."
-              }
+              { "speaker": "가", "ko": "마이클 씨, 어제 뭐 했어요?", "en": "Michael-ssi, what did you do yesterday?", "he": "מייקל-שי, מה עשית אתמול?" },
+              { "speaker": "나", "ko": "한국어를 공부했어요.", "en": "I studied Korean.", "he": "למדתי קוריאנית." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "베른 씨, 어제 뭐 먹었어요?", "en": "Bern-ssi, what did you eat yesterday?", "he": "ברן-שי, מה אכלת אתמול?" },
+              { "speaker": "나", "ko": "김치찌개를 먹었어요. 맛있었어요!", "en": "I ate kimchi stew. It was delicious!", "he": "אכלתי תבשיל קימצ’י. היה טעים!" }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "나나코 씨, 어제 영화를 봤어요?", "en": "Nanako-ssi, did you watch a movie yesterday?", "he": "נאנאקו-שי, ראית סרט אתמול?" },
+              { "speaker": "나", "ko": "아니요, 안 봤어요. 편지를 썼어요.", "en": "No, I didn't. I wrote a letter.", "he": "לא, לא ראיתי. כתבתי מכתב." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 리신 씨, 어제 뭐 했어요? → 책을 읽었어요.",
+            "items": [
+              { "prompt": "엠마 씨, 어제 뭐 마셨어요?", "options": ["술을 마셔요", "술을 안 마셔요", "술을 마셨어요", "술을 봤어요"], "answers": ["술을 마셨어요"] },
+              { "prompt": "태우 씨, 어제 뭐 했어요?", "options": ["산책해요", "산책 안 해요", "산책할 거예요", "산책했어요"], "answers": ["산책했어요"] },
+              { "prompt": "나나코 씨, 어제 한국어를 공부했어요?", "options": ["네, 공부해요", "아니요, 공부했어요", "네, 공부했어요", "네, 공부를 안 해요"], "answers": ["네, 공부했어요"] },
+              { "prompt": "베른 씨, 어제 밥을 먹었어요?", "options": ["네, 먹어요", "아니요, 안 먹어요", "네, 먹을 거예요", "아니요, 안 먹었어요"], "answers": ["아니요, 안 먹었어요"] },
+              { "prompt": "마이클 씨, 어제 책을 읽었어요?", "options": ["읽어요", "안 읽어요", "읽었어요", "읽을 거예요"], "answers": ["읽었어요"] },
+              { "prompt": "자영 씨, 어제 수영했어요?", "options": ["수영해요", "수영 안 해요", "수영할 거예요", "수영했어요"], "answers": ["수영했어요"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 리신 씨가 어제 뭐 했어요? → 책을 ______.",
+            "items": [
+              { "prompt": "엠마 씨가 어제 뭐 마셨어요? → 술을 ______.", "answers": ["마셨어요"] },
+              { "prompt": "태우 씨가 어제 뭐 했어요? → ______. (산책하다)", "answers": ["산책했어요"] },
+              { "prompt": "나나코 씨가 어제 한국어를 공부했어요? → 네, 한국어를 ______.", "answers": ["공부했어요"] },
+              { "prompt": "베른 씨가 어제 밥을 먹었어요? → 아니요, 밥을 ______.", "answers": ["안 먹었어요"] },
+              { "prompt": "마이클 씨가 어제 책을 읽었어요? → 네, 책을 ______.", "answers": ["읽었어요"] },
+              { "prompt": "자영 씨가 어제 수영했어요? → 네, ______.", "answers": ["수영했어요"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 리신 씨 / 어제 / 책 / 읽다 → 리신 씨가 어제 책을 읽었어요.",
+            "items": [
+              { "prompt": "베른 씨 / 어제 / 한국어 / 공부하다", "sample": "베른 씨가 어제 한국어를 공부했어요." },
+              { "prompt": "리신 씨 / 어제 / 밥 / 먹다", "sample": "리신 씨가 어제 밥을 먹었어요." },
+              { "prompt": "엠마 씨 / 어제 / 편지 / 쓰다", "sample": "엠마 씨가 어제 편지를 썼어요." },
+              { "prompt": "마이클 씨 / 어제 / 책 / 읽다", "sample": "마이클 씨가 어제 책을 읽었어요." },
+              { "prompt": "태우 씨 / 어제 / 물 / 마시다", "sample": "태우 씨가 어제 물을 마셨어요." },
+              { "prompt": "나나코 씨 / 어제 / 수영하다", "sample": "나나코 씨가 어제 수영했어요." }
             ]
           }
         ]

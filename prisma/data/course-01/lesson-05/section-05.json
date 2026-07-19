@@ -1,0 +1,32 @@
+{
+  "type": "LISTENING",
+  "title": "Listening",
+  "orderNum": 5,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "LISTENING_AUDIO",
+      "isExtra": false,
+      "contentText": {
+        "title": "듣기",
+        "mode": "text",
+        "audioUrl": "",
+        "audioUnavailable": true,
+        "transcript": "민주: 자영 씨, 어제 뭐 했어요?\n자영: 수영했어요!\n민주: 어땠어요?\n자영: 재미있었어요! 그리고 쉬었어요.",
+        "dialogue": [
+          { "speaker": "민주", "ko": "자영 씨, 어제 뭐 했어요?" },
+          { "speaker": "자영", "ko": "수영했어요!" },
+          { "speaker": "민주", "ko": "어땠어요?" },
+          { "speaker": "자영", "ko": "재미있었어요! 그리고 쉬었어요." }
+        ],
+        "questions": [
+          { "kind": "choose", "questionText": "자영 씨는 어제 뭐 했어요?", "options": ["공부했어요", "수영했어요", "산책했어요", "밥을 먹었어요"], "answer": "수영했어요" },
+          { "kind": "choose", "questionText": "자영 씨는 수영이 어땠어요?", "options": ["쉬었어요", "재미없었어요", "재미있었어요", "어려웠어요"], "answer": "재미있었어요" }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}
