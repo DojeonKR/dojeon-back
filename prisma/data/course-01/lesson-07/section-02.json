@@ -1,0 +1,92 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 1",
+  "orderNum": 2,
+  "totalPages": 8,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "에",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "סיומת המצורפת לשם עצם ומייצגת מיקום אליו הולכים. תרגום פשוט: אל. מתחברת אך ורק לפעלים של תנועה - בעיקר: 가다, 오다, 다니다." },
+          { "lang": "en", "text": "A particle attached to a noun that indicates the destination of movement. Simple translation: to. It connects only to movement verbs - mainly: 가다, 오다, 다니다." }
+        ],
+        "table": {
+          "headers": ["명사", "N에"],
+          "rows": [
+            { "condition": "학교", "form": "학교에", "examples": [] },
+            { "condition": "도서관", "form": "도서관에", "examples": [] },
+            { "condition": "집", "form": "집에", "examples": [] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "지금 어디에 가요?", "en": "Where are you going now?", "he": "לאן אתה הולך עכשיו?" },
+              { "speaker": "나", "ko": "도서관에 가요. 공부할 거예요.", "en": "I'm going to the library. I’m going to study.", "he": "אני הולך לספרייה. אני הולך ללמוד." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "민안 씨, 오늘 학교에 와요?", "en": "Minan-ssi, are you coming to school today?", "he": "מינאן-שי, אתה בא לבית הספר היום?" },
+              { "speaker": "나", "ko": "아니요, 오늘은 안 가요. 병원에 가요.", "en": "No, I'm not coming today. I'm going to the hospital.", "he": "לא, היום אני לא בא. אני הולך לבית חולים." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "보통 어디에 가요?", "en": "Where do you usually go?", "he": "בדרך כלל לאן אתה הולך?" },
+              { "speaker": "나", "ko": "학교에 가요. 한국어를 공부해요.", "en": "I usually go to school. I study Korean.", "he": "אני הולך לבית הספר. אני לומד קוריאנית!" }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 어디에 가요? → 도서관__ ______",
+            "items": [
+              { "prompt": "어디에 가요? → 병원__ ______", "options": ["에 가요", "에서 가요", "를 가요", "에 다녀요"], "answers": ["에 가요"] },
+              { "prompt": "어디에 와요? → 학교__ ______", "options": ["에 가요", "에 와요", "에서 와요", "를 와요"], "answers": ["에 와요"] },
+              { "prompt": "어디에 가요? → 기숙사__ ______", "options": ["에서 가요", "를 가요", "에 다녀요", "에 가요"], "answers": ["에 가요"] },
+              { "prompt": "어디에 다녀요? → 대학교__ ______", "options": ["에 가요", "에서 다녀요", "를 다녀요", "에 다녀요"], "answers": ["에 다녀요"] },
+              { "prompt": "어디에 다녀요? → 회사__ ______", "options": ["에 다녀요", "에서 다녀요", "를 다녀요", "에 가요"], "answers": ["에 다녀요"] },
+              { "prompt": "어디에 가요? → 식당__ ______", "options": ["에서 가요", "를 가요", "에 다녀요", "에 가요"], "answers": ["에 가요"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 어디에 가요? → 도서관______ ______.",
+            "items": [
+              { "prompt": "어디에 가요? → 병원______ ______.", "answers": ["에 가요"] },
+              { "prompt": "어디에 와요? → 학교______ ______.", "answers": ["에 와요"] },
+              { "prompt": "어디에 가요? → 기숙사______ ______.", "answers": ["에 가요"] },
+              { "prompt": "어디에 다녀요? → 대학교______ ______.", "answers": ["에 다녀요"] },
+              { "prompt": "어디에 다녀요? → 회사______ ______.", "answers": ["에 다녀요"] },
+              { "prompt": "어디에 가요? → 식당______ ______.", "answers": ["에 가요"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 도서관 / 가다 → 도서관에 가요.",
+            "items": [
+              { "prompt": "병원 / 가다", "sample": "병원에 가요." },
+              { "prompt": "학교 / 오다", "sample": "학교에 와요." },
+              { "prompt": "기숙사 / 가다", "sample": "기숙사에 가요." },
+              { "prompt": "대학교 / 다니다", "sample": "대학교에 다녀요." },
+              { "prompt": "회사 / 다니다", "sample": "회사에 다녀요." },
+              { "prompt": "식당 / 가다", "sample": "식당에 가요." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

@@ -1,0 +1,92 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 2",
+  "orderNum": 3,
+  "totalPages": 8,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "에서",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "סיומת המצורפת לשם עצם ומייצגת מיקום בו עושים פעולה. תרגום פשוט: ב." },
+          { "lang": "en", "text": "A particle attached to a noun that indicates the place where an action takes place. Simple translation: at / in." }
+        ],
+        "table": {
+          "headers": ["명사", "N에서"],
+          "rows": [
+            { "condition": "학교", "form": "학교에서", "examples": [] },
+            { "condition": "카페", "form": "카페에서", "examples": [] },
+            { "condition": "집", "form": "집에서", "examples": [] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "어디에서 공부해요?", "en": "Where do you study?", "he": "איפה אתה לומד?" },
+              { "speaker": "나", "ko": "도서관에서 공부해요.", "en": "I study at the library.", "he": "אני לומד בספרייה." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "보통 어디에서 밥을 먹어요?", "en": "Where do you usually eat?", "he": "איפה אתה אוכל בדרך כלל?" },
+              { "speaker": "나", "ko": "집에서 먹어요. 식당에는 안 가요.", "en": "I eat at home. I don't go to restaurants.", "he": "אני אוכל בבית. אני לא הולך למסעדות." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "어디에서 살아요?", "en": "Where do you live?", "he": "איפה אתה גר?" },
+              { "speaker": "나", "ko": "기숙사에서 살아요.", "en": "I live in the dormitory.", "he": "אני גר במעונות." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 어디에서 공부해요? → 도서관__ ______",
+            "items": [
+              { "prompt": "어디에서 커피를 마셔요? → 카페__ ______", "options": ["에 마셔요", "에서 마셔요", "를 마셔요", "에서 가요"], "answers": ["에서 마셔요"] },
+              { "prompt": "어디에서 쉬어요? → 집__ ______", "options": ["에 쉬어요", "를 쉬어요", "에서 다녀요", "에서 쉬어요"], "answers": ["에서 쉬어요"] },
+              { "prompt": "어디에서 밥을 먹어요? → 식당__ ______", "options": ["에 먹어요", "에서 먹어요", "를 먹어요", "에서 가요"], "answers": ["에서 먹어요"] },
+              { "prompt": "어디에서 살아요? → 기숙사__ ______", "options": ["에 살아요", "를 살아요", "에서 다녀요", "에서 살아요"], "answers": ["에서 살아요"] },
+              { "prompt": "어디에서 한국어를 배워요? → 학교__ ______", "options": ["에 배워요", "를 배워요", "에서 가요", "에서 배워요"], "answers": ["에서 배워요"] },
+              { "prompt": "어디에서 친구를 만나요? → 카페__ ______", "options": ["에 만나요", "에서 만나요", "를 만나요", "에서 다녀요"], "answers": ["에서 만나요"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 어디에서 공부해요? → 도서관______ ______.",
+            "items": [
+              { "prompt": "어디에서 커피를 마셔요? → 카페______ ______.", "answers": ["에서 마셔요"] },
+              { "prompt": "어디에서 쉬어요? → 집______ ______.", "answers": ["에서 쉬어요"] },
+              { "prompt": "어디에서 밥을 먹어요? → 식당______ ______.", "answers": ["에서 먹어요"] },
+              { "prompt": "어디에서 살아요? → 기숙사______ ______.", "answers": ["에서 살아요"] },
+              { "prompt": "어디에서 한국어를 배워요? → 학교______ ______.", "answers": ["에서 배워요"] },
+              { "prompt": "어디에서 친구를 만나요? → 카페______ ______.", "answers": ["에서 만나요"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 도서관 / 공부하다 → 도서관에서 공부해요.",
+            "items": [
+              { "prompt": "카페 / 커피 / 마시다", "sample": "카페에서 커피를 마셔요." },
+              { "prompt": "집 / 쉬다", "sample": "집에서 쉬어요." },
+              { "prompt": "식당 / 밥 / 먹다", "sample": "식당에서 밥을 먹어요." },
+              { "prompt": "기숙사 / 살다", "sample": "기숙사에서 살아요." },
+              { "prompt": "학교 / 한국어 / 배우다", "sample": "학교에서 한국어를 배워요." },
+              { "prompt": "카페 / 친구 / 만나다", "sample": "카페에서 친구를 만나요." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

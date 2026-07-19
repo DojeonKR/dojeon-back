@@ -1,0 +1,24 @@
+{
+  "type": "VOCAB",
+  "title": "Vocabulary",
+  "orderNum": 1,
+  "totalPages": 14,
+  "cards": [
+    { "sequence": 1, "wordFront": "어디", "wordBack": "where", "notes": null, "locales": { "he": { "back": "איפה", "notes": null } }, "audioUrl": null },
+    { "sequence": 2, "wordFront": "집", "wordBack": "home / house", "notes": null, "locales": { "he": { "back": "בית", "notes": null } }, "audioUrl": null },
+    { "sequence": 3, "wordFront": "학교", "wordBack": "school", "notes": null, "locales": { "he": { "back": "בית ספר", "notes": null } }, "audioUrl": null },
+    { "sequence": 4, "wordFront": "대학교", "wordBack": "university", "notes": null, "locales": { "he": { "back": "אוניברסיטה", "notes": null } }, "audioUrl": null },
+    { "sequence": 5, "wordFront": "기숙사", "wordBack": "dormitory", "notes": null, "locales": { "he": { "back": "מעונות", "notes": null } }, "audioUrl": null },
+    { "sequence": 6, "wordFront": "식당", "wordBack": "restaurant", "notes": null, "locales": { "he": { "back": "מסעדה", "notes": null } }, "audioUrl": null },
+    { "sequence": 7, "wordFront": "카페", "wordBack": "café", "notes": null, "locales": { "he": { "back": "בית קפה", "notes": null } }, "audioUrl": null },
+    { "sequence": 8, "wordFront": "병원", "wordBack": "hospital", "notes": null, "locales": { "he": { "back": "בית חולים", "notes": null } }, "audioUrl": null },
+    { "sequence": 9, "wordFront": "회사", "wordBack": "company / workplace", "notes": null, "locales": { "he": { "back": "חברה / מקום עבודה", "notes": null } }, "audioUrl": null },
+    { "sequence": 10, "wordFront": "살다", "wordBack": "to live / to reside", "notes": null, "locales": { "he": { "back": "לגור", "notes": null } }, "audioUrl": null },
+    { "sequence": 11, "wordFront": "다니다", "wordBack": "to attend / to go regularly", "notes": null, "locales": { "he": { "back": "ללכת באופן קבוע", "notes": null } }, "audioUrl": null },
+    { "sequence": 12, "wordFront": "보통", "wordBack": "usually", "notes": null, "locales": { "he": { "back": "בדרך כלל", "notes": null } }, "audioUrl": null },
+    { "sequence": 13, "wordFront": "그러면", "wordBack": "then / in that case", "notes": null, "locales": { "he": { "back": "אז / במקרה כזה", "notes": null } }, "audioUrl": null },
+    { "sequence": 14, "wordFront": "만", "wordBack": "only", "notes": "오늘만 = today only", "locales": { "he": { "back": "רק", "notes": "רק היום = 오늘만" } }, "audioUrl": null }
+  ],
+  "materials": [],
+  "questions": []
+}

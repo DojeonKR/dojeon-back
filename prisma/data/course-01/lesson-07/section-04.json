@@ -1,0 +1,29 @@
+{
+  "type": "READING",
+  "title": "Reading",
+  "orderNum": 4,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "READING_PASSAGE",
+      "isExtra": false,
+      "contentText": {
+        "title": "읽기",
+        "body": "가: 보통 어디에서 공부해요?\n나: 저는 보통 도서관에서 공부해요.\n가: 그러면 지금 도서관에 가요?\n나: 아니요, 지금 안 가요. 오늘만 카페에서 공부할 거예요.",
+        "dialogue": [
+          { "speaker": "가", "ko": "보통 어디에서 공부해요?" },
+          { "speaker": "나", "ko": "저는 보통 도서관에서 공부해요." },
+          { "speaker": "가", "ko": "그러면 지금 도서관에 가요?" },
+          { "speaker": "나", "ko": "아니요, 지금 안 가요. 오늘만 카페에서 공부할 거예요." }
+        ],
+        "questions": [
+          { "kind": "free", "questionText": "보통 어디에서 공부해요?", "sample": "도서관에서 공부해요." },
+          { "kind": "free", "questionText": "오늘 어디에서 공부할 거예요?", "sample": "카페에서 공부할 거예요." }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

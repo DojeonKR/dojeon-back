@@ -244,6 +244,25 @@ function main() {
           `${lessonDir}: Listening must use text fallback without audio`,
         );
       }
+
+      if (courseFolder === 'course-01' && lessonFolder === 'lesson-07') {
+        assert(sectionFiles.length === 5, `${lessonDir}: exactly 5 sections required`);
+        const sections = sectionFiles.map((file) => readJson(path.join(lessonDir, file)));
+        assert(sections[0].cards.length === 14, `${lessonDir}: 14 vocabulary cards required`);
+        assert(
+          sections[1].materials[0]?.contentText?.title === '에',
+          `${lessonDir}: Grammar 1 must contain 에`,
+        );
+        assert(
+          sections[2].materials[0]?.contentText?.title === '에서',
+          `${lessonDir}: Grammar 2 must contain 에서`,
+        );
+        assert(
+          sections[4].materials[0]?.contentText?.audioUnavailable === true &&
+            !sections[4].materials[0]?.contentText?.audioUrl,
+          `${lessonDir}: Listening must use text fallback without audio`,
+        );
+      }
     }
   }
 

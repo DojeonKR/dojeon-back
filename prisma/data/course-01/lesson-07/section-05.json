@@ -1,0 +1,32 @@
+{
+  "type": "LISTENING",
+  "title": "Listening",
+  "orderNum": 5,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "LISTENING_AUDIO",
+      "isExtra": false,
+      "contentText": {
+        "title": "듣기",
+        "mode": "text",
+        "audioUrl": "",
+        "audioUnavailable": true,
+        "transcript": "선생님: 오늘 어디에 가요?\n학생: 식당에 가요.\n선생님: 식당에서 뭐 해요?\n학생: 친구를 만나요. 같이 밥을 먹어요.",
+        "dialogue": [
+          { "speaker": "선생님", "ko": "오늘 어디에 가요?" },
+          { "speaker": "학생", "ko": "식당에 가요." },
+          { "speaker": "선생님", "ko": "식당에서 뭐 해요?" },
+          { "speaker": "학생", "ko": "친구를 만나요. 같이 밥을 먹어요." }
+        ],
+        "questions": [
+          { "kind": "choose", "questionText": "오늘 어디에 가요?", "options": ["카페", "도서관", "식당", "기숙사"], "answer": "식당" },
+          { "kind": "choose", "questionText": "식당에서 뭐 해요?", "options": ["혼자 공부해요", "친구를 만나요", "한국어를 배워요", "쉬어요"], "answer": "친구를 만나요" }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}
