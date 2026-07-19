@@ -1,0 +1,29 @@
+{
+  "type": "VOCAB",
+  "title": "Vocabulary",
+  "orderNum": 1,
+  "totalPages": 19,
+  "cards": [
+    { "sequence": 1, "wordFront": "이따가", "wordBack": "later", "notes": null, "locales": { "he": { "back": "אחר כך / מאוחר יותר", "notes": null } }, "audioUrl": null },
+    { "sequence": 2, "wordFront": "전화하다", "wordBack": "to call", "notes": null, "locales": { "he": { "back": "להתקשר", "notes": null } }, "audioUrl": null },
+    { "sequence": 3, "wordFront": "돕다", "wordBack": "to help", "notes": null, "locales": { "he": { "back": "לעזור", "notes": null } }, "audioUrl": null },
+    { "sequence": 4, "wordFront": "노래", "wordBack": "song", "notes": null, "locales": { "he": { "back": "שיר", "notes": null } }, "audioUrl": null },
+    { "sequence": 5, "wordFront": "노래 부르다", "wordBack": "to sing", "notes": null, "locales": { "he": { "back": "לשיר", "notes": null } }, "audioUrl": null },
+    { "sequence": 6, "wordFront": "요리하다", "wordBack": "to cook", "notes": null, "locales": { "he": { "back": "לבשל", "notes": null } }, "audioUrl": null },
+    { "sequence": 7, "wordFront": "운전하다", "wordBack": "to drive", "notes": null, "locales": { "he": { "back": "לנהוג", "notes": null } }, "audioUrl": null },
+    { "sequence": 8, "wordFront": "치다", "wordBack": "to play / to hit", "notes": "used for instruments and some sports", "locales": { "he": { "back": "לנגן / להכות", "notes": "משתמשים בזה הרבה לנגינה/משחקי כדור, אך גם פיזית להכות" } }, "audioUrl": null },
+    { "sequence": 9, "wordFront": "피아노", "wordBack": "piano", "notes": null, "locales": { "he": { "back": "פסנתר", "notes": null } }, "audioUrl": null },
+    { "sequence": 10, "wordFront": "춤", "wordBack": "dance", "notes": null, "locales": { "he": { "back": "ריקוד", "notes": null } }, "audioUrl": null },
+    { "sequence": 11, "wordFront": "춤을 추다", "wordBack": "to dance", "notes": null, "locales": { "he": { "back": "לרקוד", "notes": null } }, "audioUrl": null },
+    { "sequence": 12, "wordFront": "스키", "wordBack": "ski", "notes": null, "locales": { "he": { "back": "סקי", "notes": null } }, "audioUrl": null },
+    { "sequence": 13, "wordFront": "스키를 타다", "wordBack": "to ski", "notes": null, "locales": { "he": { "back": "לעשות סקי", "notes": null } }, "audioUrl": null },
+    { "sequence": 14, "wordFront": "살", "wordBack": "years old", "notes": "age counter — 열 살 = 10 years old", "locales": { "he": { "back": "שנות חיים", "notes": "열 살 = בן 10" } }, "audioUrl": null },
+    { "sequence": 15, "wordFront": "몇 살", "wordBack": "how old", "notes": null, "locales": { "he": { "back": "בן כמה", "notes": null } }, "audioUrl": null },
+    { "sequence": 16, "wordFront": "잘 못하다", "wordBack": "to not do well", "notes": null, "locales": { "he": { "back": "לא ממש יכול", "notes": null } }, "audioUrl": null },
+    { "sequence": 17, "wordFront": "대단하다", "wordBack": "to be amazing / impressive", "notes": null, "locales": { "he": { "back": "מדהים / מרשים", "notes": null } }, "audioUrl": null },
+    { "sequence": 18, "wordFront": "언어", "wordBack": "language", "notes": null, "locales": { "he": { "back": "שפה", "notes": null } }, "audioUrl": null },
+    { "sequence": 19, "wordFront": "정말요?", "wordBack": "really?", "notes": "surprised reaction", "locales": { "he": { "back": "?באמת", "notes": "תגובה מופתעת" } }, "audioUrl": null }
+  ],
+  "materials": [],
+  "questions": []
+}

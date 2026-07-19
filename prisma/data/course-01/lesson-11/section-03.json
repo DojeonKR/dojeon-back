@@ -1,0 +1,92 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 2",
+  "orderNum": 3,
+  "totalPages": 8,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "을 수 있다/없다",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "יכול/לא יכול לעשות משהו" },
+          { "lang": "en", "text": "Can / cannot do something." }
+        ],
+        "table": {
+          "headers": ["V-을 수 있다/없다", "형태", "V-ㄹ 수 있다/없다", "형태"],
+          "rows": [
+            { "condition": "먹다", "form": "먹을 수 있다/없다", "examples": ["가다 → 갈 수 있다/없다"] },
+            { "condition": "읽다", "form": "읽을 수 있다/없다", "examples": ["오다 → 올 수 있다/없다"] },
+            { "condition": "닫다", "form": "닫을 수 있다/없다", "examples": ["요리하다 → 요리할 수 있다/없다"] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "한국어를 할 수 있어요?", "en": "Can you speak Korean?", "he": "אתה יכול לדבר קוריאנית?" },
+              { "speaker": "나", "ko": "네, 조금 할 수 있어요!", "en": "Yes, I can a little!", "he": "כן, אני יכול קצת!" }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "내일 같이 올 수 있어요?", "en": "Can you come together tomorrow?", "he": "אתה יכול לבוא ביחד מחר?" },
+              { "speaker": "나", "ko": "미안해요. 내일은 올 수 없어요. 알바가 있어요.", "en": "Sorry. I can't come tomorrow. I have a part-time job.", "he": "סליחה. מחר אני לא יכול לבוא. יש לי עבודה חלקית." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "요리할 수 있어요?", "en": "Can you cook?", "he": "אתה יודע לבשל?" },
+              { "speaker": "나", "ko": "아니요, 요리를 잘 못해요. 그렇지만 배울 수 있어요!", "en": "No, I can't cook well. But I can learn!", "he": "לא, אני לא מבשל טוב. אבל אני יכול ללמוד!" }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 한국어를 ______. → 할 수 있어요",
+            "items": [
+              { "prompt": "노래를 ______.", "options": ["불렀어요", "불러요", "부를 수 있어요", "부를 거예요"], "answers": ["부를 수 있어요"] },
+              { "prompt": "수영을 ______.", "options": ["했어요", "해요", "할 수 있어요", "할 거예요"], "answers": ["할 수 있어요"] },
+              { "prompt": "피아노를 ______.", "options": ["쳤어요", "쳐요", "칠 수 있어요", "칠 거예요"], "answers": ["칠 수 있어요"] },
+              { "prompt": "운전을 ______.", "options": ["했어요", "해요", "할 수 있어요", "할 거예요"], "answers": ["할 수 있어요"] },
+              { "prompt": "김치찌개를 ______.", "options": ["만들었어요", "만들어요", "만들 수 있어요", "만들 거예요"], "answers": ["만들 수 있어요"] },
+              { "prompt": "춤을 ______.", "options": ["췄어요", "춰요", "출 수 있어요", "출 거예요"], "answers": ["출 수 있어요"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 한국어를 ______. (하다)",
+            "items": [
+              { "prompt": "노래를 ______. (부르다)", "answers": ["부를 수 있어요"] },
+              { "prompt": "수영을 ______. (하다)", "answers": ["할 수 있어요"] },
+              { "prompt": "피아노를 ______. (치다)", "answers": ["칠 수 있어요"] },
+              { "prompt": "운전을 ______. (하다)", "answers": ["할 수 있어요"] },
+              { "prompt": "김치찌개를 ______. (만들다)", "answers": ["만들 수 있어요"] },
+              { "prompt": "춤을 ______. (추다)", "answers": ["출 수 있어요"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 한국어 / 하다 → 한국어를 할 수 있어요.",
+            "items": [
+              { "prompt": "노래 / 부르다", "sample": "노래를 부를 수 있어요." },
+              { "prompt": "수영 / 하다", "sample": "수영을 할 수 있어요." },
+              { "prompt": "피아노 / 치다", "sample": "피아노를 칠 수 있어요." },
+              { "prompt": "운전 / 하다", "sample": "운전을 할 수 있어요." },
+              { "prompt": "김치찌개 / 만들다", "sample": "김치찌개를 만들 수 있어요." },
+              { "prompt": "춤 / 추다", "sample": "춤을 출 수 있어요." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

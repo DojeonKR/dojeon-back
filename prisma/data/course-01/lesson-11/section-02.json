@@ -1,0 +1,92 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 1",
+  "orderNum": 2,
+  "totalPages": 8,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "을게요",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "כאשר אנחנו רוצים לתאר כוונה שלנו לעשות משהו, או כשאנחנו מבטיחים שנעשה משהו עבור האדם שמולנו." },
+          { "lang": "en", "text": "Used to express our intention to do something, or when we promise to do something for the person we're speaking to." }
+        ],
+        "table": {
+          "headers": ["V-을게요", "형태", "V-ㄹ게요", "형태"],
+          "rows": [
+            { "condition": "먹다", "form": "먹을게요", "examples": ["가다 → 갈게요"] },
+            { "condition": "읽다", "form": "읽을게요", "examples": ["오다 → 올게요"] },
+            { "condition": "닫다", "form": "닫을게요", "examples": ["공부하다 → 공부할게요"] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "빨리 와요!", "en": "Hurry up, come!", "he": "מהר, בוא כבר!" },
+              { "speaker": "나", "ko": "네, 빨리 올게요!", "en": "Okay, I'll come quickly!", "he": "בסדר, אני בא מהר!" }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "숙제가 너무 어려워요...", "en": "The homework is too difficult...", "he": "שיעורי הבית קשים מדי..." },
+              { "speaker": "나", "ko": "괜찮아요. 제가 도와줄게요.", "en": "It's okay. I'll help you.", "he": "בסדר. אני אעזור לך." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "지금 바빠요?", "en": "Are you busy now?", "he": "אתה עסוק עכשיו?" },
+              { "speaker": "나", "ko": "네, 조금 바빠요. 이따가 전화할게요.", "en": "Yes, a little busy. I'll call you later.", "he": "כן, קצת עסוק. אתקשר אחר כך." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 내일 일찍 ______. → 올게요",
+            "items": [
+              { "prompt": "열심히 한국어를 ______.", "options": ["공부했어요", "공부해요", "공부할게요", "공부할 거예요"], "answers": ["공부할게요"] },
+              { "prompt": "제가 창문을 ______.", "options": ["닫았어요", "닫아요", "닫을게요", "닫을 거예요"], "answers": ["닫을게요"] },
+              { "prompt": "같이 노래를 ______.", "options": ["들었어요", "들어요", "들을게요", "들을 거예요"], "answers": ["들을게요"] },
+              { "prompt": "오늘 일찍 ______.", "options": ["잤어요", "자요", "잘게요", "잘 거예요"], "answers": ["잘게요"] },
+              { "prompt": "제가 ______.", "options": ["요리했어요", "요리해요", "요리할게요", "요리할 거예요"], "answers": ["요리할게요"] },
+              { "prompt": "내일 책을 ______.", "options": ["샀어요", "사요", "살게요", "살 거예요"], "answers": ["살게요"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 내일 일찍 ______. (오다)",
+            "items": [
+              { "prompt": "열심히 한국어를 ______. (공부하다)", "answers": ["공부할게요"] },
+              { "prompt": "제가 창문을 ______. (닫다)", "answers": ["닫을게요"] },
+              { "prompt": "같이 노래를 ______. (듣다)", "answers": ["들을게요"] },
+              { "prompt": "오늘 일찍 ______. (자다)", "answers": ["잘게요"] },
+              { "prompt": "제가 ______. (요리하다)", "answers": ["요리할게요"] },
+              { "prompt": "내일 책을 ______. (사다)", "answers": ["살게요"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 내일 / 일찍 / 오다 → 내일 일찍 올게요.",
+            "items": [
+              { "prompt": "열심히 / 한국어 / 공부하다", "sample": "열심히 한국어를 공부할게요." },
+              { "prompt": "제가 / 창문 / 닫다", "sample": "제가 창문을 닫을게요." },
+              { "prompt": "같이 / 노래 / 듣다", "sample": "같이 노래를 들을게요." },
+              { "prompt": "오늘 / 일찍 / 자다", "sample": "오늘 일찍 잘게요." },
+              { "prompt": "제가 / 요리하다", "sample": "제가 요리할게요." },
+              { "prompt": "내일 / 책 / 사다", "sample": "내일 책을 살게요." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

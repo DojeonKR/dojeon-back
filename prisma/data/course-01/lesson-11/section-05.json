@@ -1,0 +1,33 @@
+{
+  "type": "LISTENING",
+  "title": "Listening",
+  "orderNum": 5,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "LISTENING_AUDIO",
+      "isExtra": false,
+      "contentText": {
+        "title": "듣기",
+        "mode": "text",
+        "audioUrl": "",
+        "audioUnavailable": true,
+        "transcript": "선생님: 나나코 씨, 무슨 언어를 할 수 있어요?\n나나코: 일본어하고 한국어를 할 수 있어요!\n선생님: 리신 씨는요?\n리신: 저는 중국어하고 한국어를 할 수 있어요. 그리고 영어도 조금 할 수 있어요.\n선생님: 대단해요!",
+        "dialogue": [
+          { "speaker": "선생님", "ko": "나나코 씨, 무슨 언어를 할 수 있어요?" },
+          { "speaker": "나나코", "ko": "일본어하고 한국어를 할 수 있어요!" },
+          { "speaker": "선생님", "ko": "리신 씨는요?" },
+          { "speaker": "리신", "ko": "저는 중국어하고 한국어를 할 수 있어요. 그리고 영어도 조금 할 수 있어요." },
+          { "speaker": "선생님", "ko": "대단해요!" }
+        ],
+        "questions": [
+          { "kind": "choose", "questionText": "나나코 씨는 무슨 언어를 할 수 있어요?", "options": ["일본어하고 중국어", "일본어하고 한국어", "한국어하고 영어", "중국어하고 한국어"], "answer": "일본어하고 한국어" },
+          { "kind": "choose", "questionText": "리신 씨는 영어를 할 수 있어요?", "options": ["네, 잘 할 수 있어요", "아니요, 할 수 없어요", "네, 조금 할 수 있어요", "아니요, 잘 못해요"], "answer": "네, 조금 할 수 있어요" }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

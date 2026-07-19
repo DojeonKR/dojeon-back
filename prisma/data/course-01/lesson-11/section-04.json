@@ -1,0 +1,30 @@
+{
+  "type": "READING",
+  "title": "Reading",
+  "orderNum": 4,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "READING_PASSAGE",
+      "isExtra": false,
+      "contentText": {
+        "title": "읽기",
+        "body": "민주: 베른 씨, 스키를 탈 수 있어요?\n베른: 네, 탈 수 있어요!\n민주: 언제부터 배웠어요?\n베른: 열 살부터 배웠어요.\n민주: 와, 정말요? 대단해요!",
+        "dialogue": [
+          { "speaker": "민주", "ko": "베른 씨, 스키를 탈 수 있어요?" },
+          { "speaker": "베른", "ko": "네, 탈 수 있어요!" },
+          { "speaker": "민주", "ko": "언제부터 배웠어요?" },
+          { "speaker": "베른", "ko": "열 살부터 배웠어요." },
+          { "speaker": "민주", "ko": "와, 정말요? 대단해요!" }
+        ],
+        "questions": [
+          { "kind": "free", "questionText": "베른 씨는 스키를 탈 수 있어요?", "sample": "네, 탈 수 있어요." },
+          { "kind": "free", "questionText": "베른 씨는 언제부터 스키를 배웠어요?", "sample": "열 살부터 배웠어요." }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}
