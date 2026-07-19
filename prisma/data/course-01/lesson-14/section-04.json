@@ -1,0 +1,31 @@
+{
+  "type": "READING",
+  "title": "Reading",
+  "orderNum": 4,
+  "totalPages": 4,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "READING_PASSAGE",
+      "isExtra": false,
+      "contentText": {
+        "title": "읽기",
+        "body": "자영: 리신 씨, 취미가 뭐예요?\n리신: 저는 사진 찍기예요. 자영 씨는요?\n자영: 저는 달리기예요. 근데 요즘 너무 바쁘니까 자주 못 해요.\n리신: 그래요? 저도 달리기가 좋지만 시간이 없어요.\n자영: 맞아요. 시간이 있으면 같이 달려요!",
+        "dialogue": [
+          { "speaker": "자영", "ko": "리신 씨, 취미가 뭐예요?" },
+          { "speaker": "리신", "ko": "저는 사진 찍기예요. 자영 씨는요?" },
+          { "speaker": "자영", "ko": "저는 달리기예요. 근데 요즘 너무 바쁘니까 자주 못 해요." },
+          { "speaker": "리신", "ko": "그래요? 저도 달리기가 좋지만 시간이 없어요." },
+          { "speaker": "자영", "ko": "맞아요. 시간이 있으면 같이 달려요!" }
+        ],
+        "questions": [
+          { "kind": "choose", "questionText": "리신 씨는 왜 못 달려요?", "options": ["카메라가 없어요", "바빠요", "시간이 없어요", "돈이 없어요"], "answer": "시간이 없어요" },
+          { "kind": "fill", "questionText": "자영 씨의 취미는 뭐예요?", "answers": ["달리기예요."] },
+          { "kind": "fill", "questionText": "자영 씨는 요즘 왜 달리기를 자주 못 해요?", "answers": ["너무 바쁘니까 못 해요."] }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

@@ -1,0 +1,33 @@
+{
+  "type": "LISTENING",
+  "title": "Listening",
+  "orderNum": 5,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "LISTENING_AUDIO",
+      "isExtra": false,
+      "contentText": {
+        "title": "듣기",
+        "mode": "text",
+        "audioUrl": "",
+        "audioUnavailable": true,
+        "transcript": "나나코: 베른 씨, 주말에 뭐 해요?\n베른: 보통 게임을 해요. 근데 오늘은 친구를 만나고 싶어요.\n나나코: 그래요? 왜요?\n베른: 오늘 날씨가 좋으니까 같이 산책하고 싶어요. 같이 할까요?\n나나코: 네, 좋아요.",
+        "dialogue": [
+          { "speaker": "나나코", "ko": "베른 씨, 주말에 뭐 해요?" },
+          { "speaker": "베른", "ko": "보통 게임을 해요. 근데 오늘은 친구를 만나고 싶어요." },
+          { "speaker": "나나코", "ko": "그래요? 왜요?" },
+          { "speaker": "베른", "ko": "오늘 날씨가 좋으니까 같이 산책하고 싶어요. 같이 할까요?" },
+          { "speaker": "나나코", "ko": "네, 좋아요." }
+        ],
+        "questions": [
+          { "kind": "choose", "questionText": "베른 씨는 보통 주말에 뭐 해요?", "options": ["달려요", "산책해요", "게임을 해요", "친구를 만나요"], "answer": "게임을 해요" },
+          { "kind": "choose", "questionText": "베른 씨는 오늘 왜 산책하고 싶어요?", "options": ["게임이 재미없으니까", "날씨가 좋으니까", "나나코 씨가 바쁘니까", "시간이 없으니까"], "answer": "날씨가 좋으니까" }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

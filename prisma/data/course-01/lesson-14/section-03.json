@@ -1,0 +1,136 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 2",
+  "orderNum": 3,
+  "totalPages": 10,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "(으)니까",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "צורת סיבה - לכן / מכיוון ש. מצורף לתארים ופעלים. כאשר מחובר לשמות עצם נוסיף 이니까 או 니까." },
+          { "lang": "en", "text": "The reason form — therefore / because. Attaches to adjectives and verbs. When attached to nouns, we add 이니까 or 니까." }
+        ],
+        "table": {
+          "headers": ["형태", "받침 O", "받침 X"],
+          "rows": [
+            { "condition": "A/V-으니까·니까", "form": "좋다 → 좋으니까 / 먹다 → 먹으니까", "examples": ["바쁘다 → 바쁘니까", "가다 → 가니까"] },
+            { "condition": "N이니까·니까", "form": "학생 → 학생이니까", "examples": ["친구 → 친구니까"] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "왜 일찍 자요?", "en": "Why are you going to sleep early?", "he": "למה אתה הולך לישון מוקדם?" },
+              { "speaker": "나", "ko": "내일 시험이 있으니까 일찍 자요.", "en": "Because there's an exam tomorrow, I'm going to sleep early.", "he": "כי מחר יש בחינה, אני הולך לישון מוקדם." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "리신", "ko": "왜 밥을 안 먹어요?", "en": "Why aren't you eating?", "he": "למה את לא אוכלת?" },
+              { "speaker": "나나코", "ko": "배가 안 고프니까 안 먹어요.", "en": "Because I'm not hungry, I'm not eating.", "he": "כי אני לא רעבה, אני לא אוכלת." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "오늘 날씨가 좋으니까 같이 산책할까요?", "en": "The weather is nice today, so shall we take a walk together?", "he": "מזג האוויר היום טוב, אז בוא נצא להליכה ביחד?" },
+              { "speaker": "나", "ko": "네, 좋아요!", "en": "Yes, sounds great!", "he": "כן, מעולה!" }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 날씨가 좋으니까 ______. → 산책해요",
+            "items": [
+              { "prompt": "음식이 매우니까 ______.", "options": ["물을 마셔요", "산책해요", "또 봐요", "못 사요"], "answers": ["물을 마셔요"] },
+              { "prompt": "주말이니까 ______.", "options": ["학교에 안 가요", "물을 마셔요", "못 해요", "산책해요"], "answers": ["학교에 안 가요"] },
+              { "prompt": "영화가 재미있으니까 ______.", "options": ["또 보고 싶어요", "안 먹어요", "못 사요", "자요"], "answers": ["또 보고 싶어요"] },
+              { "prompt": "방이 시끄러우니까 ______.", "options": ["공부를 못 해요", "물을 마셔요", "또 봐요", "안 가요"], "answers": ["공부를 못 해요"] },
+              { "prompt": "돈이 없으니까 ______.", "options": ["못 사요", "산책해요", "또 봐요", "안 자요"], "answers": ["못 사요"] },
+              { "prompt": "배가 부르니까 ______.", "options": ["안 먹어요", "마셔요", "못 사요", "공부해요"], "answers": ["안 먹어요"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: ______ 산책해요. (날씨가 좋다)",
+            "items": [
+              { "prompt": "______ 물을 마셔요. (음식이 맵다)", "answers": ["음식이 매우니까"] },
+              { "prompt": "______ 학교에 안 가요. (주말이다)", "answers": ["주말이니까"] },
+              { "prompt": "______ 또 보고 싶어요. (영화가 재미있다)", "answers": ["영화가 재미있으니까"] },
+              { "prompt": "______ 공부를 못 해요. (방이 시끄럽다)", "answers": ["방이 시끄러우니까"] },
+              { "prompt": "______ 못 사요. (돈이 없다)", "answers": ["돈이 없으니까"] },
+              { "prompt": "______ 안 먹어요. (배가 부르다)", "answers": ["배가 부르니까"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 날씨 / 좋다 / 산책하다 → 날씨가 좋으니까 산책해요.",
+            "items": [
+              { "prompt": "음식 / 맵다 / 물을 마시다", "sample": "음식이 매우니까 물을 마셔요." },
+              { "prompt": "주말 / 이다 / 학교에 안 가다", "sample": "주말이니까 학교에 안 가요." },
+              { "prompt": "영화 / 재미있다 / 또 보고 싶다", "sample": "영화가 재미있으니까 또 보고 싶어요." },
+              { "prompt": "방 / 시끄럽다 / 공부를 못 하다", "sample": "방이 시끄러우니까 공부를 못 해요." },
+              { "prompt": "돈 / 없다 / 못 사다", "sample": "돈이 없으니까 못 사요." },
+              { "prompt": "배 / 부르다 / 안 먹다", "sample": "배가 부르니까 안 먹어요." }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "-기",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "זו צורה שהופכת פעלים לשמות פעולה, כמו לאכול ← אכילה. הצורה הזו תהיה חלק מצורות אחרות בהן היא תמלא תפקידים נוספים, לכן מדובר באפקט שלה כשהמילה באה לבד." },
+          { "lang": "en", "text": "This form turns verbs into verbal nouns (gerunds), like \"to eat\" → \"eating.\" It also appears as part of other grammar structures, so this covers its effect when it stands alone." }
+        ],
+        "table": {
+          "headers": ["동사", "V-기"],
+          "rows": [
+            { "condition": "읽다", "form": "읽기", "examples": [] },
+            { "condition": "수영하다", "form": "수영하기", "examples": [] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "취미가 뭐예요?", "en": "What is your hobby?", "he": "מה התחביב שלך?" },
+              { "speaker": "나", "ko": "취미는 책 읽기예요.", "en": "My hobby is reading books.", "he": "התחביב שלי הוא קריאת ספרים." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "엠마", "ko": "민안 씨, 취미가 뭐예요?", "en": "Minan-ssi, what is your hobby?", "he": "מינאן-שי, מה התחביב שלך?" },
+              { "speaker": "민안", "ko": "수영하기예요! 엠마 씨는요?", "en": "It's swimming! What about Emma-ssi?", "he": "זה שחייה! ואמה-שי?" },
+              { "speaker": "엠마", "ko": "저는 요리하기예요.", "en": "Mine is cooking.", "he": "שלי זה בישול." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "취미가 뭐예요?", "en": "What is your hobby?", "he": "מה התחביב שלך?" },
+              { "speaker": "나", "ko": "음악 듣기하고 사진 찍기예요.", "en": "It's listening to music and taking photos.", "he": "זה האזנה למוזיקה וצילום." }
+            ]
+          }
+        ],
+        "notes": [
+          { "lang": "ko", "text": "쉬운 개념이기 때문에 연습은 없습니다." }
+        ],
+        "practices": []
+      }
+    }
+  ],
+  "questions": []
+}

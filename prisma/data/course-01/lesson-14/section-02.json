@@ -1,0 +1,90 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 1",
+  "orderNum": 2,
+  "totalPages": 8,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "지만",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "צורת \"אבל\". אפשר לצרף את זה בסוף כל מילה. עובד גם עם שמות עצם: אם יש עיצור סופי 이지만 ואם אין עיצור סופי 지만. המילה ל\"אבל\" היא 하지만." },
+          { "lang": "en", "text": "The \"but\" form. It can be attached to the end of any word. It also works with nouns: if there's a final consonant, 이지만; if there isn't, 지만. The word for \"but\" is 하지만." }
+        ],
+        "table": {
+          "headers": ["형태", "단어", "활용"],
+          "rows": [
+            { "condition": "A/V-지만", "form": "작다 → 작지만", "examples": ["비싸다 → 비싸지만"] },
+            { "condition": "N이지만·지만", "form": "학생 → 학생이지만", "examples": ["친구 → 친구지만"] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "가방이 어때요?", "en": "How is the bag?", "he": "איך התיק?" },
+              { "speaker": "나", "ko": "가방이 작지만 예뻐요.", "en": "The bag is small but pretty.", "he": "התיק קטן אבל יפה." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "이 옷이 비싸지만 사고 싶어요.", "en": "This clothing is expensive but I want to buy it.", "he": "הבגד הזה יקר אבל אני רוצה לקנות אותו." },
+              { "speaker": "나", "ko": "그러면 참아요.", "en": "Then restrain yourself.", "he": "אז תתאפק." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "예문", "ko": "베른 씨는 외국 사람이지만 한국어를 잘해요.", "en": "Bern-shi is a foreigner but is good in Korean.", "he": "ברן-שי זר, אבל טוב בקוריאנית." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 가방이 작지만 ______. → 예뻐요",
+            "items": [
+              { "prompt": "옷이 비싸지만 ______.", "options": ["사고 싶어요", "맛있어요", "재미있어요", "괜찮아요"], "answers": ["사고 싶어요"] },
+              { "prompt": "음식이 맵지만 ______.", "options": ["맛있어요", "예뻐요", "비싸요", "무거워요"], "answers": ["맛있어요"] },
+              { "prompt": "한국어가 어렵지만 ______.", "options": ["재미있어요", "맛있어요", "예뻐요", "사고 싶어요"], "answers": ["재미있어요"] },
+              { "prompt": "가방이 무겁지만 ______.", "options": ["괜찮아요", "맛있어요", "재미있어요", "사고 싶어요"], "answers": ["괜찮아요"] },
+              { "prompt": "날씨가 춥지만 ______.", "options": ["좋아요", "맛있어요", "무거워요", "비싸요"], "answers": ["좋아요"] },
+              { "prompt": "시험이 어렵지만 ______.", "options": ["잘 봤어요", "맛있어요", "예뻐요", "괜찮아요"], "answers": ["잘 봤어요"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 가방이 ______ 예뻐요. (작다)",
+            "items": [
+              { "prompt": "옷이 ______ 사고 싶어요. (비싸다)", "answers": ["비싸지만"] },
+              { "prompt": "음식이 ______ 맛있어요. (맵다)", "answers": ["맵지만"] },
+              { "prompt": "한국어가 ______ 재미있어요. (어렵다)", "answers": ["어렵지만"] },
+              { "prompt": "가방이 ______ 괜찮아요. (무겁다)", "answers": ["무겁지만"] },
+              { "prompt": "날씨가 ______ 좋아요. (춥다)", "answers": ["춥지만"] },
+              { "prompt": "시험이 ______ 잘 봤어요. (어렵다)", "answers": ["어렵지만"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 가방 / 작다 / 예쁘다 → 가방이 작지만 예뻐요.",
+            "items": [
+              { "prompt": "옷 / 비싸다 / 사고 싶다", "sample": "옷이 비싸지만 사고 싶어요." },
+              { "prompt": "음식 / 맵다 / 맛있다", "sample": "음식이 맵지만 맛있어요." },
+              { "prompt": "한국어 / 어렵다 / 재미있다", "sample": "한국어가 어렵지만 재미있어요." },
+              { "prompt": "가방 / 무겁다 / 괜찮다", "sample": "가방이 무겁지만 괜찮아요." },
+              { "prompt": "날씨 / 춥다 / 좋다", "sample": "날씨가 춥지만 좋아요." },
+              { "prompt": "시험 / 어렵다 / 잘 보다", "sample": "시험이 어렵지만 잘 봤어요." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}
