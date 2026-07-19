@@ -1,0 +1,32 @@
+{
+  "type": "LISTENING",
+  "title": "Listening",
+  "orderNum": 5,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "LISTENING_AUDIO",
+      "isExtra": false,
+      "contentText": {
+        "title": "듣기",
+        "mode": "text",
+        "audioUrl": "",
+        "audioUnavailable": true,
+        "transcript": "가: 내일 몇 시에 만나요?\n나: 두 시 반에 만나요. 괜찮아요?\n가: 네, 좋아요! 뭐 해요?\n나: 커피를 마시고 공원에서 산책해요.",
+        "dialogue": [
+          { "speaker": "가", "ko": "내일 몇 시에 만나요?" },
+          { "speaker": "나", "ko": "두 시 반에 만나요. 괜찮아요?" },
+          { "speaker": "가", "ko": "네, 좋아요! 뭐 해요?" },
+          { "speaker": "나", "ko": "커피를 마시고 공원에서 산책해요." }
+        ],
+        "questions": [
+          { "kind": "choose", "questionText": "내일 몇 시에 만나요?", "options": ["2:00", "2:30", "3:00", "3:30"], "answer": "2:30" },
+          { "kind": "choose", "questionText": "뭐 할 거예요?", "options": ["공부하고 운동해요", "밥을 먹고 영화를 봐요", "커피를 마시고 산책해요", "쇼핑하고 밥을 먹어요"], "answer": "커피를 마시고 산책해요" }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

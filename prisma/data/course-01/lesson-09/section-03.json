@@ -1,0 +1,93 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 2",
+  "orderNum": 3,
+  "totalPages": 8,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "고",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "ו' החיבור. סיומת של פעלים ותארים על מנת לחבר שני חלקים של המשפט. כאשר יש שתי פעולות במשפט, ברוב המקרים הפעולות יקרו לפי הסדר שנאמר." },
+          { "lang": "en", "text": "The connecting particle. Attaches to verbs and adjectives to connect two parts of a sentence. When there are two actions, they usually happen in the order they are said." }
+        ],
+        "table": {
+          "headers": ["동사/형용사", "V/A-고"],
+          "rows": [
+            { "condition": "먹다", "form": "먹고", "examples": [] },
+            { "condition": "가다", "form": "가고", "examples": [] },
+            { "condition": "공부하다", "form": "공부하고", "examples": [] },
+            { "condition": "크다", "form": "크고", "examples": [] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "오늘 뭐 해요?", "en": "What are you doing today?", "he": "מה אתה עושה היום?" },
+              { "speaker": "나", "ko": "공부하고 운동해요.", "en": "I study and then exercise.", "he": "אני לומד ואחר כך מתאמן." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "이 카페가 어때요?", "en": "How is this café?", "he": "איך בית הקפה הזה?" },
+              { "speaker": "나", "ko": "커피가 맛있고 싸요.", "en": "The coffee is delicious and cheap.", "he": "הקפה טעים וזול." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "어제 뭐 했어요?", "en": "What did you do yesterday?", "he": "מה עשית אתמול?" },
+              { "speaker": "나", "ko": "밥을 먹고 친구를 만났어요.", "en": "I ate and then met a friend.", "he": "אכלתי ואחר כך פגשתי חבר." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 밥을 ______ 공부해요. → 먹고",
+            "items": [
+              { "prompt": "커피가 ______ 싸요.", "options": ["맛있고", "맛있어요", "맛있었어요", "맛있을 거예요"], "answers": ["맛있고"] },
+              { "prompt": "______ 자요.", "options": ["샤워하고", "샤워해요", "샤워했어요", "샤워할 거예요"], "answers": ["샤워하고"] },
+              { "prompt": "______ 쉬어요.", "options": ["숙제하고", "숙제해요", "숙제했어요", "숙제할 거예요"], "answers": ["숙제하고"] },
+              { "prompt": "친구를 ______ 영화를 봐요.", "options": ["만나고", "만나요", "만났어요", "만날 거예요"], "answers": ["만나고"] },
+              { "prompt": "한국어를 ______ 운동해요.", "options": ["공부하고", "공부해요", "공부했어요", "공부할 거예요"], "answers": ["공부하고"] },
+              { "prompt": "가방이 ______ 좋아요.", "options": ["크고", "커요", "컸어요", "클 거예요"], "answers": ["크고"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 밥을 ______ 공부해요. (먹다)",
+            "items": [
+              { "prompt": "커피가 ______ 싸요. (맛있다)", "answers": ["맛있고"] },
+              { "prompt": "______ 자요. (샤워하다)", "answers": ["샤워하고"] },
+              { "prompt": "______ 쉬어요. (숙제하다)", "answers": ["숙제하고"] },
+              { "prompt": "친구를 ______ 영화를 봐요. (만나다)", "answers": ["만나고"] },
+              { "prompt": "한국어를 ______ 운동해요. (공부하다)", "answers": ["공부하고"] },
+              { "prompt": "가방이 ______ 좋아요. (크다)", "answers": ["크고"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 밥을 먹다 / 공부하다 → 밥을 먹고 공부해요.",
+            "items": [
+              { "prompt": "커피가 맛있다 / 싸다", "sample": "커피가 맛있고 싸요." },
+              { "prompt": "샤워하다 / 자다", "sample": "샤워하고 자요." },
+              { "prompt": "숙제하다 / 쉬다", "sample": "숙제하고 쉬어요." },
+              { "prompt": "친구를 만나다 / 영화를 보다", "sample": "친구를 만나고 영화를 봐요." },
+              { "prompt": "한국어를 공부하다 / 운동하다", "sample": "한국어를 공부하고 운동해요." },
+              { "prompt": "가방이 크다 / 좋다", "sample": "가방이 크고 좋아요." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

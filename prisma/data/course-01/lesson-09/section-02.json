@@ -1,0 +1,127 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 1",
+  "orderNum": 2,
+  "totalPages": 10,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "시간",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "בקוריאנית יש שתי צורות מספרים. הראשונה היא הסינו-קוריאנית שלמדנו בשיעור הקודם. השנייה היא הספירה הקוריאנית המקורית — 고유어. כשאנחנו אומרים שעות, משתמשים בספירה הקוריאנית המקורית. כשאנחנו אומרים דקות, משתמשים בסינו-קוריאנית. שימו לב: חלק מהמספרים משתנים מעט כשמוסיפים 시 — למשל 하나 הופך ל-한, ו-둘 הופך ל-두." },
+          { "lang": "en", "text": "In Korean there are two number systems. The first is Sino-Korean, which we learned in the previous lesson. The second is the native Korean system — 고유어. When saying hours, we use native Korean numbers. When saying minutes, we use Sino-Korean numbers. Note: some numbers change slightly when adding 시 — for example 하나 becomes 한, and 둘 becomes 두." }
+        ],
+        "table": {
+          "headers": ["고유어 수", "시"],
+          "rows": [
+            { "condition": "하나 → 한", "form": "한 시", "examples": [] },
+            { "condition": "둘 → 두", "form": "두 시", "examples": [] },
+            { "condition": "셋 → 세", "form": "세 시", "examples": [] },
+            { "condition": "넷 → 네", "form": "네 시", "examples": [] },
+            { "condition": "다섯", "form": "다섯 시", "examples": [] },
+            { "condition": "여섯", "form": "여섯 시", "examples": [] },
+            { "condition": "일곱", "form": "일곱 시", "examples": [] },
+            { "condition": "여덟", "form": "여덟 시", "examples": [] },
+            { "condition": "아홉", "form": "아홉 시", "examples": [] },
+            { "condition": "열", "form": "열 시", "examples": [] },
+            { "condition": "열한", "form": "열한 시", "examples": [] },
+            { "condition": "열두", "form": "열두 시", "examples": [] }
+          ]
+        },
+        "notes": [
+          { "lang": "ko", "text": "반 = half → 두 시 반 = 2:30" }
+        ],
+        "dialogues": [],
+        "practices": []
+      }
+    },
+    {
+      "sequence": 2,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "에3",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "\"ב\" של זמן. מצרפים אותו למילות זמן כדי לתאר מתי מתרחשת פעולה." },
+          { "lang": "en", "text": "The time particle. Attached to time words to describe when an action takes place." }
+        ],
+        "table": {
+          "headers": ["명사", "N에"],
+          "rows": [
+            { "condition": "주말", "form": "주말에", "examples": [] },
+            { "condition": "1시", "form": "1시에", "examples": [] },
+            { "condition": "6월", "form": "6월에", "examples": [] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "보통 몇 시에 일어나요?", "en": "What time do you usually wake up?", "he": "בדרך כלל באיזו שעה אתה קם?" },
+              { "speaker": "나", "ko": "일곱 시에 일어나요.", "en": "I wake up at seven.", "he": "אני קם בשבע." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "생일이 언제예요?", "en": "When is your birthday?", "he": "מתי יום ההולדת שלך?" },
+              { "speaker": "나", "ko": "6월 9일이에요. 이번 주에 파티를 할 거예요!", "en": "It's June 9th. I'm going to have a party this week!", "he": "ב-9 ביוני. השבוע אני הולך לעשות מסיבה!" }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "주말에 뭐 해요?", "en": "What do you do on the weekend?", "he": "מה אתה עושה בסוף השבוע?" },
+              { "speaker": "나", "ko": "친구하고 같이 영화를 봐요.", "en": "I watch a movie with a friend.", "he": "אני רואה סרט עם חבר." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 보통 7시에 일어나요. → 일곱 시에 일어나요.",
+            "items": [
+              { "prompt": "11시 반에 자요.", "options": ["열", "열한", "열두", "아홉"], "answers": ["열한"] },
+              { "prompt": "수업이 9시에 시작해요.", "options": ["일곱", "여덟", "아홉", "열"], "answers": ["아홉"] },
+              { "prompt": "2시에 밥을 먹어요.", "options": ["한", "두", "세", "네"], "answers": ["두"] },
+              { "prompt": "3시에 친구를 만나요.", "options": ["두", "세", "네", "다섯"], "answers": ["세"] },
+              { "prompt": "12시에 공부해요.", "options": ["열", "열한", "열두", "아홉"], "answers": ["열두"] },
+              { "prompt": "6시에 학교에 가요.", "options": ["다섯", "여섯", "일곱", "여덟"], "answers": ["여섯"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 보통 7시에 일어나요. → 보통 ______ 일어나요.",
+            "items": [
+              { "prompt": "11시 반에 자요. → ______ 자요.", "answers": ["열한 시 반에"] },
+              { "prompt": "수업이 9시에 시작해요. → 수업이 ______ 시작해요.", "answers": ["아홉 시에"] },
+              { "prompt": "2시에 밥을 먹어요. → ______ 밥을 먹어요.", "answers": ["두 시에"] },
+              { "prompt": "3시에 친구를 만나요. → ______ 친구를 만나요.", "answers": ["세 시에"] },
+              { "prompt": "12시에 공부해요. → ______ 공부해요.", "answers": ["열두 시에"] },
+              { "prompt": "6시에 학교에 가요. → ______ 학교에 가요.", "answers": ["여섯 시에"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 보통 / 7시 / 일어나다 → 보통 일곱 시에 일어나요.",
+            "items": [
+              { "prompt": "11시 반 / 자다", "sample": "열한 시 반에 자요." },
+              { "prompt": "수업 / 9시 / 시작하다", "sample": "수업이 아홉 시에 시작해요." },
+              { "prompt": "2시 / 밥 / 먹다", "sample": "두 시에 밥을 먹어요." },
+              { "prompt": "3시 / 친구 / 만나다", "sample": "세 시에 친구를 만나요." },
+              { "prompt": "12시 / 공부하다", "sample": "열두 시에 공부해요." },
+              { "prompt": "6시 / 학교 / 가다", "sample": "여섯 시에 학교에 가요." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

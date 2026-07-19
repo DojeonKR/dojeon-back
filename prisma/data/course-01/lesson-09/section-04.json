@@ -1,0 +1,24 @@
+{
+  "type": "READING",
+  "title": "Reading",
+  "orderNum": 4,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "READING_PASSAGE",
+      "isExtra": false,
+      "contentText": {
+        "title": "읽기",
+        "body": "저는 보통 일곱 시에 일어나요. 일어나고 샤워해요. 아홉 시에 한국어 수업이 시작해요. 수업이 끝나고 도서관에서 공부해요. 저녁에 친구를 만나고 같이 밥을 먹어요.",
+        "dialogue": [],
+        "questions": [
+          { "kind": "free", "questionText": "몇 시에 일어나요?", "sample": "일곱 시에 일어나요." },
+          { "kind": "free", "questionText": "수업이 끝나고 뭐 해요?", "sample": "도서관에서 공부해요." }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}
