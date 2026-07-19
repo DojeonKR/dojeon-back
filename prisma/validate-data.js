@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 const DATA_DIR = path.join(__dirname, 'data');
+const APP_DATA_PATH = path.join(DATA_DIR, 'app-data.json');
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
@@ -47,10 +48,54 @@ function validateSection(section, filePath) {
       `${filePath}: material.contentText required`,
     );
   }
+
+  for (const question of section.questions) {
+    assert(typeof question.type === 'string', `${filePath}: question.type required`);
+    assert(
+      typeof question.questionText === 'string',
+      `${filePath}: question.questionText required`,
+    );
+    assert(Array.isArray(question.options), `${filePath}: question.options must be array`);
+    assert(typeof question.answer === 'string', `${filePath}: question.answer required`);
+  }
+}
+
+function validateAppData() {
+  assert(fs.existsSync(APP_DATA_PATH), `${APP_DATA_PATH}: file required`);
+  const appData = readJson(APP_DATA_PATH);
+  assert(Array.isArray(appData.badges), `${APP_DATA_PATH}: badges must be array`);
+  assert(
+    Array.isArray(appData.subscriptionPlans),
+    `${APP_DATA_PATH}: subscriptionPlans must be array`,
+  );
+  assert(appData.badges.length === 18, `${APP_DATA_PATH}: exactly 18 badges required`);
+  assert(
+    appData.badges[0]?.key === 'signed_up',
+    `${APP_DATA_PATH}: signed_up must be the first badge`,
+  );
+  assert(
+    new Set(appData.badges.map((badge) => badge.key)).size === appData.badges.length,
+    `${APP_DATA_PATH}: badge keys must be unique`,
+  );
+
+  const expectedUsdPrices = new Map([
+    ['pro', 15],
+    ['pro-3month', 39],
+    ['pro-6month', 69],
+    ['annual', 99],
+  ]);
+  for (const [planId, priceUsd] of expectedUsdPrices) {
+    const plan = appData.subscriptionPlans.find((candidate) => candidate.id === planId);
+    assert(plan, `${APP_DATA_PATH}: ${planId} plan required`);
+    assert(plan.priceUsd === priceUsd, `${APP_DATA_PATH}: ${planId} must cost $${priceUsd}`);
+  }
+
+  return appData;
 }
 
 function main() {
   assert(fs.existsSync(DATA_DIR), 'prisma/data 폴더가 없습니다.');
+  const appData = validateAppData();
 
   const summary = {
     courses: 0,
@@ -60,6 +105,7 @@ function main() {
     sections: 0,
     cards: 0,
     materials: 0,
+    questions: 0,
     byCourse: {},
   };
 
@@ -90,14 +136,56 @@ function main() {
       summary.lessons += 1;
       summary.byCourse[courseFolder].lessons += 1;
 
-      for (const sectionFile of getSectionFiles(lessonDir)) {
+      let grammarNumber = 0;
+      const sectionFiles = getSectionFiles(lessonDir);
+      for (const sectionFile of sectionFiles) {
         const sectionPath = path.join(lessonDir, sectionFile);
         const section = readJson(sectionPath);
         validateSection(section, sectionPath);
+
+        const expectedTitle =
+          section.type === 'VOCAB'
+            ? 'Vocabulary'
+            : section.type === 'GRAMMAR'
+              ? `Grammar ${++grammarNumber}`
+              : section.type === 'READING'
+                ? 'Reading'
+                : section.type === 'LISTENING'
+                  ? 'Listening'
+                  : section.title;
+        assert(
+          section.title === expectedTitle,
+          `${sectionPath}: section title must be "${expectedTitle}"`,
+        );
+
         summary.sections += 1;
         summary.byCourse[courseFolder].sections += 1;
         summary.cards += section.cards.length;
         summary.materials += section.materials.length;
+        summary.questions += section.questions.length;
+      }
+
+      if (courseFolder === 'course-01' && lessonFolder === 'lesson-03') {
+        assert(sectionFiles.length === 5, `${lessonDir}: exactly 5 sections required`);
+        const sections = sectionFiles.map((file) => readJson(path.join(lessonDir, file)));
+        assert(sections[0].cards.length === 25, `${lessonDir}: 25 vocabulary cards required`);
+        assert(
+          sections[1].materials[0]?.contentText?.title === '아/어/해요',
+          `${lessonDir}: Grammar 1 must contain 아/어/해요`,
+        );
+        assert(
+          sections[2].materials[0]?.contentText?.title === '을/를',
+          `${lessonDir}: Grammar 2 must contain 을/를`,
+        );
+        assert(
+          JSON.stringify(sections[2]).includes('Bern ssi, do you learn Korean?'),
+          `${lessonDir}: corrected Bern dialogue required`,
+        );
+        assert(
+          sections[4].materials[0]?.contentText?.audioUnavailable === true &&
+            !sections[4].materials[0]?.contentText?.audioUrl,
+          `${lessonDir}: Listening must use text fallback without audio`,
+        );
       }
     }
   }
@@ -105,9 +193,16 @@ function main() {
   assert(summary.courses >= 1, '최소 1개 코스가 필요합니다.');
 
   console.log('✅ prisma/data 검증 통과');
-  console.log(`   코스: ${summary.courses} (활성 ${summary.activeCourses}, 비활성 ${summary.inactiveCourses})`);
+  console.log(
+    `   앱 데이터: 업적 ${appData.badges.length}개, 구독 플랜 ${appData.subscriptionPlans.length}개`,
+  );
+  console.log(
+    `   코스: ${summary.courses} (활성 ${summary.activeCourses}, 비활성 ${summary.inactiveCourses})`,
+  );
   console.log(`   레슨: ${summary.lessons}, 섹션: ${summary.sections}`);
-  console.log(`   카드: ${summary.cards}, 머티리얼: ${summary.materials}`);
+  console.log(
+    `   카드: ${summary.cards}, 머티리얼: ${summary.materials}, 문제: ${summary.questions}`,
+  );
   console.log('');
   console.log('코스별 요약:');
   for (const [course, stats] of Object.entries(summary.byCourse)) {

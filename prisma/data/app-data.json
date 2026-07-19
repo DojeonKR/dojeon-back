@@ -1,0 +1,210 @@
+{
+  "badges": [
+    {
+      "key": "signed_up",
+      "title": "Signed up",
+      "description": "You joined DOJEON.",
+      "category": "onboarding",
+      "sortOrder": 1,
+      "imageUrl": "https://cdn.dojeon.local/badges/signed_up.png"
+    },
+    {
+      "key": "first_start",
+      "title": "First Start",
+      "description": "You started your first lesson section.",
+      "category": "onboarding",
+      "sortOrder": 2,
+      "imageUrl": "https://cdn.dojeon.local/badges/first_start.png"
+    },
+    {
+      "key": "streak_3",
+      "title": "3 days",
+      "description": "3-day learning streak.",
+      "category": "daily_streak",
+      "sortOrder": 1,
+      "imageUrl": "https://cdn.dojeon.local/badges/streak_3.png"
+    },
+    {
+      "key": "streak_7",
+      "title": "7 days",
+      "description": "7-day learning streak.",
+      "category": "daily_streak",
+      "sortOrder": 2,
+      "imageUrl": "https://cdn.dojeon.local/badges/streak_7.png"
+    },
+    {
+      "key": "streak_14",
+      "title": "14 days",
+      "description": "14-day learning streak.",
+      "category": "daily_streak",
+      "sortOrder": 3,
+      "imageUrl": "https://cdn.dojeon.local/badges/streak_14.png"
+    },
+    {
+      "key": "streak_30",
+      "title": "30 days",
+      "description": "30-day learning streak.",
+      "category": "daily_streak",
+      "sortOrder": 4,
+      "imageUrl": "https://cdn.dojeon.local/badges/streak_30.png"
+    },
+    {
+      "key": "course_1",
+      "title": "1 course",
+      "description": "Completed 1 course.",
+      "category": "course_completed",
+      "sortOrder": 1,
+      "imageUrl": "https://cdn.dojeon.local/badges/course_1.png"
+    },
+    {
+      "key": "course_2",
+      "title": "2 course",
+      "description": "Completed 2 courses.",
+      "category": "course_completed",
+      "sortOrder": 2,
+      "imageUrl": "https://cdn.dojeon.local/badges/course_2.png"
+    },
+    {
+      "key": "course_3",
+      "title": "3 course",
+      "description": "Completed 3 courses.",
+      "category": "course_completed",
+      "sortOrder": 3,
+      "imageUrl": "https://cdn.dojeon.local/badges/course_3.png"
+    },
+    {
+      "key": "course_4",
+      "title": "4 course",
+      "description": "Completed 4 courses.",
+      "category": "course_completed",
+      "sortOrder": 4,
+      "imageUrl": "https://cdn.dojeon.local/badges/course_4.png"
+    },
+    {
+      "key": "lesson_first",
+      "title": "First Lesson",
+      "description": "Completed your first lesson.",
+      "category": "lesson_completed",
+      "sortOrder": 1,
+      "imageUrl": "https://cdn.dojeon.local/badges/lesson_first.png"
+    },
+    {
+      "key": "lesson_5",
+      "title": "5 Lesson",
+      "description": "Completed 5 lessons.",
+      "category": "lesson_completed",
+      "sortOrder": 2,
+      "imageUrl": "https://cdn.dojeon.local/badges/lesson_5.png"
+    },
+    {
+      "key": "lesson_10",
+      "title": "10 Lesson",
+      "description": "Completed 10 lessons.",
+      "category": "lesson_completed",
+      "sortOrder": 3,
+      "imageUrl": "https://cdn.dojeon.local/badges/lesson_10.png"
+    },
+    {
+      "key": "lesson_25",
+      "title": "25 Lesson",
+      "description": "Completed 25 lessons.",
+      "category": "lesson_completed",
+      "sortOrder": 4,
+      "imageUrl": "https://cdn.dojeon.local/badges/lesson_25.png"
+    },
+    {
+      "key": "learned_10m",
+      "title": "10 minutes",
+      "description": "Studied for 10 minutes.",
+      "category": "learned",
+      "sortOrder": 1,
+      "imageUrl": "https://cdn.dojeon.local/badges/learned_10m.png"
+    },
+    {
+      "key": "learned_1h",
+      "title": "1 hour",
+      "description": "Studied for 1 hour.",
+      "category": "learned",
+      "sortOrder": 2,
+      "imageUrl": "https://cdn.dojeon.local/badges/learned_1h.png"
+    },
+    {
+      "key": "learned_5h",
+      "title": "5 hours",
+      "description": "Studied for 5 hours.",
+      "category": "learned",
+      "sortOrder": 3,
+      "imageUrl": "https://cdn.dojeon.local/badges/learned_5h.png"
+    },
+    {
+      "key": "learned_10h",
+      "title": "10 hours",
+      "description": "Studied for 10 hours.",
+      "category": "learned",
+      "sortOrder": 4,
+      "imageUrl": "https://cdn.dojeon.local/badges/learned_10h.png"
+    }
+  ],
+  "subscriptionPlans": [
+    {
+      "id": "free",
+      "title": "Free Plan",
+      "priceText": "$0",
+      "subText": null,
+      "hasTrial": false,
+      "billingCycleMonths": 0,
+      "priceIls": null,
+      "priceUsd": 0
+    },
+    {
+      "id": "basic",
+      "title": "7-day Trial",
+      "priceText": "$0",
+      "subText": null,
+      "hasTrial": true,
+      "billingCycleMonths": 0,
+      "priceIls": null,
+      "priceUsd": 0
+    },
+    {
+      "id": "pro",
+      "title": "1 Month",
+      "priceText": "$15",
+      "subText": null,
+      "hasTrial": false,
+      "billingCycleMonths": 1,
+      "priceIls": null,
+      "priceUsd": 15
+    },
+    {
+      "id": "pro-3month",
+      "title": "3 Month",
+      "priceText": "$39",
+      "subText": "$13/month",
+      "hasTrial": false,
+      "billingCycleMonths": 3,
+      "priceIls": null,
+      "priceUsd": 39
+    },
+    {
+      "id": "pro-6month",
+      "title": "6 Month",
+      "priceText": "$69",
+      "subText": "$11.50/month",
+      "hasTrial": false,
+      "billingCycleMonths": 6,
+      "priceIls": null,
+      "priceUsd": 69
+    },
+    {
+      "id": "annual",
+      "title": "1 Year",
+      "priceText": "$99",
+      "subText": "$8.25/month",
+      "hasTrial": false,
+      "billingCycleMonths": 12,
+      "priceIls": null,
+      "priceUsd": 99
+    }
+  ]
+}

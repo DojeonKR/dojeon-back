@@ -12,7 +12,7 @@ export class SubscriptionController {
   @ApiOperation({
     summary: '구독 플랜 목록',
     description:
-      'DB `subscription_plan`의 `planId`·표시 필드 + 서버 하드코딩 `benefits` 맵(`free`·`basic`·`pro`·`pro-3month`·`pro-6month`·`annual`)을 합쳐 반환합니다. 플랜 id가 맵에 없으면 `benefits`는 빈 배열입니다. `title`·`priceText`·`priceIls`·`priceUsd` 등은 DB 시드 값과 일치해야 합니다.',
+      '무료·7일 체험 후 Pro 1·3·6·12개월 순으로 반환합니다. `priceUsd`는 결제 총액, `billingCycleMonths`는 구독 기간입니다.',
   })
   @ApiResponse({
     status: 200,
@@ -22,25 +22,30 @@ export class SubscriptionController {
         plans: [
           {
             planId: 'free',
-            title: '무료',
-            priceText: '₩0 / 월',
+            title: 'Free Plan',
+            priceText: '$0',
+            subText: null,
+            hasTrial: false,
+            billingCycleMonths: 0,
+            priceIls: null,
+            priceUsd: 0,
+            benefits: [],
+          },
+          {
+            planId: 'pro',
+            title: '1 Month',
+            priceText: '$15',
             subText: null,
             hasTrial: false,
             billingCycleMonths: 1,
             priceIls: null,
-            priceUsd: null,
-            benefits: ['기본 레슨', '광고 포함'],
-          },
-          {
-            planId: 'pro',
-            title: '프리미엄',
-            priceText: '₩9,900 / 월',
-            subText: '첫 달 무료',
-            hasTrial: true,
-            billingCycleMonths: 1,
-            priceIls: 50,
             priceUsd: 15,
-            benefits: ['전체 레슨', 'AI 분석', '우선 지원'],
+            benefits: [
+              'Access to all courses classes',
+              'Full access to connectivity',
+              'Full access to personal notebook',
+              'More coming soon',
+            ],
           },
         ],
       }),

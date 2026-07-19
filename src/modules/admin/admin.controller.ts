@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 import { AdminRoleGuard } from './admin-role.guard';
@@ -25,6 +25,18 @@ import {
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
+
+  @Get('overview')
+  @ApiOperation({ summary: '전체 콘텐츠 트리 조회 (코스 → 레슨 → 섹션 + 콘텐츠 개수)' })
+  getOverview() {
+    return this.adminService.getOverview();
+  }
+
+  @Get('sections/:sectionId/contents')
+  @ApiOperation({ summary: '섹션 콘텐츠 상세 조회 (카드·자료·문제, 정답 포함)' })
+  getSectionContents(@Param('sectionId', ParseIntPipe) sectionId: number) {
+    return this.adminService.getSectionContents(sectionId);
+  }
 
   @Post('courses')
   @ApiOperation({ summary: '코스 생성' })

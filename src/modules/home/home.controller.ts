@@ -13,14 +13,14 @@ export class HomeController {
   @ApiOperation({
     summary: '홈 화면 정보 조회',
     description:
-      '`userFirstName`에는 **닉네임 전체**가 들어갑니다(이름 파싱 없음). `lastLesson`은 학습 이력이 없으면 `null`입니다. 이론상 사용자 레코드가 없으면 `data`가 `null`일 수 있습니다.',
+      '`nickname`에 홈 화면에 표시할 닉네임 전체가 들어갑니다. `lastLesson`은 학습 이력이 없으면 `null`입니다. 이론상 사용자 레코드가 없으면 `data`가 `null`일 수 있습니다.',
   })
   @ApiResponse({
     status: 200,
     description: '홈 정보 조회 성공',
     schema: {
       example: successExample({
-        userFirstName: '도전이',
+        nickname: '도전이',
         dailyStreak: 7,
         todayGoal: { targetMin: 30, studiedMin: 15 },
         weekGoal: { targetMin: 210, studiedMin: 45 },

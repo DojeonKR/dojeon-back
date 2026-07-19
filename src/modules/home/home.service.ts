@@ -39,7 +39,9 @@ export class HomeService {
     }
 
     const today = new Date();
-    const startOfDay = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+    const startOfDay = new Date(
+      Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()),
+    );
     const endOfDay = new Date(startOfDay);
     endOfDay.setUTCDate(endOfDay.getUTCDate() + 1);
 
@@ -88,7 +90,7 @@ export class HomeService {
     };
 
     return {
-      userFirstName: user.nickname,
+      nickname: user.nickname,
       dailyStreak: user.stats?.currentStreak ?? 0,
       todayGoal: {
         targetMin: dailyTarget,

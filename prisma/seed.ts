@@ -72,6 +72,31 @@ interface CourseData {
   isActive: boolean;
 }
 
+interface BadgeSeedData {
+  key: string;
+  title: string;
+  description: string;
+  category: string;
+  sortOrder: number;
+  imageUrl: string;
+}
+
+interface SubscriptionPlanSeedData {
+  id: string;
+  title: string;
+  priceText: string;
+  subText: string | null;
+  hasTrial: boolean;
+  billingCycleMonths: number;
+  priceIls: number | null;
+  priceUsd: number | null;
+}
+
+interface AppData {
+  badges: BadgeSeedData[];
+  subscriptionPlans: SubscriptionPlanSeedData[];
+}
+
 function readJson<T>(filePath: string): T {
   return JSON.parse(fs.readFileSync(filePath, 'utf-8')) as T;
 }
@@ -97,7 +122,11 @@ async function seedSection(lessonId: number, sectionData: SectionData) {
   if (section) {
     section = await prisma.section.update({
       where: { id: section.id },
-      data: { type: sectionData.type as any, title: sectionData.title, totalPages: sectionData.totalPages },
+      data: {
+        type: sectionData.type as any,
+        title: sectionData.title,
+        totalPages: sectionData.totalPages,
+      },
     });
   } else {
     section = await prisma.section.create({
@@ -120,7 +149,9 @@ async function seedSection(lessonId: number, sectionData: SectionData) {
   const hasContent = existingCards > 0 || existingMaterials > 0 || existingQuestions > 0;
 
   if (hasContent && !FORCE) {
-    console.log(`    ⏭  섹션 "${sectionData.title}" — 이미 콘텐츠 있음 (건너뜀, --force로 강제 재입력)`);
+    console.log(
+      `    ⏭  섹션 "${sectionData.title}" — 이미 콘텐츠 있음 (건너뜀, --force로 강제 재입력)`,
+    );
     return;
   }
 
@@ -183,7 +214,11 @@ async function seedCourses() {
     if (course) {
       course = await prisma.course.update({
         where: { id: course.id },
-        data: { title: courseData.title, description: courseData.description, isActive: courseData.isActive },
+        data: {
+          title: courseData.title,
+          description: courseData.description,
+          isActive: courseData.isActive,
+        },
       });
     } else {
       course = await prisma.course.create({ data: courseData });
@@ -197,7 +232,9 @@ async function seedCourses() {
       if (!fs.existsSync(lessonJsonPath)) continue;
 
       const lessonData = readJson<LessonData>(lessonJsonPath);
-      let lesson = await prisma.lesson.findFirst({ where: { courseId: course.id, orderNum: lessonData.orderNum } });
+      let lesson = await prisma.lesson.findFirst({
+        where: { courseId: course.id, orderNum: lessonData.orderNum },
+      });
       if (lesson) {
         lesson = await prisma.lesson.update({
           where: { id: lesson.id },
@@ -218,28 +255,9 @@ async function seedCourses() {
 }
 
 async function seedStaticData() {
-  // 뱃지 (MVP 18종)
-  const badges = [
-    { key: 'signed_up', title: 'Signed up', description: 'You joined DOJEON.', category: 'onboarding', sortOrder: 1, imageUrl: 'https://cdn.dojeon.local/badges/signed_up.png' },
-    { key: 'first_start', title: 'First Start', description: 'You started your first lesson section.', category: 'onboarding', sortOrder: 2, imageUrl: 'https://cdn.dojeon.local/badges/first_start.png' },
-    { key: 'streak_3', title: '3 days', description: '3-day learning streak.', category: 'daily_streak', sortOrder: 1, imageUrl: 'https://cdn.dojeon.local/badges/streak_3.png' },
-    { key: 'streak_7', title: '7 days', description: '7-day learning streak.', category: 'daily_streak', sortOrder: 2, imageUrl: 'https://cdn.dojeon.local/badges/streak_7.png' },
-    { key: 'streak_14', title: '14 days', description: '14-day learning streak.', category: 'daily_streak', sortOrder: 3, imageUrl: 'https://cdn.dojeon.local/badges/streak_14.png' },
-    { key: 'streak_30', title: '30 days', description: '30-day learning streak.', category: 'daily_streak', sortOrder: 4, imageUrl: 'https://cdn.dojeon.local/badges/streak_30.png' },
-    { key: 'course_1', title: '1 course', description: 'Completed 1 course.', category: 'course_completed', sortOrder: 1, imageUrl: 'https://cdn.dojeon.local/badges/course_1.png' },
-    { key: 'course_2', title: '2 course', description: 'Completed 2 courses.', category: 'course_completed', sortOrder: 2, imageUrl: 'https://cdn.dojeon.local/badges/course_2.png' },
-    { key: 'course_3', title: '3 course', description: 'Completed 3 courses.', category: 'course_completed', sortOrder: 3, imageUrl: 'https://cdn.dojeon.local/badges/course_3.png' },
-    { key: 'course_4', title: '4 course', description: 'Completed 4 courses.', category: 'course_completed', sortOrder: 4, imageUrl: 'https://cdn.dojeon.local/badges/course_4.png' },
-    { key: 'lesson_first', title: 'First Lesson', description: 'Completed your first lesson.', category: 'lesson_completed', sortOrder: 1, imageUrl: 'https://cdn.dojeon.local/badges/lesson_first.png' },
-    { key: 'lesson_5', title: '5 Lesson', description: 'Completed 5 lessons.', category: 'lesson_completed', sortOrder: 2, imageUrl: 'https://cdn.dojeon.local/badges/lesson_5.png' },
-    { key: 'lesson_10', title: '10 Lesson', description: 'Completed 10 lessons.', category: 'lesson_completed', sortOrder: 3, imageUrl: 'https://cdn.dojeon.local/badges/lesson_10.png' },
-    { key: 'lesson_25', title: '25 Lesson', description: 'Completed 25 lessons.', category: 'lesson_completed', sortOrder: 4, imageUrl: 'https://cdn.dojeon.local/badges/lesson_25.png' },
-    { key: 'learned_10m', title: '10 minutes', description: 'Studied for 10 minutes.', category: 'learned', sortOrder: 1, imageUrl: 'https://cdn.dojeon.local/badges/learned_10m.png' },
-    { key: 'learned_1h', title: '1 hour', description: 'Studied for 1 hour.', category: 'learned', sortOrder: 2, imageUrl: 'https://cdn.dojeon.local/badges/learned_1h.png' },
-    { key: 'learned_5h', title: '5 hours', description: 'Studied for 5 hours.', category: 'learned', sortOrder: 3, imageUrl: 'https://cdn.dojeon.local/badges/learned_5h.png' },
-    { key: 'learned_10h', title: '10 hours', description: 'Studied for 10 hours.', category: 'learned', sortOrder: 4, imageUrl: 'https://cdn.dojeon.local/badges/learned_10h.png' },
-  ];
-  for (const b of badges) {
+  const appData = readJson<AppData>(path.join(DATA_DIR, 'app-data.json'));
+
+  for (const b of appData.badges) {
     await prisma.badge.upsert({
       where: { key: b.key },
       create: b,
@@ -253,70 +271,7 @@ async function seedStaticData() {
     });
   }
 
-  // 구독 플랜
-  const plans = [
-    {
-      id: 'free',
-      title: 'Free',
-      priceText: '₩0',
-      subText: '기본 학습',
-      hasTrial: false,
-      billingCycleMonths: 0,
-      priceIls: null,
-      priceUsd: null,
-    },
-    {
-      id: 'basic',
-      title: 'Basic',
-      priceText: '₩9,900/월',
-      subText: null,
-      hasTrial: true,
-      billingCycleMonths: 1,
-      priceIls: null,
-      priceUsd: null,
-    },
-    {
-      id: 'pro',
-      title: 'Pro',
-      priceText: '₩19,900/월',
-      subText: '전체 콘텐츠',
-      hasTrial: true,
-      billingCycleMonths: 1,
-      priceIls: 50,
-      priceUsd: 15,
-    },
-    {
-      id: 'pro-3month',
-      title: 'Pro 3 Month',
-      priceText: '₩39,900/3개월',
-      subText: '전체 콘텐츠',
-      hasTrial: false,
-      billingCycleMonths: 3,
-      priceIls: 135,
-      priceUsd: 40,
-    },
-    {
-      id: 'pro-6month',
-      title: 'Pro 6 Month',
-      priceText: '₩69,900/6개월',
-      subText: '전체 콘텐츠',
-      hasTrial: false,
-      billingCycleMonths: 6,
-      priceIls: 240,
-      priceUsd: 70,
-    },
-    {
-      id: 'annual',
-      title: 'Annual',
-      priceText: '₩199,000/년',
-      subText: '2개월 무료',
-      hasTrial: false,
-      billingCycleMonths: 12,
-      priceIls: 420,
-      priceUsd: 120,
-    },
-  ];
-  for (const p of plans) {
+  for (const p of appData.subscriptionPlans) {
     await prisma.subscriptionPlan.upsert({ where: { id: p.id }, create: p, update: p });
   }
 
@@ -324,7 +279,9 @@ async function seedStaticData() {
 }
 
 async function main() {
-  console.log(`🌱 시드 시작${FORCE ? ' (--force 모드)' : ''}${COURSES_ONLY ? ' (--courses-only)' : ''}\n`);
+  console.log(
+    `🌱 시드 시작${FORCE ? ' (--force 모드)' : ''}${COURSES_ONLY ? ' (--courses-only)' : ''}\n`,
+  );
   if (!COURSES_ONLY) {
     await seedStaticData();
     await seedDevDemoUser(prisma);

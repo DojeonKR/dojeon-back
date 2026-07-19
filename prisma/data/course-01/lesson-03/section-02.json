@@ -1,8 +1,8 @@
 {
   "type": "GRAMMAR",
-  "title": "Grammar",
+  "title": "Grammar 1",
   "orderNum": 2,
-  "totalPages": 2,
+  "totalPages": 8,
   "cards": [],
   "materials": [
     {
@@ -10,27 +10,83 @@
       "type": "GRAMMAR_TABLE",
       "isExtra": false,
       "contentText": {
-        "title": "Lesson 3 grammar",
+        "title": "아/어/해요",
+        "imageUrl": "",
         "explanations": [
           {
+            "lang": "he",
+            "text": "זוהי צורת הווה פשוט. הצורה 아/어/해요 מתחברת לשורש של הפועל ולעיתים משנה את צורתו. היא משמשת להווה, להרגלים ולעיתים לעתיד קרוב, והיא צורה מנומסת המסתיימת ב־요."
+          },
+          {
             "lang": "en",
-            "text": "A verb ending used to form polite present tense sentences."
+            "text": "This is the polite present-tense form. 아/어/해요 attaches to a verb stem and is used for present actions, habits, and sometimes the near future. Dictionary-form verbs end in 다."
           }
         ],
-        "imageUrl": "",
+        "table": {
+          "headers": ["규칙", "형태", "예시"],
+          "rows": [
+            { "condition": "어간의 마지막 모음이 ㅏ 또는 ㅗ", "form": "아요", "examples": ["가다 → 가요", "보다 → 봐요"] },
+            { "condition": "그 밖의 모음", "form": "어요", "examples": ["먹다 → 먹어요", "읽다 → 읽어요", "쓰다 → 써요"] },
+            { "condition": "하다", "form": "해요", "examples": ["공부하다 → 공부해요", "산책하다 → 산책해요"] }
+          ]
+        },
         "dialogues": [
           {
             "lines": [
-              {
-                "speaker": "가",
-                "ko": "뭐 해요?",
-                "en": "What are you doing?"
-              },
-              {
-                "speaker": "나",
-                "ko": "공부해요.",
-                "en": "I am studying."
-              }
+              { "speaker": "가", "ko": "뭐 해요?", "en": "What are you doing?", "he": "מה אתה עושה?" },
+              { "speaker": "나", "ko": "저는 먹어요.", "en": "I eat.", "he": "אני אוכל/ת." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "마이클 씨, 지금 공부해요?", "en": "Michael-ssi, do you study now?", "he": "מייקל-שי, אתה לומד עכשיו?" },
+              { "speaker": "나", "ko": "네, 지금 공부해요.", "en": "Yes, I study now.", "he": "כן, אני לומד עכשיו." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "태우 씨, 읽어요?", "en": "Taeu-ssi, do you read?", "he": "טאו-שי, אתה קורא?" },
+              { "speaker": "나", "ko": "네, 읽어요.", "en": "Yes, I read.", "he": "כן, אני קורא." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "cards",
+            "label": "Practice",
+            "fixedQuestion": "동사의 아/어/해요 형태를 확인하세요.",
+            "items": [
+              { "prompt": "가다", "sample": "가요" },
+              { "prompt": "보다", "sample": "봐요" },
+              { "prompt": "쓰다", "sample": "써요" },
+              { "prompt": "먹다", "sample": "먹어요" },
+              { "prompt": "읽다", "sample": "읽어요" },
+              { "prompt": "마시다", "sample": "마셔요" },
+              { "prompt": "배우다", "sample": "배워요" },
+              { "prompt": "가르치다", "sample": "가르쳐요" },
+              { "prompt": "공부하다", "sample": "공부해요" },
+              { "prompt": "서다", "sample": "서요" },
+              { "prompt": "만들다", "sample": "만들어요" },
+              { "prompt": "산책하다", "sample": "산책해요" }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice",
+            "fixedQuestion": "알맞은 활용형을 입력하세요.",
+            "items": [
+              { "prompt": "가다 - [     ]", "answers": ["가요"] },
+              { "prompt": "보다 - [     ]", "answers": ["봐요"] },
+              { "prompt": "쓰다 - [     ]", "answers": ["써요"] },
+              { "prompt": "먹다 - [     ]", "answers": ["먹어요"] },
+              { "prompt": "읽다 - [     ]", "answers": ["읽어요"] },
+              { "prompt": "마시다 - [     ]", "answers": ["마셔요"] },
+              { "prompt": "배우다 - [     ]", "answers": ["배워요"] },
+              { "prompt": "가르치다 - [     ]", "answers": ["가르쳐요"] },
+              { "prompt": "공부하다 - [     ]", "answers": ["공부해요"] },
+              { "prompt": "서다 - [     ]", "answers": ["서요"] },
+              { "prompt": "만들다 - [     ]", "answers": ["만들어요"] },
+              { "prompt": "산책하다 - [     ]", "answers": ["산책해요"] }
             ]
           }
         ]

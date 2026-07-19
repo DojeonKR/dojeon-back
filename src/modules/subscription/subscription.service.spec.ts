@@ -8,14 +8,11 @@ describe('SubscriptionService', () => {
 
   beforeEach(async () => {
     mockPrismaService = {
-      subscriptionPlan: { findMany: jest.fn() }
+      subscriptionPlan: { findMany: jest.fn() },
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        SubscriptionService,
-        { provide: PrismaService, useValue: mockPrismaService },
-      ],
+      providers: [SubscriptionService, { provide: PrismaService, useValue: mockPrismaService }],
     }).compile();
 
     service = module.get<SubscriptionService>(SubscriptionService);
@@ -29,6 +26,26 @@ describe('SubscriptionService', () => {
     it('should return subscription plans with benefits', async () => {
       mockPrismaService.subscriptionPlan.findMany.mockResolvedValue([
         {
+          id: 'annual',
+          title: '1 Year',
+          priceText: '$99',
+          subText: '$8.25/month',
+          hasTrial: false,
+          billingCycleMonths: 12,
+          priceIls: null,
+          priceUsd: 99,
+        },
+        {
+          id: 'pro',
+          title: '1 Month',
+          priceText: '$15',
+          subText: null,
+          hasTrial: false,
+          billingCycleMonths: 1,
+          priceIls: null,
+          priceUsd: 15,
+        },
+        {
           id: 'free',
           title: 'Free Plan',
           priceText: '$0',
@@ -36,37 +53,18 @@ describe('SubscriptionService', () => {
           hasTrial: false,
           billingCycleMonths: 0,
           priceIls: null,
-          priceUsd: null,
-        },
-        {
-          id: 'pro',
-          title: 'Pro Plan',
-          priceText: '$10',
-          subText: null,
-          hasTrial: true,
-          billingCycleMonths: 1,
-          priceIls: 50,
-          priceUsd: 15,
-        },
-        {
-          id: 'unknown',
-          title: 'Unknown Plan',
-          priceText: '$99',
-          subText: null,
-          hasTrial: false,
-          billingCycleMonths: 1,
-          priceIls: null,
-          priceUsd: null,
+          priceUsd: 0,
         },
       ]);
       const res = await service.listPlans();
       expect(res.plans.length).toBe(3);
-      expect(res.plans[0].benefits).toEqual(['기본 레슨', '광고 포함']);
+      expect(res.plans.map((plan) => plan.planId)).toEqual(['free', 'pro', 'annual']);
+      expect(res.plans[0].benefits).toEqual([]);
       expect(res.plans[0].priceIls).toBeNull();
-      expect(res.plans[1].benefits).toContain('AI 분석');
-      expect(res.plans[1].priceIls).toBe(50);
+      expect(res.plans[1].benefits).toContain('Full access to personal notebook');
+      expect(res.plans[1].priceIls).toBeNull();
       expect(res.plans[1].priceUsd).toBe(15);
-      expect(res.plans[2].benefits).toEqual([]);
+      expect(res.plans[2].priceUsd).toBe(99);
     });
   });
 });

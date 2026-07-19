@@ -3,6 +3,8 @@
  *
  * 실행: node prisma/seed-courses.js
  * 강제 재입력: node prisma/seed-courses.js --force
+ * 누락 데이터만 추가: node prisma/seed-courses.js --missing-only
+ * 특정 레슨 교체: node prisma/seed-courses.js --course=1 --lesson=3 --force
  */
 const { PrismaClient } = require('@prisma/client');
 const fs = require('fs');
@@ -10,7 +12,21 @@ const path = require('path');
 
 const prisma = new PrismaClient();
 const FORCE = process.argv.includes('--force');
+const MISSING_ONLY = process.argv.includes('--missing-only');
+const COURSE_FILTER = readNumberFlag('--course');
+const LESSON_FILTER = readNumberFlag('--lesson');
 const DATA_DIR = path.join(__dirname, 'data');
+
+function readNumberFlag(name) {
+  const prefix = `${name}=`;
+  const raw = process.argv.find((arg) => arg.startsWith(prefix))?.slice(prefix.length);
+  if (raw == null) return null;
+  const value = Number(raw);
+  if (!Number.isInteger(value) || value < 1) {
+    throw new Error(`${name} must be a positive integer`);
+  }
+  return value;
+}
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
@@ -37,9 +53,13 @@ async function seedSection(lessonId, sectionData) {
   if (section) {
     section = await prisma.section.update({
       where: { id: section.id },
-      data: { type: sectionData.type, title: sectionData.title, totalPages: sectionData.totalPages },
+      data: {
+        type: sectionData.type,
+        title: sectionData.title,
+        totalPages: sectionData.totalPages,
+      },
     });
-  } else {
+  } else if (!section) {
     section = await prisma.section.create({
       data: {
         lessonId,
@@ -58,9 +78,21 @@ async function seedSection(lessonId, sectionData) {
   ]);
 
   const hasContent = existingCards > 0 || existingMaterials > 0 || existingQuestions > 0;
+  const shouldSeedCards = (FORCE || existingCards === 0) && sectionData.cards.length > 0;
+  const shouldSeedMaterials =
+    (FORCE || existingMaterials === 0) && sectionData.materials.length > 0;
+  const shouldSeedQuestions =
+    (FORCE || existingQuestions === 0) && sectionData.questions.length > 0;
 
-  if (hasContent && !FORCE) {
-    console.log(`    ⏭  섹션 "${sectionData.title}" — 이미 콘텐츠 있음 (건너뜀, --force로 강제 재입력)`);
+  if (hasContent && !FORCE && !MISSING_ONLY) {
+    console.log(
+      `    ⏭  섹션 "${sectionData.title}" — 이미 콘텐츠 있음 (건너뜀, --force로 강제 재입력)`,
+    );
+    return;
+  }
+
+  if (MISSING_ONLY && !shouldSeedCards && !shouldSeedMaterials && !shouldSeedQuestions) {
+    console.log(`    ⏭  섹션 "${sectionData.title}" — 누락 콘텐츠 없음`);
     return;
   }
 
@@ -71,7 +103,7 @@ async function seedSection(lessonId, sectionData) {
     await prisma.sectionQuestion.deleteMany({ where: { sectionId: section.id } });
   }
 
-  if (sectionData.cards.length > 0) {
+  if (shouldSeedCards) {
     await prisma.sectionCard.createMany({
       data: sectionData.cards.map((c) => ({
         sectionId: section.id,
@@ -79,27 +111,26 @@ async function seedSection(lessonId, sectionData) {
         wordFront: c.wordFront,
         wordBack: c.wordBack,
         notes: c.notes ?? null,
-        locales:
-          c.locales != null && Object.keys(c.locales).length > 0 ? c.locales : undefined,
+        locales: c.locales != null && Object.keys(c.locales).length > 0 ? c.locales : undefined,
         audioUrl: c.audioUrl ?? null,
       })),
     });
   }
 
-  if (sectionData.materials.length > 0) {
+  if (shouldSeedMaterials) {
     await prisma.sectionMaterial.createMany({
       data: sectionData.materials.map((m) => ({ ...m, sectionId: section.id })),
     });
   }
 
-  if (sectionData.questions.length > 0) {
+  if (shouldSeedQuestions) {
     await prisma.sectionQuestion.createMany({
       data: sectionData.questions.map((q) => ({ ...q, sectionId: section.id })),
     });
   }
 
   console.log(
-    `    ✅ 섹션 "${sectionData.title}" — 카드 ${sectionData.cards.length}개, 자료 ${sectionData.materials.length}개, 문제 ${sectionData.questions.length}개`,
+    `    ✅ 섹션 "${sectionData.title}" — 카드 ${shouldSeedCards ? sectionData.cards.length : 0}개, 자료 ${shouldSeedMaterials ? sectionData.materials.length : 0}개, 문제 ${shouldSeedQuestions ? sectionData.questions.length : 0}개 추가`,
   );
 }
 
@@ -117,13 +148,18 @@ async function seedCourses() {
     if (!fs.existsSync(courseJsonPath)) continue;
 
     const courseData = readJson(courseJsonPath);
+    if (COURSE_FILTER !== null && courseData.orderNum !== COURSE_FILTER) continue;
     let course = await prisma.course.findFirst({ where: { orderNum: courseData.orderNum } });
     if (course) {
       course = await prisma.course.update({
         where: { id: course.id },
-        data: { title: courseData.title, description: courseData.description, isActive: courseData.isActive },
+        data: {
+          title: courseData.title,
+          description: courseData.description,
+          isActive: courseData.isActive,
+        },
       });
-    } else {
+    } else if (!course) {
       course = await prisma.course.create({ data: courseData });
     }
     console.log(`📚 코스: "${course.title}"`);
@@ -135,6 +171,7 @@ async function seedCourses() {
       if (!fs.existsSync(lessonJsonPath)) continue;
 
       const lessonData = readJson(lessonJsonPath);
+      if (LESSON_FILTER !== null && lessonData.orderNum !== LESSON_FILTER) continue;
       let lesson = await prisma.lesson.findFirst({
         where: { courseId: course.id, orderNum: lessonData.orderNum },
       });
@@ -143,7 +180,7 @@ async function seedCourses() {
           where: { id: lesson.id },
           data: { title: lessonData.title, subtitle: lessonData.subtitle },
         });
-      } else {
+      } else if (!lesson) {
         lesson = await prisma.lesson.create({ data: { ...lessonData, courseId: course.id } });
       }
       console.log(`  📖 레슨: "${lesson.title}"`);
@@ -158,7 +195,9 @@ async function seedCourses() {
 }
 
 async function main() {
-  console.log(`🌱 코스 시드 시작${FORCE ? ' (--force 모드)' : ''}\n`);
+  console.log(
+    `🌱 코스 시드 시작${FORCE ? ' (--force 모드)' : ''}${MISSING_ONLY ? ' (--missing-only)' : ''}${COURSE_FILTER !== null ? ` (--course=${COURSE_FILTER})` : ''}${LESSON_FILTER !== null ? ` (--lesson=${LESSON_FILTER})` : ''}\n`,
+  );
   await seedCourses();
   console.log('\n🎉 시드 완료');
 }

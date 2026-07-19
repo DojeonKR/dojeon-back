@@ -49,6 +49,84 @@ export class AdminService {
     });
   }
 
+  async getOverview() {
+    const courses = await this.prisma.course.findMany({
+      orderBy: { orderNum: 'asc' },
+      include: {
+        lessons: {
+          orderBy: { orderNum: 'asc' },
+          include: {
+            sections: {
+              orderBy: { orderNum: 'asc' },
+              include: {
+                _count: { select: { cards: true, materials: true, questions: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+    return {
+      courses: courses.map((course) => ({
+        id: course.id,
+        title: course.title,
+        description: course.description,
+        orderNum: course.orderNum,
+        isActive: course.isActive,
+        lessons: course.lessons.map((lesson) => ({
+          id: lesson.id,
+          title: lesson.title,
+          subtitle: lesson.subtitle,
+          orderNum: lesson.orderNum,
+          sections: lesson.sections.map((section) => ({
+            id: section.id,
+            type: section.type,
+            title: section.title,
+            totalPages: section.totalPages,
+            orderNum: section.orderNum,
+            counts: {
+              cards: section._count.cards,
+              materials: section._count.materials,
+              questions: section._count.questions,
+            },
+          })),
+        })),
+      })),
+    };
+  }
+
+  async getSectionContents(sectionId: number) {
+    const section = await this.prisma.section.findUnique({
+      where: { id: sectionId },
+      include: {
+        lesson: { include: { course: true } },
+        cards: { orderBy: { sequence: 'asc' } },
+        materials: { orderBy: { sequence: 'asc' } },
+        questions: { orderBy: { id: 'asc' } },
+      },
+    });
+    if (!section) {
+      throw new AppException('SECTION_NOT_FOUND', '섹션을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+    }
+    return {
+      section: {
+        id: section.id,
+        type: section.type,
+        title: section.title,
+        totalPages: section.totalPages,
+        orderNum: section.orderNum,
+        lesson: {
+          id: section.lesson.id,
+          title: section.lesson.title,
+          course: { id: section.lesson.course.id, title: section.lesson.course.title },
+        },
+      },
+      cards: section.cards,
+      materials: section.materials,
+      questions: section.questions,
+    };
+  }
+
   async createCourse(dto: CreateCourseDto) {
     return this.prisma.course.create({
       data: {

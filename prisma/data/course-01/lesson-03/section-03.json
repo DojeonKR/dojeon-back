@@ -1,31 +1,101 @@
 {
-  "type": "READING",
-  "title": "Reading",
+  "type": "GRAMMAR",
+  "title": "Grammar 2",
   "orderNum": 3,
-  "totalPages": 2,
+  "totalPages": 7,
   "cards": [],
   "materials": [
     {
       "sequence": 1,
-      "type": "READING_PASSAGE",
+      "type": "GRAMMAR_TABLE",
       "isExtra": false,
       "contentText": {
-        "title": "Reading 3",
-        "body": "안녕하세요. 저는 학생입니다. (Lesson 3)"
+        "title": "을/를",
+        "imageUrl": "",
+        "explanations": [
+          {
+            "lang": "he",
+            "text": "סיומת יחס שמחברת שם עצם לפועל ומסמנת את מושא הפעולה. שימו לב: 무엇 מתקצר ל־뭐, ו־무엇을 מתקצר ל־뭘."
+          },
+          {
+            "lang": "en",
+            "text": "을/를 is an object particle that connects a noun to the verb. Use 을 after a final consonant and 를 after a final vowel. 무엇 can be shortened to 뭐, and 무엇을 to 뭘."
+          }
+        ],
+        "table": {
+          "headers": ["받침", "형태", "예시"],
+          "rows": [
+            { "condition": "받침 O", "form": "N을", "examples": ["밥을 먹어요", "물을 마셔요", "책을 읽어요"] },
+            { "condition": "받침 X", "form": "N를", "examples": ["영화를 봐요", "바나나를 사요", "편지를 써요"] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "나나코 씨, 무엇을 해요?", "en": "Nanako-ssi, what are you doing?", "he": "נאנאקו-שי, מה את עושה?" },
+              { "speaker": "나", "ko": "저는 밥을 먹어요.", "en": "I'm eating a meal.", "he": "אני אוכלת אוכל." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "리신 씨, 무엇을 해요?", "en": "Rishin-ssi, what are you doing?", "he": "רישין-שי, מה אתה עושה?" },
+              { "speaker": "나", "ko": "편지를 써요.", "en": "I'm writing a letter.", "he": "אני כותב מכתב." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "베른 씨는 한국어를 배워요?", "en": "Bern ssi, do you learn Korean?", "he": "ברן-שי, אתה לומד קוריאנית?" },
+              { "speaker": "나", "ko": "네, 한국어를 배워요.", "en": "Yes, I learn Korean.", "he": "כן, אני לומד קוריאנית." }
+            ]
+          }
+        ],
+        "notes": [
+          { "lang": "he", "text": "שימו לב שהמילים האלה יכולות להתקצר: 무엇 = 뭐, 무엇을 = 뭘." },
+          { "lang": "en", "text": "Notice that these words can be shortened: 무엇 = 뭐, 무엇을 = 뭘." }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice1",
+            "fixedQuestion": "무엇을 해요? (을/를 선택)",
+            "items": [
+              { "prompt": "물___ 마셔요.", "options": ["을", "를"], "answers": ["을"] },
+              { "prompt": "영화___ 봐요.", "options": ["을", "를"], "answers": ["를"] },
+              { "prompt": "책___ 읽어요.", "options": ["을", "를"], "answers": ["을"] },
+              { "prompt": "바나나___ 사요.", "options": ["을", "를"], "answers": ["를"] },
+              { "prompt": "편지___ 써요.", "options": ["을", "를"], "answers": ["를"] },
+              { "prompt": "한국어___ 공부해요.", "options": ["을", "를"], "answers": ["를"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice2",
+            "fixedQuestion": "무엇을 해요? (을/를 입력)",
+            "items": [
+              { "prompt": "물___ 마셔요.", "answers": ["을"] },
+              { "prompt": "영화___ 봐요.", "answers": ["를"] },
+              { "prompt": "책___ 읽어요.", "answers": ["을"] },
+              { "prompt": "바나나___ 사요.", "answers": ["를"] },
+              { "prompt": "편지___ 써요.", "answers": ["를"] },
+              { "prompt": "한국어___ 공부해요.", "answers": ["를"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice3",
+            "fixedQuestion": "단어를 사용해 문장을 완성하세요.",
+            "items": [
+              { "prompt": "물 / 마시다", "sample": "물을 마셔요." },
+              { "prompt": "영화 / 보다", "sample": "영화를 봐요." },
+              { "prompt": "책 / 읽다", "sample": "책을 읽어요." },
+              { "prompt": "바나나 / 사다", "sample": "바나나를 사요." },
+              { "prompt": "편지 / 쓰다", "sample": "편지를 써요." },
+              { "prompt": "한국어 / 공부하다", "sample": "한국어를 공부해요." }
+            ]
+          }
+        ]
       }
     }
   ],
-  "questions": [
-    {
-      "type": "MULTIPLE_CHOICE",
-      "questionText": "What does the passage say?",
-      "options": [
-        "I am a student",
-        "I am a teacher",
-        "I am happy"
-      ],
-      "answer": "I am a student",
-      "explanation": "저는 학생입니다 means I am a student."
-    }
-  ]
+  "questions": []
 }

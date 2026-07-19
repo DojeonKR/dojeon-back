@@ -839,7 +839,7 @@
                       "recentAchievements": [
                         {
                           "badgeId": 1,
-                          "title": "첫 발걸음",
+                          "title": "Signed up",
                           "imageUrl": "https://...",
                           "earnedAt": "2026-04-01T00:00:00.000Z"
                         }
@@ -1362,7 +1362,7 @@
     },
     "/home/resume": {
       "get": {
-        "description": "`userFirstName`에는 **닉네임 전체**가 들어갑니다(이름 파싱 없음). `lastLesson`은 학습 이력이 없으면 `null`입니다. 이론상 사용자 레코드가 없으면 `data`가 `null`일 수 있습니다.",
+        "description": "`nickname`에 홈 화면에 표시할 닉네임 전체가 들어갑니다. `lastLesson`은 학습 이력이 없으면 `null`입니다. 이론상 사용자 레코드가 없으면 `data`가 `null`일 수 있습니다.",
         "operationId": "HomeController_resume",
         "parameters": [],
         "responses": {
@@ -1376,7 +1376,7 @@
                     "code": "200",
                     "message": "요청이 성공했습니다.",
                     "data": {
-                      "userFirstName": "도전이",
+                      "nickname": "도전이",
                       "dailyStreak": 7,
                       "todayGoal": {
                         "targetMin": 30,
@@ -1621,7 +1621,7 @@
     },
     "/subscription/plan": {
       "get": {
-        "description": "DB `subscription_plan`의 `planId`·표시 필드 + 서버 하드코딩 `benefits` 맵(`free`·`basic`·`pro`·`annual`)을 합쳐 반환합니다. 플랜 id가 맵에 없으면 `benefits`는 빈 배열입니다. `title`·`priceText` 등은 DB 시드 값과 일치해야 합니다.",
+        "description": "무료·7일 체험 후 Pro 1·3·6·12개월 순으로 반환합니다. `priceUsd`는 결제 총액, `billingCycleMonths`는 구독 기간입니다.",
         "operationId": "SubscriptionController_plans",
         "parameters": [],
         "responses": {
@@ -1638,27 +1638,29 @@
                       "plans": [
                         {
                           "planId": "free",
-                          "title": "무료",
-                          "priceText": "₩0 / 월",
+                          "title": "Free Plan",
+                          "priceText": "$0",
                           "subText": null,
                           "hasTrial": false,
-                          "billingCycleMonths": 1,
-                          "benefits": [
-                            "기본 레슨",
-                            "광고 포함"
-                          ]
+                          "billingCycleMonths": 0,
+                          "priceIls": null,
+                          "priceUsd": 0,
+                          "benefits": []
                         },
                         {
                           "planId": "pro",
-                          "title": "프리미엄",
-                          "priceText": "₩9,900 / 월",
-                          "subText": "첫 달 무료",
-                          "hasTrial": true,
+                          "title": "1 Month",
+                          "priceText": "$15",
+                          "subText": null,
+                          "hasTrial": false,
                           "billingCycleMonths": 1,
+                          "priceIls": null,
+                          "priceUsd": 15,
                           "benefits": [
-                            "전체 레슨",
-                            "AI 분석",
-                            "우선 지원"
+                            "Access to all courses classes",
+                            "Full access to connectivity",
+                            "Full access to personal notebook",
+                            "More coming soon"
                           ]
                         }
                       ]
@@ -2437,6 +2439,55 @@
         "summary": "스크랩 삭제",
         "tags": [
           "스크랩 (Scrap)"
+        ]
+      }
+    },
+    "/admin/overview": {
+      "get": {
+        "operationId": "AdminController_getOverview",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "전체 콘텐츠 트리 조회 (코스 → 레슨 → 섹션 + 콘텐츠 개수)",
+        "tags": [
+          "관리자 (Admin)"
+        ]
+      }
+    },
+    "/admin/sections/{sectionId}/contents": {
+      "get": {
+        "operationId": "AdminController_getSectionContents",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "섹션 콘텐츠 상세 조회 (카드·자료·문제, 정답 포함)",
+        "tags": [
+          "관리자 (Admin)"
         ]
       }
     },

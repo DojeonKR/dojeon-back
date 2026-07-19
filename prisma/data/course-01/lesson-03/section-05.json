@@ -1,0 +1,31 @@
+{
+  "type": "LISTENING",
+  "title": "Listening",
+  "orderNum": 5,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "LISTENING_AUDIO",
+      "isExtra": false,
+      "contentText": {
+        "title": "듣기",
+        "mode": "text",
+        "audioUrl": "",
+        "audioUnavailable": true,
+        "transcript": "여자: 지금 뭐 해요?\n남자: 저는 영화를 봐요. 뭐 해요?\n여자: 물을 마셔요.",
+        "dialogue": [
+          { "speaker": "여자", "ko": "지금 뭐 해요?" },
+          { "speaker": "남자", "ko": "저는 영화를 봐요. 뭐 해요?" },
+          { "speaker": "여자", "ko": "물을 마셔요." }
+        ],
+        "questions": [
+          { "kind": "free", "questionText": "여자는 뭐 해요?", "sample": "여자는 물을 마셔요." },
+          { "kind": "free", "questionText": "남자는 뭐 해요?", "sample": "남자는 영화를 봐요." }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

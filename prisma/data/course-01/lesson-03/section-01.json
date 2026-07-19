@@ -2,29 +2,33 @@
   "type": "VOCAB",
   "title": "Vocabulary",
   "orderNum": 1,
-  "totalPages": 3,
+  "totalPages": 25,
   "cards": [
-    {
-      "sequence": 1,
-      "wordFront": "안녕하세요",
-      "wordBack": "Hello",
-      "notes": "polite greeting",
-      "audioUrl": null
-    },
-    {
-      "sequence": 2,
-      "wordFront": "감사합니다",
-      "wordBack": "Thank you",
-      "notes": null,
-      "audioUrl": null
-    },
-    {
-      "sequence": 3,
-      "wordFront": "단어3",
-      "wordBack": "Word 3",
-      "notes": "demo vocabulary",
-      "audioUrl": null
-    }
+    { "sequence": 1, "wordFront": "가다", "wordBack": "to go", "notes": null, "locales": { "he": { "back": "ללכת", "notes": null } }, "audioUrl": null },
+    { "sequence": 2, "wordFront": "보다", "wordBack": "to see / to watch", "notes": null, "locales": { "he": { "back": "לראות", "notes": null } }, "audioUrl": null },
+    { "sequence": 3, "wordFront": "쓰다", "wordBack": "to write", "notes": null, "locales": { "he": { "back": "לכתוב", "notes": null } }, "audioUrl": null },
+    { "sequence": 4, "wordFront": "먹다", "wordBack": "to eat", "notes": null, "locales": { "he": { "back": "לאכול", "notes": null } }, "audioUrl": null },
+    { "sequence": 5, "wordFront": "읽다", "wordBack": "to read", "notes": null, "locales": { "he": { "back": "לקרוא", "notes": null } }, "audioUrl": null },
+    { "sequence": 6, "wordFront": "마시다", "wordBack": "to drink", "notes": null, "locales": { "he": { "back": "לשתות", "notes": null } }, "audioUrl": null },
+    { "sequence": 7, "wordFront": "배우다", "wordBack": "to learn", "notes": null, "locales": { "he": { "back": "ללמוד", "notes": null } }, "audioUrl": null },
+    { "sequence": 8, "wordFront": "가르치다", "wordBack": "to teach", "notes": null, "locales": { "he": { "back": "ללמד", "notes": null } }, "audioUrl": null },
+    { "sequence": 9, "wordFront": "공부하다", "wordBack": "to study", "notes": null, "locales": { "he": { "back": "ללמוד", "notes": null } }, "audioUrl": null },
+    { "sequence": 10, "wordFront": "서다", "wordBack": "to stand", "notes": null, "locales": { "he": { "back": "לעמוד", "notes": null } }, "audioUrl": null },
+    { "sequence": 11, "wordFront": "만들다", "wordBack": "to make", "notes": null, "locales": { "he": { "back": "להכין / ליצור", "notes": null } }, "audioUrl": null },
+    { "sequence": 12, "wordFront": "산책하다", "wordBack": "to take a walk", "notes": null, "locales": { "he": { "back": "לצאת להליכה", "notes": null } }, "audioUrl": null },
+    { "sequence": 13, "wordFront": "밥", "wordBack": "meal / rice", "notes": null, "locales": { "he": { "back": "אוכל / אורז", "notes": null } }, "audioUrl": null },
+    { "sequence": 14, "wordFront": "편지", "wordBack": "letter", "notes": null, "locales": { "he": { "back": "מכתב", "notes": null } }, "audioUrl": null },
+    { "sequence": 15, "wordFront": "한국어", "wordBack": "Korean language", "notes": null, "locales": { "he": { "back": "קוריאנית", "notes": null } }, "audioUrl": null },
+    { "sequence": 16, "wordFront": "물", "wordBack": "water", "notes": null, "locales": { "he": { "back": "מים", "notes": null } }, "audioUrl": null },
+    { "sequence": 17, "wordFront": "영화", "wordBack": "movie", "notes": null, "locales": { "he": { "back": "סרט", "notes": null } }, "audioUrl": null },
+    { "sequence": 18, "wordFront": "바나나", "wordBack": "banana", "notes": null, "locales": { "he": { "back": "בננה", "notes": null } }, "audioUrl": null },
+    { "sequence": 19, "wordFront": "무엇", "wordBack": "what (formal)", "notes": null, "locales": { "he": { "back": "מה", "notes": "צורה מלאה של 뭐" } }, "audioUrl": null },
+    { "sequence": 20, "wordFront": "무엇을", "wordBack": "what (object)", "notes": null, "locales": { "he": { "back": "מה", "notes": "עם 을" } }, "audioUrl": null },
+    { "sequence": 21, "wordFront": "뭘", "wordBack": "what (shortened form)", "notes": "short form of 무엇을", "locales": { "he": { "back": "מה", "notes": "קיצור של 무엇을" } }, "audioUrl": null },
+    { "sequence": 22, "wordFront": "지금", "wordBack": "now", "notes": null, "locales": { "he": { "back": "עכשיו", "notes": null } }, "audioUrl": null },
+    { "sequence": 23, "wordFront": "그래요?", "wordBack": "really? / I see", "notes": null, "locales": { "he": { "back": "באמת? / הבנתי", "notes": null } }, "audioUrl": null },
+    { "sequence": 24, "wordFront": "화이팅", "wordBack": "good luck / you can do it", "notes": null, "locales": { "he": { "back": "בהצלחה", "notes": null } }, "audioUrl": null },
+    { "sequence": 25, "wordFront": "감사합니다", "wordBack": "thank you (formal)", "notes": null, "locales": { "he": { "back": "תודה", "notes": null } }, "audioUrl": null }
   ],
   "materials": [],
   "questions": []
