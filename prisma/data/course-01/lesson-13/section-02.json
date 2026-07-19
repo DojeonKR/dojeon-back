@@ -1,0 +1,91 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 1",
+  "orderNum": 2,
+  "totalPages": 8,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "고 싶다",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "\"רוצה לעשות\". משתמשים בסיומת הזו על מנת לתאר דברים שרוצים לעשות. כמובן מתחבר לפעלים בלבד." },
+          { "lang": "en", "text": "\"Want to do.\" This ending is used to describe things that one wants to do. Of course, it attaches only to verbs." }
+        ],
+        "table": {
+          "headers": ["동사", "V-고 싶다"],
+          "rows": [
+            { "condition": "먹다", "form": "먹고 싶다", "examples": [] },
+            { "condition": "배우다", "form": "배우고 싶다", "examples": [] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "오늘 뭐 하고 싶어요?", "en": "What do you want to do today?", "he": "מה אתה רוצה לעשות היום?" },
+              { "speaker": "나", "ko": "저는 자고 싶어요. 너무 피곤해요.", "en": "I want to sleep. I'm too tired.", "he": "אני רוצה לישון. אני עייף מדי." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "태우", "ko": "마이클 씨는 뭘 배우고 싶어요?", "en": "What does Michael-ssi want to learn?", "he": "מה מייקל-שי רוצה ללמוד?" },
+              { "speaker": "마이클", "ko": "저는 기타를 배우고 싶어요.", "en": "I want to learn guitar.", "he": "אני רוצה ללמוד לנגן בגיטרה." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "점심에 뭐 먹고 싶어요?", "en": "What do you want to eat for lunch?", "he": "מה אתה רוצה לאכול בארוחת הצהריים?" },
+              { "speaker": "나", "ko": "김치찌개를 먹고 싶어요. 그렇지만 회사 근처에 식당이 없어요.", "en": "I want to eat kimchi-jjigae. But there's no restaurant near the office.", "he": "אני רוצה לאכול קימצ׳י-צ׳יגה. אבל אין מסעדה ליד המשרד." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 한국에 ______. → 가고 싶어요",
+            "items": [
+              { "prompt": "영화를 ______.", "options": ["보고 싶어요", "자고 싶어요", "쉬고 싶어요", "만나고 싶어요"], "answers": ["보고 싶어요"] },
+              { "prompt": "새 옷을 ______.", "options": ["사고 싶어요", "가고 싶어요", "먹고 싶어요", "배우고 싶어요"], "answers": ["사고 싶어요"] },
+              { "prompt": "여행을 ______.", "options": ["가고 싶어요", "보고 싶어요", "사고 싶어요", "쉬고 싶어요"], "answers": ["가고 싶어요"] },
+              { "prompt": "피아노를 ______.", "options": ["배우고 싶어요", "만나고 싶어요", "자고 싶어요", "사고 싶어요"], "answers": ["배우고 싶어요"] },
+              { "prompt": "집에서 ______.", "options": ["쉬고 싶어요", "보고 싶어요", "가고 싶어요", "배우고 싶어요"], "answers": ["쉬고 싶어요"] },
+              { "prompt": "친구를 ______.", "options": ["만나고 싶어요", "자고 싶어요", "사고 싶어요", "쉬고 싶어요"], "answers": ["만나고 싶어요"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 한국에 ______. (가다)",
+            "items": [
+              { "prompt": "영화를 ______. (보다)", "answers": ["보고 싶어요"] },
+              { "prompt": "새 옷을 ______. (사다)", "answers": ["사고 싶어요"] },
+              { "prompt": "여행을 ______. (가다)", "answers": ["가고 싶어요"] },
+              { "prompt": "피아노를 ______. (배우다)", "answers": ["배우고 싶어요"] },
+              { "prompt": "집에서 ______. (쉬다)", "answers": ["쉬고 싶어요"] },
+              { "prompt": "친구를 ______. (만나다)", "answers": ["만나고 싶어요"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 한국 / 가다 → 한국에 가고 싶어요.",
+            "items": [
+              { "prompt": "영화 / 보다", "sample": "영화를 보고 싶어요." },
+              { "prompt": "새 옷 / 사다", "sample": "새 옷을 사고 싶어요." },
+              { "prompt": "여행 / 가다", "sample": "여행을 가고 싶어요." },
+              { "prompt": "피아노 / 배우다", "sample": "피아노를 배우고 싶어요." },
+              { "prompt": "집 / 쉬다", "sample": "집에서 쉬고 싶어요." },
+              { "prompt": "친구 / 만나다", "sample": "친구를 만나고 싶어요." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

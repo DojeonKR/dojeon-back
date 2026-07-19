@@ -364,6 +364,29 @@ function main() {
           `${lessonDir}: Listening must use text fallback without audio`,
         );
       }
+
+      if (courseFolder === 'course-01' && lessonFolder === 'lesson-13') {
+        assert(sectionFiles.length === 5, `${lessonDir}: exactly 5 sections required`);
+        const sections = sectionFiles.map((file) => readJson(path.join(lessonDir, file)));
+        assert(sections[0].cards.length === 20, `${lessonDir}: 20 vocabulary cards required`);
+        assert(
+          sections[1].materials[0]?.contentText?.title === '고 싶다',
+          `${lessonDir}: Grammar 1 must contain 고 싶다`,
+        );
+        assert(
+          sections[2].materials[0]?.contentText?.title === '으면',
+          `${lessonDir}: Grammar 2 must contain 으면`,
+        );
+        assert(
+          sections[3].materials[0]?.contentText?.questions?.length === 3,
+          `${lessonDir}: Reading must contain 3 questions`,
+        );
+        assert(
+          sections[4].materials[0]?.contentText?.audioUnavailable === true &&
+            !sections[4].materials[0]?.contentText?.audioUrl,
+          `${lessonDir}: Listening must use text fallback without audio`,
+        );
+      }
     }
   }
 

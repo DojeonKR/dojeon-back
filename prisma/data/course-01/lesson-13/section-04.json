@@ -1,0 +1,31 @@
+{
+  "type": "READING",
+  "title": "Reading",
+  "orderNum": 4,
+  "totalPages": 4,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "READING_PASSAGE",
+      "isExtra": false,
+      "contentText": {
+        "title": "읽기",
+        "body": "마이클: 주말에 시간이 있으면 뭐 하고 싶어요?\n태우: 저는 여행을 가고 싶어요. 마이클 씨는요?\n마이클: 저는 그냥 집에서 쉬고 싶어요. 요즘 너무 바빠요.\n태우: 그럼 시간이 나면 같이 영화를 볼까요?\n마이클: 네, 좋아요!",
+        "dialogue": [
+          { "speaker": "마이클", "ko": "주말에 시간이 있으면 뭐 하고 싶어요?" },
+          { "speaker": "태우", "ko": "저는 여행을 가고 싶어요. 마이클 씨는요?" },
+          { "speaker": "마이클", "ko": "저는 그냥 집에서 쉬고 싶어요. 요즘 너무 바빠요." },
+          { "speaker": "태우", "ko": "그럼 시간이 나면 같이 영화를 볼까요?" },
+          { "speaker": "마이클", "ko": "네, 좋아요!" }
+        ],
+        "questions": [
+          { "kind": "choose", "questionText": "마이클 씨는 주말에 뭐 하고 싶어요?", "options": ["영화를 보고 싶어요", "여행을 가고 싶어요", "집에서 쉬고 싶어요", "친구를 만나고 싶어요"], "answer": "집에서 쉬고 싶어요" },
+          { "kind": "fill", "questionText": "마이클 씨는 왜 집에서 쉬고 싶어요?", "answers": ["요즘 너무 바빠요."] },
+          { "kind": "fill", "questionText": "태우 씨는 주말에 뭐 하고 싶어요?", "answers": ["여행을 가고 싶어요."] }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

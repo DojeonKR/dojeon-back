@@ -1,0 +1,91 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 2",
+  "orderNum": 3,
+  "totalPages": 8,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "으면",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "צורת תנאי - אם. מצורף לתארים ופעלים. כאשר מחובר לשמות עצם נוסיף 이면 או 면." },
+          { "lang": "en", "text": "The conditional form - if. Attaches to adjectives and verbs. When attached to nouns, we add 이면 or 면." }
+        ],
+        "table": {
+          "headers": ["형태", "받침 O", "받침 X"],
+          "rows": [
+            { "condition": "A/V-으면·면", "form": "좋다 → 좋으면 / 먹다 → 먹으면", "examples": ["바쁘다 → 바쁘면", "가다 → 가면"] },
+            { "condition": "N이면·면", "form": "학생 → 학생이면", "examples": ["친구 → 친구면"] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "시간이 있으면 뭐 하고 싶어요?", "en": "If you have time, what do you want to do?", "he": "אם יהיה לך זמן, מה אתה רוצה לעשות?" },
+              { "speaker": "나", "ko": "시간이 있으면 친구를 만나고 싶어요.", "en": "If I have time, I want to meet a friend.", "he": "אם יהיה לי זמן, אני רוצה לפגוש חבר." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "엠마", "ko": "날씨가 좋으면 같이 산책할까요?", "en": "If the weather is nice, shall we take a walk together?", "he": "אם מזג האוויר יהיה טוב, שנצא להליכה ביחד?" },
+              { "speaker": "베른", "ko": "네, 좋아요!", "en": "Yes, sounds good!", "he": "כן, מעולה!" }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "졸리면 어떻게 해요?", "en": "What do you do if you're sleepy?", "he": "מה את עושה אם את ישנונית?" },
+              { "speaker": "나", "ko": "졸리면 커피를 마셔요.", "en": "If I'm sleepy, I drink coffee.", "he": "אם אני ישנונית, אני שותה קפה." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 시간이 ______ 친구를 만나고 싶어요. → 있으면",
+            "items": [
+              { "prompt": "날씨가 ______ 산책하고 싶어요.", "options": ["좋으면", "가면", "쉬면", "마시면"], "answers": ["좋으면"] },
+              { "prompt": "너무 ______ 쉬고 싶어요.", "options": ["바쁘면", "좋으면", "배고프면", "심심하면"], "answers": ["바쁘면"] },
+              { "prompt": "______ 커피를 마시고 싶어요.", "options": ["졸리면", "바쁘면", "있으면", "심심하면"], "answers": ["졸리면"] },
+              { "prompt": "______ 밥을 먹고 싶어요.", "options": ["배고프면", "졸리면", "좋으면", "있으면"], "answers": ["배고프면"] },
+              { "prompt": "돈이 ______ 여행을 가고 싶어요.", "options": ["있으면", "좋으면", "바쁘면", "배고프면"], "answers": ["있으면"] },
+              { "prompt": "______ 영화를 보고 싶어요.", "options": ["심심하면", "졸리면", "바쁘면", "좋으면"], "answers": ["심심하면"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 시간이 ______ 친구를 만나고 싶어요. (있다)",
+            "items": [
+              { "prompt": "날씨가 ______ 산책하고 싶어요. (좋다)", "answers": ["좋으면"] },
+              { "prompt": "너무 ______ 쉬고 싶어요. (바쁘다)", "answers": ["바쁘면"] },
+              { "prompt": "______ 커피를 마시고 싶어요. (졸리다)", "answers": ["졸리면"] },
+              { "prompt": "______ 밥을 먹고 싶어요. (배고프다)", "answers": ["배고프면"] },
+              { "prompt": "돈이 ______ 여행을 가고 싶어요. (있다)", "answers": ["있으면"] },
+              { "prompt": "______ 영화를 보고 싶어요. (심심하다)", "answers": ["심심하면"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 시간 / 있다 / 친구 / 만나다 (고 싶다) → 시간이 있으면 친구를 만나고 싶어요.",
+            "items": [
+              { "prompt": "날씨 / 좋다 / 산책하다 (고 싶다)", "sample": "날씨가 좋으면 산책하고 싶어요." },
+              { "prompt": "너무 바쁘다 / 쉬다 (고 싶다)", "sample": "너무 바쁘면 쉬고 싶어요." },
+              { "prompt": "졸리다 / 커피 / 마시다 (고 싶다)", "sample": "졸리면 커피를 마시고 싶어요." },
+              { "prompt": "배고프다 / 밥 / 먹다 (고 싶다)", "sample": "배고프면 밥을 먹고 싶어요." },
+              { "prompt": "돈 / 있다 / 여행 / 가다 (고 싶다)", "sample": "돈이 있으면 여행을 가고 싶어요." },
+              { "prompt": "심심하다 / 영화 / 보다 (고 싶다)", "sample": "심심하면 영화를 보고 싶어요." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

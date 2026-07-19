@@ -1,0 +1,33 @@
+{
+  "type": "LISTENING",
+  "title": "Listening",
+  "orderNum": 5,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "LISTENING_AUDIO",
+      "isExtra": false,
+      "contentText": {
+        "title": "듣기",
+        "mode": "text",
+        "audioUrl": "",
+        "audioUnavailable": true,
+        "transcript": "가: 너무 졸려요.\n나: 졸리면 커피를 마셔요.\n가: 좋아요. 그런데 배도 고파요.\n나: 그럼 커피를 마시고 같이 밥을 먹을까요?\n가: 네, 좋아요!",
+        "dialogue": [
+          { "speaker": "가", "ko": "너무 졸려요." },
+          { "speaker": "나", "ko": "졸리면 커피를 마셔요." },
+          { "speaker": "가", "ko": "좋아요. 그런데 배도 고파요." },
+          { "speaker": "나", "ko": "그럼 커피를 마시고 같이 밥을 먹을까요?" },
+          { "speaker": "가", "ko": "네, 좋아요!" }
+        ],
+        "questions": [
+          { "kind": "choose", "questionText": "가는 졸리면 뭘 하고 싶어요?", "options": ["자고 싶어요", "쉬고 싶어요", "커피를 마시고 싶어요", "영화를 보고 싶어요"], "answer": "커피를 마시고 싶어요" },
+          { "kind": "choose", "questionText": "두 사람은 이제 뭐 할 거예요?", "options": ["커피를 마시고 영화를 볼 거예요", "커피를 마시고 같이 밥을 먹을 거예요", "집에서 쉴 거예요", "여행을 갈 거예요"], "answer": "커피를 마시고 같이 밥을 먹을 거예요" }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

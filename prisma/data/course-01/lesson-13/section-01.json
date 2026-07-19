@@ -1,0 +1,30 @@
+{
+  "type": "VOCAB",
+  "title": "Vocabulary",
+  "orderNum": 1,
+  "totalPages": 20,
+  "cards": [
+    { "sequence": 1, "wordFront": "자다", "wordBack": "to sleep", "notes": null, "locales": { "he": { "back": "לישון", "notes": null } }, "audioUrl": null },
+    { "sequence": 2, "wordFront": "피곤하다", "wordBack": "to be tired", "notes": "it’s more physical “tired”", "locales": { "he": { "back": "עייף", "notes": "זו עייפות יותר פיזית" } }, "audioUrl": null },
+    { "sequence": 3, "wordFront": "기타", "wordBack": "guitar", "notes": null, "locales": { "he": { "back": "גיטרה", "notes": null } }, "audioUrl": null },
+    { "sequence": 4, "wordFront": "배우다", "wordBack": "to learn", "notes": null, "locales": { "he": { "back": "ללמוד", "notes": null } }, "audioUrl": null },
+    { "sequence": 5, "wordFront": "점심", "wordBack": "lunch", "notes": null, "locales": { "he": { "back": "ארוחת צהריים", "notes": null } }, "audioUrl": null },
+    { "sequence": 6, "wordFront": "김치찌개", "wordBack": "kimchi stew", "notes": null, "locales": { "he": { "back": "קימצ׳י-צ׳יגה", "notes": null } }, "audioUrl": null },
+    { "sequence": 7, "wordFront": "그렇지만", "wordBack": "but / however", "notes": null, "locales": { "he": { "back": "אבל", "notes": null } }, "audioUrl": null },
+    { "sequence": 8, "wordFront": "회사", "wordBack": "company / office", "notes": null, "locales": { "he": { "back": "חברה / משרד", "notes": null } }, "audioUrl": null },
+    { "sequence": 9, "wordFront": "근처", "wordBack": "nearby / vicinity", "notes": null, "locales": { "he": { "back": "קרוב / בסביבה", "notes": null } }, "audioUrl": null },
+    { "sequence": 10, "wordFront": "식당", "wordBack": "restaurant", "notes": null, "locales": { "he": { "back": "מסעדה", "notes": null } }, "audioUrl": null },
+    { "sequence": 11, "wordFront": "피아노", "wordBack": "piano", "notes": null, "locales": { "he": { "back": "פסנתר", "notes": null } }, "audioUrl": null },
+    { "sequence": 12, "wordFront": "쉬다", "wordBack": "to rest", "notes": null, "locales": { "he": { "back": "לנוח", "notes": null } }, "audioUrl": null },
+    { "sequence": 13, "wordFront": "바쁘다", "wordBack": "to be busy", "notes": null, "locales": { "he": { "back": "עסוק", "notes": null } }, "audioUrl": null },
+    { "sequence": 14, "wordFront": "졸리다", "wordBack": "to be sleepy", "notes": null, "locales": { "he": { "back": "ישנוני", "notes": null } }, "audioUrl": null },
+    { "sequence": 15, "wordFront": "어떻게", "wordBack": "how", "notes": null, "locales": { "he": { "back": "איך", "notes": null } }, "audioUrl": null },
+    { "sequence": 16, "wordFront": "배고프다", "wordBack": "to be hungry", "notes": null, "locales": { "he": { "back": "רעב", "notes": null } }, "audioUrl": null },
+    { "sequence": 17, "wordFront": "돈", "wordBack": "money", "notes": null, "locales": { "he": { "back": "כסף", "notes": null } }, "audioUrl": null },
+    { "sequence": 18, "wordFront": "심심하다", "wordBack": "to be bored", "notes": null, "locales": { "he": { "back": "משועמם", "notes": null } }, "audioUrl": null },
+    { "sequence": 19, "wordFront": "그냥", "wordBack": "just / simply", "notes": null, "locales": { "he": { "back": "סתם / פשוט", "notes": null } }, "audioUrl": null },
+    { "sequence": 20, "wordFront": "시간이 나다", "wordBack": "becomes available (time)", "notes": null, "locales": { "he": { "back": "זמן שמתפנה", "notes": null } }, "audioUrl": null }
+  ],
+  "materials": [],
+  "questions": []
+}
