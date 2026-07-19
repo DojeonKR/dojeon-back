@@ -1,0 +1,120 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 1",
+  "orderNum": 2,
+  "totalPages": 10,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "지 않다",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "צורת שלילה לפעלים ותארים." },
+          { "lang": "en", "text": "A negation form for verbs and adjectives." }
+        ],
+        "table": {
+          "headers": ["동사/형용사", "A/V-지 않다"],
+          "rows": [
+            { "condition": "비싸다", "form": "비싸지 않다", "examples": [] },
+            { "condition": "먹다", "form": "먹지 않다", "examples": [] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "오늘 바빠요?", "en": "Are you busy today?", "he": "האם אתה עסוק היום?" },
+              { "speaker": "나", "ko": "아니요, 바쁘지 않아요.", "en": "No, I'm not busy.", "he": "לא, אני לא עסוק." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "한국 음식을 자주 먹어요?", "en": "Do you eat Korean food often?", "he": "האם אתה אוכל אוכל קוריאני לעתים קרובות?" },
+              { "speaker": "나", "ko": "아니요, 자주 먹지 않아요. 가끔 먹어요.", "en": "No, I don't eat it often. Sometimes.", "he": "לא, אני לא אוכל לעתים קרובות. לפעמים." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "예문", "ko": "가방이 비싸지 않아요. 그렇지만 예뻐요.", "en": "The bag isn't expensive. But it's pretty.", "he": "התיק לא יקר. אבל הוא יפה." }
+            ]
+          }
+        ],
+        "notes": [
+          { "lang": "ko", "text": "원문에 따라 연습은 없습니다." }
+        ],
+        "practices": []
+      }
+    },
+    {
+      "sequence": 2,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "으세요/-지 마세요",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "צורת ציווי — עשה / אל תעשה. זו צורה מנומסת להגיד למישהו לעשות משהו, והקשיחות תקבע על פי ההקשר והטון." },
+          { "lang": "en", "text": "Imperative form — do / don't do. This is a polite way to tell someone to do something, and the level of firmness depends on context and tone." }
+        ],
+        "table": {
+          "headers": ["형태", "동사", "활용"],
+          "rows": [
+            { "condition": "V-으세요", "form": "앉다 → 앉으세요 / 읽다 → 읽으세요", "examples": ["씻다 → 씻으세요"] },
+            { "condition": "V-세요", "form": "보다 → 보세요 / 오다 → 오세요", "examples": ["공부하다 → 공부하세요"] },
+            { "condition": "V-지 마세요", "form": "앉다 → 앉지 마세요", "examples": ["보다 → 보지 마세요"] }
+          ]
+        },
+        "dialogues": [
+          { "lines": [{ "speaker": "예문", "ko": "손을 씻으세요.", "en": "Wash your hands.", "he": "שטוף את הידיים." }] },
+          { "lines": [{ "speaker": "예문", "ko": "여기에 앉으세요.", "en": "Sit here.", "he": "שב כאן." }] },
+          { "lines": [{ "speaker": "예문", "ko": "박물관에서 사진을 찍지 마세요.", "en": "Don't take photos in the museum.", "he": "במוזיאון, אל תצלם תמונות." }] }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 책을 ______. (O) → 읽으세요",
+            "items": [
+              { "prompt": "내일 시험이 있으니까 일찍 ______. (O)", "options": ["일어나세요", "수용하세요", "드세요", "피우세요"], "answers": ["일어나세요"] },
+              { "prompt": "건강이 중요하니까 몸 관리를 잘 ______. (O)", "options": ["하세요", "자세요", "보세요", "오세요"], "answers": ["하세요"] },
+              { "prompt": "한국어를 열심히 ______. (O)", "options": ["공부하세요", "일어나세요", "자세요", "오세요"], "answers": ["공부하세요"] },
+              { "prompt": "수업 시간에 핸드폰을 ______. (X)", "options": ["보지 마세요", "자지 마세요", "피우지 마세요", "오지 마세요"], "answers": ["보지 마세요"] },
+              { "prompt": "여기에서 담배를 ______. (X)", "options": ["피우지 마세요", "보지 마세요", "자지 마세요", "먹지 마세요"], "answers": ["피우지 마세요"] },
+              { "prompt": "늦게 ______. (X)", "options": ["자지 마세요", "피우지 마세요", "보지 마세요", "오지 마세요"], "answers": ["자지 마세요"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 책을 ______. (읽다 / O)",
+            "items": [
+              { "prompt": "내일 시험이 있으니까 일찍 ______. (일어나다 / O)", "answers": ["일어나세요"] },
+              { "prompt": "건강이 중요하니까 몸 관리를 잘 ______. (하다 / O)", "answers": ["하세요"] },
+              { "prompt": "한국어를 열심히 ______. (공부하다 / O)", "answers": ["공부하세요"] },
+              { "prompt": "수업 시간에 핸드폰을 ______. (보다 / X)", "answers": ["보지 마세요"] },
+              { "prompt": "여기에서 담배를 ______. (피우다 / X)", "answers": ["피우지 마세요"] },
+              { "prompt": "늦게 ______. (자다 / X)", "answers": ["자지 마세요"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 책 / 읽다 (O) → 책을 읽으세요.",
+            "items": [
+              { "prompt": "내일 시험이 있으니까 / 일찍 / 일어나다 (O)", "sample": "내일 시험이 있으니까 일찍 일어나세요." },
+              { "prompt": "건강이 중요하니까 / 몸 관리 / 잘 하다 (O)", "sample": "건강이 중요하니까 몸 관리를 잘 하세요." },
+              { "prompt": "한국어 / 열심히 / 공부하다 (O)", "sample": "한국어를 열심히 공부하세요." },
+              { "prompt": "수업 시간 / 핸드폰 / 보다 (X)", "sample": "수업 시간에 핸드폰을 보지 마세요." },
+              { "prompt": "여기 / 담배 / 피우다 (X)", "sample": "여기에서 담배를 피우지 마세요." },
+              { "prompt": "늦게 / 자다 (X)", "sample": "늦게 자지 마세요." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

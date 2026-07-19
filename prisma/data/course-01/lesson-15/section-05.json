@@ -1,0 +1,33 @@
+{
+  "type": "LISTENING",
+  "title": "Listening",
+  "orderNum": 5,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "LISTENING_AUDIO",
+      "isExtra": false,
+      "contentText": {
+        "title": "듣기",
+        "mode": "text",
+        "audioUrl": "",
+        "audioUnavailable": true,
+        "transcript": "나나코: 선생님, 한국어를 잘 하고 싶어요. 뭘 하면 좋아요?\n선생님: 매일 한국어를 들으세요. 그리고 한국 드라마도 보세요.\n나나코: 네! 그렇지만 한국어가 재미있지만 어려워요.\n선생님: 괜찮아요. 꾸준히 하면 잘 할 수 있어요.\n나나코: 네, 감사합니다!",
+        "dialogue": [
+          { "speaker": "나나코", "ko": "선생님, 한국어를 잘 하고 싶어요. 뭘 하면 좋아요?" },
+          { "speaker": "선생님", "ko": "매일 한국어를 들으세요. 그리고 한국 드라마도 보세요." },
+          { "speaker": "나나코", "ko": "네! 그렇지만 한국어가 재미있지만 어려워요." },
+          { "speaker": "선생님", "ko": "괜찮아요. 꾸준히 하면 잘 할 수 있어요." },
+          { "speaker": "나나코", "ko": "네, 감사합니다!" }
+        ],
+        "questions": [
+          { "kind": "choose", "questionText": "한국어를 잘 하고 싶으면 뭘 하면 좋아요?", "options": ["매일 한국어를 듣고 드라마를 봐요", "영어 책을 읽어요", "물을 마셔요", "일찍 일어나요"], "answer": "매일 한국어를 듣고 드라마를 봐요" },
+          { "kind": "choose", "questionText": "나나코 씨는 한국어가 어때요?", "options": ["쉽지만 재미없어요", "재미있지만 어려워요", "어렵지만 재미없어요", "쉽고 재미있어요"], "answer": "재미있지만 어려워요" }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

@@ -1,0 +1,80 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 2",
+  "orderNum": 3,
+  "totalPages": 8,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "‘ㄷ’ 불규칙",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "יוצא דופן של העיצור הסופי ㄷ. לשים לב שחוק יוצא הדופן הזה לא מתקיים על כל הפעלים! צריך פשוט להכיר אותם." },
+          { "lang": "en", "text": "The ㄷ irregular. Note that this rule doesn't apply to all verbs ending in ㄷ! You simply need to learn which ones are irregular." }
+        ],
+        "table": {
+          "headers": ["동사", "아/어요", "으세요", "고", "을까요"],
+          "rows": [
+            { "condition": "걷다", "form": "걸어요", "examples": ["걸으세요", "걷고", "걸을까요"] },
+            { "condition": "듣다", "form": "들어요", "examples": ["들으세요", "듣고", "들을까요"] },
+            { "condition": "묻다", "form": "물어요", "examples": ["물으세요", "묻고", "물을까요"] },
+            { "condition": "닫다", "form": "닫아요", "examples": ["닫으세요", "닫고", "닫을까요"] },
+            { "condition": "받다", "form": "받아요", "examples": ["받으세요", "받고", "받을까요"] }
+          ]
+        },
+        "dialogues": [
+          { "lines": [{ "speaker": "예문", "ko": "선생님 말을 잘 들으세요!", "en": "Listen carefully to what the teacher says!", "he": "תקשיב היטב למה שהמורה אומר!" }] },
+          { "lines": [{ "speaker": "예문", "ko": "저는 음악을 듣고 공부해요.", "en": "I listen to music and then study.", "he": "אני מקשיב למוזיקה ואז לומד." }] },
+          { "lines": [{ "speaker": "예문", "ko": "오늘 추워요. 창문을 닫으세요.", "en": "It's cold today. Close the window.", "he": "היום קר. סגור את החלון." }] },
+          { "lines": [{ "speaker": "가", "ko": "문법을 잘 모르면 선생님에게 물으세요!", "en": "If you don’t understand the grammar, ask the teacher!", "he": "אם אתה לא מבין את הדקדוק, תשאל את המורה!" }] }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 새 친구를 ______. → 얻었어요",
+            "items": [
+              { "prompt": "학교까지 ______.", "options": ["걷어요", "걸어요", "걷해요", "걸해요"], "answers": ["걸어요"] },
+              { "prompt": "수업의 내용을 모르면 선생님에게 ______.", "options": ["묻어요", "물어요", "묻해요", "물해요"], "answers": ["물어요"] },
+              { "prompt": "음악을 ______ 춤 춰요.", "options": ["듣고", "들고", "듣어요", "들어요"], "answers": ["듣고"] },
+              { "prompt": "생일에 선물을 ______.", "options": ["발았어요", "받았어요", "받해요", "발해요"], "answers": ["받았어요"] },
+              { "prompt": "저는 친구를 ______.", "options": ["밀어요", "믿해요", "믿어요", "밀해요"], "answers": ["믿어요"] },
+              { "prompt": "추워요. 창문을 ______.", "options": ["달으세요", "닫으세요", "닫세요", "달세요"], "answers": ["닫으세요"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 새 친구를 ______. (얻다)",
+            "items": [
+              { "prompt": "학교까지 ______. (걷다)", "answers": ["걸어요"] },
+              { "prompt": "수업의 내용을 모르면 선생님에게 ______. (묻다)", "answers": ["물어요"] },
+              { "prompt": "음악을 ______ 춤 춰요. (듣다 / 고)", "answers": ["듣고"] },
+              { "prompt": "생일에 선물을 ______. (받다)", "answers": ["받았어요"] },
+              { "prompt": "저는 친구를 ______. (믿다)", "answers": ["믿어요"] },
+              { "prompt": "추워요. 창문을 ______. (닫다 / 으세요)", "answers": ["닫으세요"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 새 친구 / 얻다 → 새 친구를 얻었어요.",
+            "items": [
+              { "prompt": "학교까지 / 걷다", "sample": "학교까지 걸어요." },
+              { "prompt": "내용을 모르면 / 선생님에게 / 묻다", "sample": "내용을 모르면 선생님에게 물어요." },
+              { "prompt": "음악을 / 듣다 (고) / 춤 추다", "sample": "음악을 듣고 춤 춰요." },
+              { "prompt": "생일에 / 선물 / 받다", "sample": "생일에 선물을 받았어요." },
+              { "prompt": "친구를 / 믿다", "sample": "친구를 믿어요." },
+              { "prompt": "춥다 / 창문 / 닫다 (으세요)", "sample": "추우니까 창문을 닫으세요." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

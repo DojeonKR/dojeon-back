@@ -1,0 +1,32 @@
+{
+  "type": "READING",
+  "title": "Reading",
+  "orderNum": 4,
+  "totalPages": 4,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "READING_PASSAGE",
+      "isExtra": false,
+      "contentText": {
+        "title": "읽기",
+        "body": "의사: 요즘 어디가 아파요?\n환자: 머리가 아프고 목이 아파요.\n의사: 물을 많이 마시고 일찍 주무세요.\n환자: 네, 알겠어요.\n의사: 그리고 이번 주에 이 약을 드세요.\n환자: 네, 감사합니다.",
+        "dialogue": [
+          { "speaker": "의사", "ko": "요즘 어디가 아파요?" },
+          { "speaker": "환자", "ko": "머리가 아프고 목이 아파요." },
+          { "speaker": "의사", "ko": "물을 많이 마시고 일찍 주무세요." },
+          { "speaker": "환자", "ko": "네, 알겠어요." },
+          { "speaker": "의사", "ko": "그리고 이번 주에 이 약을 드세요." },
+          { "speaker": "환자", "ko": "네, 감사합니다." }
+        ],
+        "questions": [
+          { "kind": "choose", "questionText": "환자는 어디가 아파요?", "options": ["배하고 다리", "머리하고 목", "손하고 발", "눈하고 귀"], "answer": "머리하고 목" },
+          { "kind": "fill", "questionText": "의사는 뭘 말했어요? 물을 많이 마시고 ______.", "answers": ["일찍 주무세요."] },
+          { "kind": "fill", "questionText": "환자는 이번 주에 뭐 할 거예요?", "answers": ["약을 먹을 거예요."] }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}
