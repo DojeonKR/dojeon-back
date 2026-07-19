@@ -2,7 +2,7 @@
   "type": "GRAMMAR",
   "title": "Grammar 1",
   "orderNum": 2,
-  "totalPages": 2,
+  "totalPages": 8,
   "cards": [],
   "materials": [
     {
@@ -10,27 +10,77 @@
       "type": "GRAMMAR_TABLE",
       "isExtra": false,
       "contentText": {
-        "title": "Lesson 4 grammar",
-        "explanations": [
-          {
-            "lang": "en",
-            "text": "A verb ending used to form polite present tense sentences."
-          }
-        ],
+        "title": "이/가 아니에요",
         "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "צורת שלילה לשמות עצם. זה לא X. השורש של 아니에요 הוא 아니다, שמשמעותו פשוט ‘לא’." },
+          { "lang": "en", "text": "This is the negative form for nouns: ‘It is not X.’ The dictionary form of 아니에요 is 아니다, meaning ‘to not be.’" }
+        ],
+        "table": {
+          "headers": ["받침", "형태", "예시"],
+          "rows": [
+            { "condition": "받침 O", "form": "N이 아니에요", "examples": ["책이 아니에요", "연필이 아니에요"] },
+            { "condition": "받침 X", "form": "N가 아니에요", "examples": ["의사가 아니에요", "지도가 아니에요"] }
+          ]
+        },
         "dialogues": [
           {
             "lines": [
-              {
-                "speaker": "가",
-                "ko": "뭐 해요?",
-                "en": "What are you doing?"
-              },
-              {
-                "speaker": "나",
-                "ko": "공부해요.",
-                "en": "I am studying."
-              }
+              { "speaker": "가", "ko": "이것이 책이에요?", "en": "Is this a book?", "he": "האם זה ספר?" },
+              { "speaker": "나", "ko": "아니요, 그것이 책이 아니에요. 컴퓨터예요.", "en": "No, that’s not a book. That’s a computer.", "he": "לא, זה לא ספר. זה מחשב." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "그것이 시계예요?", "en": "Is that a clock?", "he": "האם זה שעון?" },
+              { "speaker": "나", "ko": "아니요, 이것이 시계가 아니에요. 필통이에요.", "en": "No, this is not a clock. It’s a pencil case.", "he": "לא, זה לא שעון. זה קלמר." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "저것이 안경이에요?", "en": "Are those glasses?", "he": "האם אלו משקפיים?" },
+              { "speaker": "나", "ko": "아니요, 저것이 안경이 아니에요. 볼펜이에요.", "en": "No, those are not glasses. It’s a pen.", "he": "לא, אלו לא משקפיים. זה עט." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "이/가 선택",
+            "items": [
+              { "prompt": "이것이 선생님의 책이에요? → 아니요. 선생님의 책 (_____) 아니에요. 공책이에요.", "options": ["이", "가"], "answers": ["이"] },
+              { "prompt": "그것이 마이클 씨의 휴대폰이에요? → 아니요. 마이클 씨의 휴대폰 (_____) 아니에요. 나나코 씨의 휴대폰이에요.", "options": ["이", "가"], "answers": ["이"] },
+              { "prompt": "이것이 물이에요? → 아니요. 물 (_____) 아니에요. 커피예요.", "options": ["이", "가"], "answers": ["이"] },
+              { "prompt": "저것이 태우 씨의 가방이에요? → 아니요. 태우 씨의 가방 (_____) 아니에요. 베른 씨의 가방이에요.", "options": ["이", "가"], "answers": ["이"] },
+              { "prompt": "이것이 연필이에요? → 아니요. 연필 (_____) 아니에요. 볼펜이에요.", "options": ["이", "가"], "answers": ["이"] },
+              { "prompt": "그것이 책이에요? → 아니요. 책 (_____) 아니에요. 지도예요.", "options": ["이", "가"], "answers": ["이"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "이/가 아니에요만 완성하세요.",
+            "items": [
+              { "prompt": "이것이 선생님의 책이에요? → 아니요. ____________________. 공책이에요.", "answers": ["선생님의 책이 아니에요"] },
+              { "prompt": "그것이 마이클 씨의 휴대폰이에요? → 아니요. ____________________. 나나코 씨의 휴대폰이에요.", "answers": ["마이클 씨의 휴대폰이 아니에요"] },
+              { "prompt": "이것이 물이에요? → 아니요. ____________________. 커피예요.", "answers": ["물이 아니에요"] },
+              { "prompt": "저것이 태우 씨의 가방이에요? → 아니요. ____________________. 베른 씨의 가방이에요.", "answers": ["태우 씨의 가방이 아니에요"] },
+              { "prompt": "이것이 연필이에요? → 아니요. ____________________. 볼펜이에요.", "answers": ["연필이 아니에요"] },
+              { "prompt": "그것이 책이에요? → 아니요. ____________________. 지도예요.", "answers": ["책이 아니에요"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 볼펜 → 책 / 이것이 볼펜이 아니에요. 책이에요.",
+            "items": [
+              { "prompt": "연필 → 볼펜", "sample": "이것이 연필이 아니에요. 볼펜이에요." },
+              { "prompt": "물 → 커피", "sample": "이것이 물이 아니에요. 커피예요." },
+              { "prompt": "제 책 → 선생님의 책", "sample": "이것이 제 책이 아니에요. 선생님의 책이에요." },
+              { "prompt": "마이클 씨의 휴대폰 → 나나코 씨의 휴대폰", "sample": "이것이 마이클 씨의 휴대폰이 아니에요. 나나코 씨의 휴대폰이에요." },
+              { "prompt": "태우 씨의 가방 → 베른 씨의 가방", "sample": "저것이 태우 씨의 가방이 아니에요. 베른 씨의 가방이에요." },
+              { "prompt": "책 → 지도", "sample": "그것이 책이 아니에요. 지도예요." }
             ]
           }
         ]

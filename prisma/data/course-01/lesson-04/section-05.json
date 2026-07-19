@@ -1,0 +1,32 @@
+{
+  "type": "LISTENING",
+  "title": "Listening",
+  "orderNum": 5,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "LISTENING_AUDIO",
+      "isExtra": false,
+      "contentText": {
+        "title": "듣기",
+        "mode": "text",
+        "audioUrl": "",
+        "audioUnavailable": true,
+        "transcript": "선생님: 마이클 씨, 의사예요?\n마이클: 아니요, 의사가 아니에요. 학생이에요.\n선생님: 리신 씨는 지금 영어를 공부해요?\n리신: 아니요, 지금 영어 공부를 안 해요. 한국어를 공부해요.",
+        "dialogue": [
+          { "speaker": "선생님", "ko": "마이클 씨, 의사예요?" },
+          { "speaker": "마이클", "ko": "아니요, 의사가 아니에요. 학생이에요." },
+          { "speaker": "선생님", "ko": "리신 씨는 지금 영어를 공부해요?" },
+          { "speaker": "리신", "ko": "아니요, 지금 영어 공부를 안 해요. 한국어를 공부해요." }
+        ],
+        "questions": [
+          { "kind": "choose", "questionText": "마이클 씨는 의사예요?", "options": ["네", "아니요"], "answer": "아니요" },
+          { "kind": "choose", "questionText": "리신 씨는 지금 무엇을 공부해요?", "options": ["한국어", "영어", "중국어", "일본어"], "answer": "한국어" }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

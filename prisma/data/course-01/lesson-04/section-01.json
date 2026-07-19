@@ -2,29 +2,22 @@
   "type": "VOCAB",
   "title": "Vocabulary",
   "orderNum": 1,
-  "totalPages": 3,
+  "totalPages": 14,
   "cards": [
-    {
-      "sequence": 1,
-      "wordFront": "안녕하세요",
-      "wordBack": "Hello",
-      "notes": "polite greeting",
-      "audioUrl": null
-    },
-    {
-      "sequence": 2,
-      "wordFront": "감사합니다",
-      "wordBack": "Thank you",
-      "notes": null,
-      "audioUrl": null
-    },
-    {
-      "sequence": 3,
-      "wordFront": "단어4",
-      "wordBack": "Word 4",
-      "notes": "demo vocabulary",
-      "audioUrl": null
-    }
+    { "sequence": 1, "wordFront": "아니요", "wordBack": "no", "notes": null, "locales": { "he": { "back": "לא", "notes": null } }, "audioUrl": null },
+    { "sequence": 2, "wordFront": "공책", "wordBack": "notebook", "notes": null, "locales": { "he": { "back": "מחברת", "notes": null } }, "audioUrl": null },
+    { "sequence": 3, "wordFront": "연필", "wordBack": "pencil", "notes": null, "locales": { "he": { "back": "עיפרון", "notes": null } }, "audioUrl": null },
+    { "sequence": 4, "wordFront": "필통", "wordBack": "pencil case", "notes": null, "locales": { "he": { "back": "קלמר", "notes": null } }, "audioUrl": null },
+    { "sequence": 5, "wordFront": "지도", "wordBack": "map", "notes": null, "locales": { "he": { "back": "מפה", "notes": null } }, "audioUrl": null },
+    { "sequence": 6, "wordFront": "휴대폰", "wordBack": "mobile phone", "notes": "same as 핸드폰", "locales": { "he": { "back": "טלפון נייד", "notes": "זהה ל־핸드폰" } }, "audioUrl": null },
+    { "sequence": 7, "wordFront": "자다", "wordBack": "to sleep", "notes": null, "locales": { "he": { "back": "לישון", "notes": null } }, "audioUrl": null },
+    { "sequence": 8, "wordFront": "오다", "wordBack": "to come", "notes": null, "locales": { "he": { "back": "לבוא", "notes": null } }, "audioUrl": null },
+    { "sequence": 9, "wordFront": "오늘", "wordBack": "today", "notes": null, "locales": { "he": { "back": "היום", "notes": null } }, "audioUrl": null },
+    { "sequence": 10, "wordFront": "학생", "wordBack": "student", "notes": "can refer to a school or university student", "locales": { "he": { "back": "סטודנט / תלמיד", "notes": null } }, "audioUrl": null },
+    { "sequence": 11, "wordFront": "영어", "wordBack": "English (language)", "notes": null, "locales": { "he": { "back": "אנגלית", "notes": null } }, "audioUrl": null },
+    { "sequence": 12, "wordFront": "중국어", "wordBack": "Chinese (language)", "notes": null, "locales": { "he": { "back": "סינית", "notes": null } }, "audioUrl": null },
+    { "sequence": 13, "wordFront": "일본어", "wordBack": "Japanese (language)", "notes": null, "locales": { "he": { "back": "יפנית", "notes": null } }, "audioUrl": null },
+    { "sequence": 14, "wordFront": "저도", "wordBack": "me too / I also", "notes": "도", "locales": { "he": { "back": "גם אני", "notes": "도 (גם)" } }, "audioUrl": null }
   ],
   "materials": [],
   "questions": []

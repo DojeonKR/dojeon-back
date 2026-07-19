@@ -1,31 +1,92 @@
 {
-  "type": "READING",
-  "title": "Reading",
+  "type": "GRAMMAR",
+  "title": "Grammar 2",
   "orderNum": 3,
-  "totalPages": 2,
+  "totalPages": 8,
   "cards": [],
   "materials": [
     {
       "sequence": 1,
-      "type": "READING_PASSAGE",
+      "type": "GRAMMAR_TABLE",
       "isExtra": false,
       "contentText": {
-        "title": "Reading 4",
-        "body": "안녕하세요. 저는 학생입니다. (Lesson 4)"
+        "title": "안",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "צורת שלילה לפעלים. הצורה שוללת את מה שמגיע אחריה. בפועל מסוג 하다, השלילה מגיעה אחרי שם העצם ולפני 하다." },
+          { "lang": "en", "text": "A negation form for verbs. It negates whatever comes after it. With a 하다 verb, 안 comes after the noun and before 하다." }
+        ],
+        "table": {
+          "headers": ["동사", "안 V"],
+          "rows": [
+            { "condition": "자다", "form": "안 자다", "examples": ["안 자요"] },
+            { "condition": "오다", "form": "안 오다", "examples": ["안 와요"] },
+            { "condition": "공부하다", "form": "공부를 안 하다", "examples": ["공부를 안 해요"] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "베른 씨, 지금 자요?", "en": "Bern-ssi, are you sleeping right now?", "he": "ברן-שי, אתה ישן עכשיו?" },
+              { "speaker": "나", "ko": "아니요, 안 자요. 한국어를 공부해요.", "en": "No, I’m not sleeping. I’m studying Korean.", "he": "לא, אני לא ישן. אני לומד קוריאנית." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "나나코 씨, 밥을 먹어요?", "en": "Nanako-ssi, are you eating?", "he": "נאנאקו-שי, את אוכלת?" },
+              { "speaker": "나", "ko": "아니요, 밥을 안 먹어요. 물을 마셔요.", "en": "No, I’m not eating. I’m drinking water.", "he": "לא, אני לא אוכלת. אני שותה מים." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "엠마 씨, 오늘 한국어를 공부해요?", "en": "Emma-ssi, are you studying Korean today?", "he": "אמה-שי, את לומדת קוריאנית היום?" },
+              { "speaker": "나", "ko": "아니요, 오늘은 공부를 안 해요. 영화를 봐요.", "en": "No, I’m not studying today. I’m watching a movie.", "he": "לא, היום אני לא לומדת. אני צופה בסרט." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 4",
+            "fixedQuestion": "보기: 태우 씨는 지금 밥을 먹어요? → 아니요, 안 먹어요.",
+            "items": [
+              { "prompt": "베른 씨는 한국어를 써요? → 아니요,", "options": ["안 가요", "안 써요", "안 읽어요", "공부를 안 해요"], "answers": ["안 써요"] },
+              { "prompt": "리신 씨는 영화를 봐요? → 아니요,", "options": ["안 먹어요", "안 자요", "안 봐요", "공부를 안 해요"], "answers": ["안 봐요"] },
+              { "prompt": "나나코 씨는 물을 마셔요? → 아니요,", "options": ["안 써요", "안 마셔요", "안 가요", "안 읽어요"], "answers": ["안 마셔요"] },
+              { "prompt": "마이클 씨는 책을 읽어요? → 아니요,", "options": ["안 자요", "안 봐요", "안 읽어요", "공부를 안 해요"], "answers": ["안 읽어요"] },
+              { "prompt": "엠마 씨는 한국어를 공부해요? → 아니요,", "options": ["안 마셔요", "안 읽어요", "안 자요", "공부를 안 해요"], "answers": ["공부를 안 해요"] },
+              { "prompt": "태우 씨는 지금 자요? → 아니요,", "options": ["안 자요", "안 먹어요", "안 써요", "공부를 안 해요"], "answers": ["안 자요"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 5",
+            "fixedQuestion": "보기: 태우 씨는 지금 자요? → 아니요, 태우 씨는 지금 ______ (자다).",
+            "items": [
+              { "prompt": "베른 씨는 밥을 먹어요? → 아니요, 베른 씨는 밥을 ______ (먹다).", "answers": ["안 먹어요"] },
+              { "prompt": "리신 씨는 영화를 봐요? → 아니요, 리신 씨는 영화를 ______ (보다).", "answers": ["안 봐요"] },
+              { "prompt": "나나코 씨는 편지를 써요? → 아니요, 나나코 씨는 편지를 ______ (쓰다).", "answers": ["안 써요"] },
+              { "prompt": "마이클 씨는 물을 마셔요? → 아니요, 마이클 씨는 물을 ______ (마시다).", "answers": ["안 마셔요"] },
+              { "prompt": "엠마 씨는 한국어를 공부해요? → 아니요, 엠마 씨는 한국어를 ______ (공부하다).", "answers": ["공부를 안 해요"] },
+              { "prompt": "태우 씨는 책을 읽어요? → 아니요, 태우 씨는 책을 ______ (읽다).", "answers": ["안 읽어요"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 6",
+            "fixedQuestion": "보기: 태우 씨 / 지금 / 자다 → 태우 씨는 지금 안 자요.",
+            "items": [
+              { "prompt": "베른 씨 / 밥 / 먹다", "sample": "베른 씨는 밥을 안 먹어요." },
+              { "prompt": "리신 씨 / 영화 / 보다", "sample": "리신 씨는 영화를 안 봐요." },
+              { "prompt": "나나코 씨 / 편지 / 쓰다", "sample": "나나코 씨는 편지를 안 써요." },
+              { "prompt": "마이클 씨 / 물 / 마시다", "sample": "마이클 씨는 물을 안 마셔요." },
+              { "prompt": "엠마 씨 / 한국어 / 공부하다", "sample": "엠마 씨는 한국어 공부를 안 해요." },
+              { "prompt": "태우 씨 / 책 / 읽다", "sample": "태우 씨는 책을 안 읽어요." }
+            ]
+          }
+        ]
       }
     }
   ],
-  "questions": [
-    {
-      "type": "MULTIPLE_CHOICE",
-      "questionText": "What does the passage say?",
-      "options": [
-        "I am a student",
-        "I am a teacher",
-        "I am happy"
-      ],
-      "answer": "I am a student",
-      "explanation": "저는 학생입니다 means I am a student."
-    }
-  ]
+  "questions": []
 }

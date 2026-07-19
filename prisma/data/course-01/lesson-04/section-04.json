@@ -1,32 +1,30 @@
 {
-  "type": "LISTENING",
-  "title": "Listening",
+  "type": "READING",
+  "title": "Reading",
   "orderNum": 4,
-  "totalPages": 2,
+  "totalPages": 3,
   "cards": [],
   "materials": [
     {
       "sequence": 1,
-      "type": "LISTENING_AUDIO",
+      "type": "READING_PASSAGE",
       "isExtra": false,
       "contentText": {
-        "title": "Listening 4",
-        "audioUrl": "https://cdn.example.com/audio/lesson-4.mp3",
-        "transcript": "안녕하세요"
+        "title": "읽기",
+        "body": "태우: 나나코 씨, 중국 사람이에요?\n나나코: 아니요, 중국 사람이 아니에요. 일본 사람이에요. 저는 한국어를 배워요!\n태우: 저도 한국어를 배워요!\n나나코: 아, 태우 씨는 한국 사람이 아니에요?\n태우: 아니요, 저는 한국 사람이에요! 하하",
+        "dialogue": [
+          { "speaker": "태우", "ko": "나나코 씨, 중국 사람이에요?" },
+          { "speaker": "나나코", "ko": "아니요, 중국 사람이 아니에요. 일본 사람이에요. 저는 한국어를 배워요!" },
+          { "speaker": "태우", "ko": "저도 한국어를 배워요!" },
+          { "speaker": "나나코", "ko": "아, 태우 씨는 한국 사람이 아니에요?" },
+          { "speaker": "태우", "ko": "아니요, 저는 한국 사람이에요! 하하" }
+        ],
+        "questions": [
+          { "kind": "free", "questionText": "나나코 씨는 어느 나라 사람이에요?", "sample": "일본 사람이에요." },
+          { "kind": "free", "questionText": "태우 씨는 어느 나라 사람이에요?", "sample": "한국 사람이에요." }
+        ]
       }
     }
   ],
-  "questions": [
-    {
-      "type": "MULTIPLE_CHOICE",
-      "questionText": "What did you hear?",
-      "options": [
-        "Hello",
-        "Goodbye",
-        "Thank you"
-      ],
-      "answer": "Hello",
-      "explanation": null
-    }
-  ]
+  "questions": []
 }
