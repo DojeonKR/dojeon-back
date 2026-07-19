@@ -1,0 +1,89 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 1",
+  "orderNum": 2,
+  "totalPages": 8,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "읍시다/지 맙시다",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "הזמנה לעשות משהו ביחד. רק לפעלים, בהכרח יבוא בתור פנייה למישהו. זו צורה של דיבור והיא מנומסת." },
+          { "lang": "en", "text": "An invitation to do something together. Used only with verbs, always addressing someone directly. This is a spoken, polite form." }
+        ],
+        "table": {
+          "headers": ["형태", "동사", "활용"],
+          "rows": [
+            { "condition": "V-읍시다", "form": "먹다 → 먹읍시다", "examples": ["읽다 → 읽읍시다"] },
+            { "condition": "V-ㅂ시다", "form": "가다 → 갑시다", "examples": ["오다 → 옵시다"] },
+            { "condition": "V-지 맙시다", "form": "먹다 → 먹지 맙시다", "examples": ["가다 → 가지 맙시다"] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "예문", "ko": "배고파요. 비빔밥을 먹읍시다.", "en": "I’m hungry, let’s eat Bibimbap together.", "he": "אני רעב, בוא נאכל ביבימבאפ ביחד." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "예문", "ko": "오늘 날씨가 좋아요. 공원에 갑시다!", "en": "The weather is nice today. Let's go to the park!", "he": "מזג האוויר היום נפלא. בואו נלך לפארק!" }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "예문", "ko": "수업 시간에 핸드폰을 보지 맙시다.", "en": "During class, let's not look at our phones.", "he": "בשיעור, בואו לא נסתכל על הטלפון." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 같이 밥을 ______. → 먹읍시다",
+            "items": [
+              { "prompt": "마이클 씨, 같이 ______.", "options": ["공부해요", "공부했어요", "공부합시다", "공부할 거예요"], "answers": ["공부합시다"] },
+              { "prompt": "도서관에 ______.", "options": ["가요", "갔어요", "갑시다", "갈 거예요"], "answers": ["갑시다"] },
+              { "prompt": "수업 시간에 음식을 ______.", "options": ["먹어요", "먹읍시다", "먹지 맙시다", "먹을 거예요"], "answers": ["먹지 맙시다"] },
+              { "prompt": "베른 씨, 같이 ______.", "options": ["운동해요", "운동했어요", "운동합시다", "운동할 거예요"], "answers": ["운동합시다"] },
+              { "prompt": "교실에서 음악을 ______.", "options": ["들어요", "들었어요", "듣지 맙시다", "들을 거예요"], "answers": ["듣지 맙시다"] },
+              { "prompt": "같이 영화를 ______.", "options": ["봐요", "봤어요", "봅시다", "볼 거예요"], "answers": ["봅시다"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 같이 밥을 ______. (먹다)",
+            "items": [
+              { "prompt": "마이클 씨, 같이 ______. (공부하다)", "answers": ["공부합시다"] },
+              { "prompt": "도서관에 ______. (가다)", "answers": ["갑시다"] },
+              { "prompt": "수업 시간에 음식을 ______. (먹다 / 지 맙시다)", "answers": ["먹지 맙시다"] },
+              { "prompt": "베른 씨, 같이 ______. (운동하다)", "answers": ["운동합시다"] },
+              { "prompt": "교실에서 음악을 ______. (듣다 / 지 맙시다)", "answers": ["듣지 맙시다"] },
+              { "prompt": "같이 영화를 ______. (보다)", "answers": ["봅시다"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 같이 / 밥 / 먹다 → 같이 밥을 먹읍시다.",
+            "items": [
+              { "prompt": "마이클 씨 / 같이 / 공부하다", "sample": "마이클 씨, 같이 공부합시다." },
+              { "prompt": "도서관 / 가다", "sample": "도서관에 갑시다." },
+              { "prompt": "수업 시간 / 음식 / 먹다 / 지 맙시다", "sample": "수업 시간에 음식을 먹지 맙시다." },
+              { "prompt": "베른 씨 / 같이 / 운동하다", "sample": "베른 씨, 같이 운동합시다." },
+              { "prompt": "교실 / 음악 / 듣다 / 지 맙시다", "sample": "교실에서 음악을 듣지 맙시다." },
+              { "prompt": "같이 / 영화 / 보다", "sample": "같이 영화를 봅시다." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

@@ -1,0 +1,27 @@
+{
+  "type": "VOCAB",
+  "title": "Vocabulary",
+  "orderNum": 1,
+  "totalPages": 17,
+  "cards": [
+    { "sequence": 1, "wordFront": "아직", "wordBack": "yet / still", "notes": null, "locales": { "he": { "back": "עדיין", "notes": null } }, "audioUrl": null },
+    { "sequence": 2, "wordFront": "모르다", "wordBack": "to not know", "notes": null, "locales": { "he": { "back": "לא לדעת", "notes": null } }, "audioUrl": null },
+    { "sequence": 3, "wordFront": "알다", "wordBack": "to know", "notes": null, "locales": { "he": { "back": "לדעת", "notes": null } }, "audioUrl": null },
+    { "sequence": 4, "wordFront": "필요하다", "wordBack": "to need", "notes": null, "locales": { "he": { "back": "להזדקק / צריך", "notes": null } }, "audioUrl": null },
+    { "sequence": 5, "wordFront": "백화점", "wordBack": "department store", "notes": null, "locales": { "he": { "back": "כלבו / קניון", "notes": null } }, "audioUrl": null },
+    { "sequence": 6, "wordFront": "연습하다", "wordBack": "to practice", "notes": null, "locales": { "he": { "back": "לתרגל / להתאמן", "notes": null } }, "audioUrl": null },
+    { "sequence": 7, "wordFront": "시간", "wordBack": "time", "notes": null, "locales": { "he": { "back": "זמן", "notes": null } }, "audioUrl": null },
+    { "sequence": 8, "wordFront": "비빔밥", "wordBack": "bibimbap", "notes": "Korean mixed rice dish", "locales": { "he": { "back": "ביבימבאפ", "notes": "מנה קוריאנית של אורז מעורב" } }, "audioUrl": null },
+    { "sequence": 9, "wordFront": "요즘", "wordBack": "these days / lately", "notes": null, "locales": { "he": { "back": "לאחרונה / בימים אלה", "notes": null } }, "audioUrl": null },
+    { "sequence": 10, "wordFront": "자주", "wordBack": "often / frequently", "notes": null, "locales": { "he": { "back": "לעתים קרובות", "notes": null } }, "audioUrl": null },
+    { "sequence": 11, "wordFront": "가끔", "wordBack": "sometimes", "notes": null, "locales": { "he": { "back": "לפעמים", "notes": null } }, "audioUrl": null },
+    { "sequence": 12, "wordFront": "음식", "wordBack": "food", "notes": null, "locales": { "he": { "back": "אוכל", "notes": null } }, "audioUrl": null },
+    { "sequence": 13, "wordFront": "미안하다", "wordBack": "to be sorry", "notes": null, "locales": { "he": { "back": "מצטער", "notes": null } }, "audioUrl": null },
+    { "sequence": 14, "wordFront": "바쁘다", "wordBack": "to be busy", "notes": null, "locales": { "he": { "back": "עסוק", "notes": null } }, "audioUrl": null },
+    { "sequence": 15, "wordFront": "이야기하다", "wordBack": "to talk / chat", "notes": null, "locales": { "he": { "back": "לדבר / לשוחח", "notes": null } }, "audioUrl": null },
+    { "sequence": 16, "wordFront": "사진을 찍다", "wordBack": "to take a photo", "notes": null, "locales": { "he": { "back": "לצלם תמונה", "notes": null } }, "audioUrl": null },
+    { "sequence": 17, "wordFront": "좋아하다", "wordBack": "to like", "notes": null, "locales": { "he": { "back": "לאהוב / לחבב", "notes": null } }, "audioUrl": null }
+  ],
+  "materials": [],
+  "questions": []
+}

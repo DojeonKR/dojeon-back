@@ -1,0 +1,32 @@
+{
+  "type": "READING",
+  "title": "Reading",
+  "orderNum": 4,
+  "totalPages": 4,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "READING_PASSAGE",
+      "isExtra": false,
+      "contentText": {
+        "title": "읽기",
+        "body": "민안: 엠마 씨, 주말에 뭐 할 거예요?\n엠마: 아직 몰라요. 그런데 시간이 많아요.\n민안: 같이 영화를 볼까요?\n엠마: 좋아요! 같이 봅시다. 몇 시에 만날까요?\n민안: 두 시에 백화점 앞에서 만납시다!\n엠마: 네, 좋아요!",
+        "dialogue": [
+          { "speaker": "민안", "ko": "엠마 씨, 주말에 뭐 할 거예요?" },
+          { "speaker": "엠마", "ko": "아직 몰라요. 그런데 시간이 많아요." },
+          { "speaker": "민안", "ko": "같이 영화를 볼까요?" },
+          { "speaker": "엠마", "ko": "좋아요! 같이 봅시다. 몇 시에 만날까요?" },
+          { "speaker": "민안", "ko": "두 시에 백화점 앞에서 만납시다!" },
+          { "speaker": "엠마", "ko": "네, 좋아요!" }
+        ],
+        "questions": [
+          { "kind": "choose", "questionText": "두 사람은 몇 시에 만날 거예요?", "options": ["6시", "2시", "3시", "7시"], "answer": "2시" },
+          { "kind": "free", "questionText": "두 사람은 주말에 뭐 할 거예요?", "sample": "영화를 볼 거예요." },
+          { "kind": "free", "questionText": "두 사람은 어디에서 만날 거예요?", "sample": "백화점 앞에서 만날 거예요." }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

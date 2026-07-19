@@ -1,0 +1,31 @@
+{
+  "type": "LISTENING",
+  "title": "Listening",
+  "orderNum": 5,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "LISTENING_AUDIO",
+      "isExtra": false,
+      "contentText": {
+        "title": "듣기",
+        "mode": "text",
+        "audioUrl": "",
+        "audioUnavailable": true,
+        "transcript": "자영: 민주 씨, 수업에 책이 필요해요. 같이 서점에 갈까요?\n민주: 좋아요! 같이 갑시다. 지금 갈까요?\n자영: 네, 지금 갑시다!",
+        "dialogue": [
+          { "speaker": "자영", "ko": "민주 씨, 수업에 책이 필요해요. 같이 서점에 갈까요?" },
+          { "speaker": "민주", "ko": "좋아요! 같이 갑시다. 지금 갈까요?" },
+          { "speaker": "자영", "ko": "네, 지금 갑시다!" }
+        ],
+        "questions": [
+          { "kind": "choose", "questionText": "두 사람은 어디에 갈 거예요?", "options": ["도서관", "카페", "서점", "식당"], "answer": "서점" },
+          { "kind": "choose", "questionText": "왜 서점에 가요?", "options": ["책을 팔아요", "수업에 책이 필요해요", "공부해요", "친구를 만나요"], "answer": "수업에 책이 필요해요" }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

@@ -1,0 +1,91 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 2",
+  "orderNum": 3,
+  "totalPages": 8,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "을까요?",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "הצעה רכה לעשות משהו ביחד, או שאלה על דעתו של האדם שמולנו. \"שנעשה...?\" / \"מה דעתך אם...?\"" },
+          { "lang": "en", "text": "A soft suggestion to do something together, or asking for the other person's opinion. \"Shall we...?\" / \"What do you think about...?\"" }
+        ],
+        "table": {
+          "headers": ["V-을까요?", "형태", "V-ㄹ까요?", "형태"],
+          "rows": [
+            { "condition": "먹다", "form": "먹을까요?", "examples": ["가다 → 갈까요?"] },
+            { "condition": "읽다", "form": "읽을까요?", "examples": ["오다 → 올까요?"] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "요즘 한국 음식을 자주 먹어요. 오늘도 같이 먹을까요?", "en": "We eat a lot of Korean food lately. Shall we eat that today as well?", "he": "אנחנו אוכלים הרבה אוכל קוריאני לאחרונה. שנאכל גם היום?" },
+              { "speaker": "나", "ko": "좋아요, 같이 먹읍시다.", "en": "Sounds good, let’s eat together.", "he": "יאללה, בוא נאכל ביחד." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "리신 씨, 내일 도서관에 갈까요?", "en": "Rishin-shi, shall we go to the library tomorrow?", "he": "רישין-שי, שנלך מחר לספרייה?" },
+              { "speaker": "나", "ko": "좋아요. 같이 갑시다.", "en": "Sounds good, Let's go together.", "he": "יאללה, בוא נלך ביחד." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "오늘 술을 마실까요?", "en": "Shall we drink tonight?", "he": "שנצא לשתות היום?" },
+              { "speaker": "나", "ko": "아니요, 내일 시험이 있어요. 마시지 맙시다!", "en": "No, we have an exam tomorrow. Let's not drink!", "he": "לא, מחר יש מבחן. בואו לא נשתה!" }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 가: 같이 점심을 ______? / 나: 좋아요, 같이 먹읍시다. → 먹을까요",
+            "items": [
+              { "prompt": "가: 내일 같이 ______? / 나: 좋아요, 같이 공부합시다!", "options": ["공부해요", "공부했어요", "공부합시다", "공부할까요"], "answers": ["공부할까요"] },
+              { "prompt": "가: 주말에 공원에 ______? / 나: 좋아요, 같이 갑시다!", "options": ["가요", "갔어요", "갑시다", "갈까요"], "answers": ["갈까요"] },
+              { "prompt": "가: 같이 영화를 ______? / 나: 좋아요, 같이 봅시다!", "options": ["봐요", "봤어요", "봅시다", "볼까요"], "answers": ["볼까요"] },
+              { "prompt": "가: 카페에서 커피를 ______? / 나: 좋아요, 같이 마십시다!", "options": ["마셔요", "마셨어요", "마십시다", "마실까요"], "answers": ["마실까요"] },
+              { "prompt": "가: 같이 음악을 ______? / 나: 좋아요, 같이 들읍시다!", "options": ["들어요", "들었어요", "들읍시다", "들을까요"], "answers": ["들을까요"] },
+              { "prompt": "가: 도서관에서 책을 ______? / 나: 좋아요, 같이 읽읍시다!", "options": ["읽어요", "읽었어요", "읽읍시다", "읽을까요"], "answers": ["읽을까요"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 가: 같이 점심을 ______? / 나: 좋아요, 같이 먹읍시다. (먹다)",
+            "items": [
+              { "prompt": "가: 내일 같이 ______? / 나: 좋아요, 같이 공부합시다! (공부하다)", "answers": ["공부할까요"] },
+              { "prompt": "가: 주말에 공원에 ______? / 나: 좋아요, 같이 갑시다! (가다)", "answers": ["갈까요"] },
+              { "prompt": "가: 같이 영화를 ______? / 나: 좋아요, 같이 봅시다! (보다)", "answers": ["볼까요"] },
+              { "prompt": "가: 카페에서 커피를 ______? / 나: 좋아요, 같이 마십시다! (마시다)", "answers": ["마실까요"] },
+              { "prompt": "가: 같이 음악을 ______? / 나: 좋아요, 같이 들읍시다! (듣다)", "answers": ["들을까요"] },
+              { "prompt": "가: 도서관에서 책을 ______? / 나: 좋아요, 같이 읽읍시다! (읽다)", "answers": ["읽을까요"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 같이 / 점심 / 먹다 → 가: 같이 점심을 먹을까요? / 나: 좋아요, 같이 먹읍시다.",
+            "items": [
+              { "prompt": "내일 / 같이 / 공부하다", "sample": "가: 내일 같이 공부할까요?" },
+              { "prompt": "주말 / 공원 / 가다", "sample": "가: 주말에 공원에 갈까요?" },
+              { "prompt": "같이 / 영화 / 보다", "sample": "가: 같이 영화를 볼까요?" },
+              { "prompt": "카페 / 커피 / 마시다", "sample": "가: 카페에서 커피를 마실까요?" },
+              { "prompt": "같이 / 음악 / 듣다", "sample": "가: 같이 음악을 들을까요?" },
+              { "prompt": "도서관 / 책 / 읽다", "sample": "가: 도서관에서 책을 읽을까요?" }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}
