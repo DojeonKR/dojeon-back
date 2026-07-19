@@ -1,0 +1,31 @@
+{
+  "type": "LISTENING",
+  "title": "Listening",
+  "orderNum": 5,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "LISTENING_AUDIO",
+      "isExtra": false,
+      "contentText": {
+        "title": "듣기",
+        "mode": "text",
+        "audioUrl": "",
+        "audioUnavailable": true,
+        "transcript": "가: 여보세요, 배달이에요. 몇 호예요?\n나: 304호예요.\n가: 감사합니다!",
+        "dialogue": [
+          { "speaker": "가", "ko": "여보세요, 배달이에요. 몇 호예요?" },
+          { "speaker": "나", "ko": "304호예요." },
+          { "speaker": "가", "ko": "감사합니다!" }
+        ],
+        "questions": [
+          { "kind": "choose", "questionText": "왜 전화했어요?", "options": ["배달이에요", "친구예요", "선생님이에요", "주문이에요"], "answer": "배달이에요" },
+          { "kind": "choose", "questionText": "몇 호예요?", "options": ["204호", "304호", "404호", "504호"], "answer": "304호" }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

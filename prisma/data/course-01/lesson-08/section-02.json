@@ -1,0 +1,79 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 1",
+  "orderNum": 2,
+  "totalPages": 7,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "몇",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "איזה (מספר). משמש לשאלות על מספרים." },
+          { "lang": "en", "text": "Which (number). Used to ask questions about numbers." }
+        ],
+        "table": {
+          "headers": ["질문", "용도", "예시"],
+          "rows": [
+            { "condition": "몇 번", "form": "number", "examples": ["전화번호가 몇 번이에요?"] },
+            { "condition": "몇 층", "form": "floor", "examples": ["화장실이 몇 층에 있어요?"] },
+            { "condition": "몇 호", "form": "room/unit number", "examples": ["방이 몇 호예요?"] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "전화번호가 몇 번이에요?", "en": "What is your phone number?", "he": "מה מספר הטלפון שלך?" },
+              { "speaker": "나", "ko": "010-2345-6789예요.", "en": "It's 010-2345-6789.", "he": "010-2345-6789." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "화장실이 몇 층에 있어요?", "en": "What floor is the bathroom on?", "he": "באיזה קומה יש שירותים?" },
+              { "speaker": "나", "ko": "3층에 있어요.", "en": "It's on the third floor.", "he": "בקומה שלוש." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "방이 몇 호예요?", "en": "What is the room number?", "he": "מה מספר החדר?" },
+              { "speaker": "나", "ko": "203호예요.", "en": "It's room 203.", "he": "203." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 3층이에요. → 삼층",
+            "items": [
+              { "prompt": "몇 층이에요? 2층이에요.", "options": ["일층", "이층", "삼층", "사층"], "answers": ["이층"] },
+              { "prompt": "몇 층이에요? 7층이에요.", "options": ["오층", "육층", "칠층", "팔층"], "answers": ["칠층"] },
+              { "prompt": "몇 층이에요? 9층이에요.", "options": ["칠층", "팔층", "구층", "십층"], "answers": ["구층"] },
+              { "prompt": "몇 호예요? 203호예요.", "options": ["이공일호", "이공이호", "이공삼호", "이공사호"], "answers": ["이공삼호"] },
+              { "prompt": "몇 호예요? 504호예요.", "options": ["오공이호", "오공삼호", "오공사호", "오공오호"], "answers": ["오공사호"] },
+              { "prompt": "몇 호예요? 718호예요.", "options": ["칠일육호", "칠일칠호", "칠일팔호", "칠일구호"], "answers": ["칠일팔호"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 전화번호는 몇 번이에요? 010-2845-6193이에요.",
+            "items": [
+              { "prompt": "010-3927-4861이에요.", "answers": ["공일공-삼구이칠-사팔육일이에요."] },
+              { "prompt": "010-7364-9250이에요.", "answers": ["공일공-칠삼육사-구이오공이에요."] },
+              { "prompt": "010-5081-3746이에요.", "answers": ["공일공-오공팔일-삼칠사육이에요."] },
+              { "prompt": "010-9472-6538이에요.", "answers": ["공일공-구사칠이-육오삼팔이에요."] },
+              { "prompt": "010-6193-8427이에요.", "answers": ["공일공-육일구삼-팔사이칠이에요."] },
+              { "prompt": "010-8350-2914이에요.", "answers": ["공일공-팔삼오공-이구일사이에요."] }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

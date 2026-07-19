@@ -1,0 +1,30 @@
+{
+  "type": "READING",
+  "title": "Reading",
+  "orderNum": 4,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "READING_PASSAGE",
+      "isExtra": false,
+      "contentText": {
+        "title": "읽기",
+        "body": "가: 서점이 어디에 있어요? 책을 살 거예요.\n나: 은행 옆에 있어요.\n가: 몇 층이에요?\n나: 2층이에요.\n가: 감사합니다!",
+        "dialogue": [
+          { "speaker": "가", "ko": "서점이 어디에 있어요? 책을 살 거예요." },
+          { "speaker": "나", "ko": "은행 옆에 있어요." },
+          { "speaker": "가", "ko": "몇 층이에요?" },
+          { "speaker": "나", "ko": "2층이에요." },
+          { "speaker": "가", "ko": "감사합니다!" }
+        ],
+        "questions": [
+          { "kind": "free", "questionText": "서점이 어디에 있어요?", "sample": "은행 옆에 있어요." },
+          { "kind": "free", "questionText": "서점이 몇 층이에요?", "sample": "2층이에요." }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

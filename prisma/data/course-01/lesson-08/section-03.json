@@ -1,0 +1,96 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 2",
+  "orderNum": 3,
+  "totalPages": 8,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "에2",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "'ב' של מיקום יחסי. מצורף למילות מיקום כמו 위, 아래, 앞, 뒤, 옆, 안, 밖 וייצור ביטויים כמו \"מעל\", \"מתחת\", \"ליד\" וכו'." },
+          { "lang": "en", "text": "The location particle. Attaches to position words like 위, 아래, 앞, 뒤, 옆, 안, 밖 to create expressions like \"on top of\", \"under\", \"next to\", etc." }
+        ],
+        "table": {
+          "headers": ["표현", "English"],
+          "rows": [
+            { "condition": "위에", "form": "on top of / above", "examples": [] },
+            { "condition": "아래에", "form": "below / under", "examples": [] },
+            { "condition": "앞에", "form": "in front of", "examples": [] },
+            { "condition": "뒤에", "form": "behind", "examples": [] },
+            { "condition": "옆에", "form": "next to", "examples": [] },
+            { "condition": "안에", "form": "inside", "examples": [] },
+            { "condition": "밖에", "form": "outside", "examples": [] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "가방이 어디에 있어요?", "en": "Where is the bag?", "he": "איפה התיק?" },
+              { "speaker": "나", "ko": "책상 위에 있어요.", "en": "It's on the desk.", "he": "על השולחן." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "화장실이 어디에 있어요?", "en": "Where is the bathroom?", "he": "איפה השירותים?" },
+              { "speaker": "나", "ko": "카페 옆에 있어요.", "en": "It's next to the café.", "he": "ליד בית הקפה." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "고양이가 어디에 있어요?", "en": "Where is the cat?", "he": "איפה החתול?" },
+              { "speaker": "나", "ko": "의자 아래에 있어요.", "en": "It's under the chair.", "he": "מתחת לכיסא." }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 고양이가 어디에 있어요? (의자 / 아래) → 의자 아래에 있어요.",
+            "items": [
+              { "prompt": "나무가 어디에 있어요? (집 / 밖)", "options": ["집 안에 있어요", "집 앞에 있어요", "집 밖에 있어요", "집 뒤에 있어요"], "answers": ["집 밖에 있어요"] },
+              { "prompt": "카페가 어디에 있어요? (도서관 / 옆)", "options": ["도서관 앞에 있어요", "도서관 뒤에 있어요", "도서관 옆에 있어요", "도서관 안에 있어요"], "answers": ["도서관 옆에 있어요"] },
+              { "prompt": "핸드폰이 어디에 있어요? (책상 / 위)", "options": ["책상 아래에 있어요", "책상 뒤에 있어요", "책상 옆에 있어요", "책상 위에 있어요"], "answers": ["책상 위에 있어요"] },
+              { "prompt": "열쇠가 어디에 있어요? (가방 / 안)", "options": ["가방 위에 있어요", "가방 안에 있어요", "가방 옆에 있어요", "가방 뒤에 있어요"], "answers": ["가방 안에 있어요"] },
+              { "prompt": "화장실이 어디에 있어요? (식당 / 뒤)", "options": ["식당 앞에 있어요", "식당 옆에 있어요", "식당 안에 있어요", "식당 뒤에 있어요"], "answers": ["식당 뒤에 있어요"] },
+              { "prompt": "볼펜이 어디에 있어요? (컴퓨터 / 앞)", "options": ["컴퓨터 위에 있어요", "컴퓨터 앞에 있어요", "컴퓨터 옆에 있어요", "컴퓨터 안에 있어요"], "answers": ["컴퓨터 앞에 있어요"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 고양이가 어디에 있어요? (의자 / 아래) → 의자 ______ 있어요.",
+            "items": [
+              { "prompt": "나무가 어디에 있어요? (집 / 밖) → 집 ______ 있어요.", "answers": ["밖에"] },
+              { "prompt": "카페가 어디에 있어요? (도서관 / 옆) → 도서관 ______ 있어요.", "answers": ["옆에"] },
+              { "prompt": "핸드폰이 어디에 있어요? (책상 / 위) → 책상 ______ 있어요.", "answers": ["위에"] },
+              { "prompt": "열쇠가 어디에 있어요? (가방 / 안) → 가방 ______ 있어요.", "answers": ["안에"] },
+              { "prompt": "화장실이 어디에 있어요? (식당 / 뒤) → 식당 ______ 있어요.", "answers": ["뒤에"] },
+              { "prompt": "볼펜이 어디에 있어요? (컴퓨터 / 앞) → 컴퓨터 ______ 있어요.", "answers": ["앞에"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 고양이 / 의자 / 아래 → 고양이가 의자 아래에 있어요.",
+            "items": [
+              { "prompt": "나무 / 집 / 밖", "sample": "나무가 집 밖에 있어요." },
+              { "prompt": "카페 / 도서관 / 옆", "sample": "카페가 도서관 옆에 있어요." },
+              { "prompt": "핸드폰 / 책상 / 위", "sample": "핸드폰이 책상 위에 있어요." },
+              { "prompt": "열쇠 / 가방 / 안", "sample": "열쇠가 가방 안에 있어요." },
+              { "prompt": "화장실 / 식당 / 뒤", "sample": "화장실이 식당 뒤에 있어요." },
+              { "prompt": "볼펜 / 컴퓨터 / 앞", "sample": "볼펜이 컴퓨터 앞에 있어요." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}
