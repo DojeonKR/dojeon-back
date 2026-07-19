@@ -1,0 +1,32 @@
+{
+  "type": "LISTENING",
+  "title": "Listening",
+  "orderNum": 5,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "LISTENING_AUDIO",
+      "isExtra": false,
+      "contentText": {
+        "title": "듣기",
+        "mode": "text",
+        "audioUrl": "",
+        "audioUnavailable": true,
+        "transcript": "선생님: 베른 씨, 내일 뭐 할 거예요?\n베른: 마이클 씨하고 같이 밥을 먹을 거예요!\n선생님: 리신 씨는요?\n리신: 저는 혼자 쉴 거예요.",
+        "dialogue": [
+          { "speaker": "선생님", "ko": "베른 씨, 내일 뭐 할 거예요?" },
+          { "speaker": "베른", "ko": "마이클 씨하고 같이 밥을 먹을 거예요!" },
+          { "speaker": "선생님", "ko": "리신 씨는요?" },
+          { "speaker": "리신", "ko": "저는 혼자 쉴 거예요." }
+        ],
+        "questions": [
+          { "kind": "choose", "questionText": "베른 씨는 내일 누구하고 밥을 먹을 거예요?", "options": ["선생님하고", "리신 씨하고", "마이클 씨하고", "혼자"], "answer": "마이클 씨하고" },
+          { "kind": "choose", "questionText": "리신 씨는 내일 뭐 할 거예요?", "options": ["공부할 거예요", "영화를 볼 거예요", "밥을 먹을 거예요", "혼자 쉴 거예요"], "answer": "혼자 쉴 거예요" }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

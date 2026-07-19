@@ -1,0 +1,78 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 2",
+  "orderNum": 3,
+  "totalPages": 7,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "하고 (같이)",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "הצורה 하고 פירושה ‘עם’. המילה 같이 פירושה ‘ביחד’ והיא אופציונלית. הוספת 같이 מדגישה שעושים משהו יחד עם מישהו." },
+          { "lang": "en", "text": "하고 means ‘with.’ 같이 means ‘together’ and is optional. Adding 같이 emphasizes doing something together with someone." }
+        ],
+        "table": {
+          "headers": ["명사", "N하고 (같이)"],
+          "rows": [
+            { "condition": "친구", "form": "친구하고 (같이)", "examples": ["친구하고 같이 공부해요"] },
+            { "condition": "동생", "form": "동생하고 (같이)", "examples": ["동생하고 같이 쉬어요"] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "나나코 씨, 내일 뭐 할 거예요?", "en": "Nanako-ssi, what are you going to do tomorrow?", "he": "נאנאקו-שי, מה את הולכת לעשות מחר?" },
+              { "speaker": "나", "ko": "친구하고 같이 영화를 볼 거예요!", "en": "I'm going to watch a movie with a friend!", "he": "אני הולכת לראות סרט עם חברה!" }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "마이클 씨, 어제 혼자 공부했어요?", "en": "Michael-ssi, did you study alone yesterday?", "he": "מייקל-שי, למדת לבד אתמול?" },
+              { "speaker": "나", "ko": "아니요, 자영 씨하고 같이 공부했어요.", "en": "No, I studied with Jayoung.", "he": "לא, למדתי עם ג'איונג." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "베른 씨, 지금 혼자 밥을 먹어요?", "en": "Bern-ssi, are you eating alone now?", "he": "ברן-שי, אתה אוכל לבד עכשיו?" },
+              { "speaker": "나", "ko": "아니요, 민주 씨하고 같이 먹어요!", "en": "No, I'm eating with Minju!", "he": "לא, אני אוכל עם מינג'ו!" }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "fill",
+            "label": "Practice 5",
+            "fixedQuestion": "보기: 누구하고 같이 공부할 거예요? → ______ 같이 공부할 거예요. (친구)",
+            "items": [
+              { "prompt": "누구하고 같이 영화를 볼 거예요? → ______ 같이 볼 거예요. (친구)", "answers": ["친구하고"] },
+              { "prompt": "누구하고 같이 밥을 먹을 거예요? → ______ 같이 먹을 거예요. (선생님)", "answers": ["선생님하고"] },
+              { "prompt": "누구하고 같이 책을 읽을 거예요? → ______ 같이 읽을 거예요. (동생)", "answers": ["동생하고"] },
+              { "prompt": "누구하고 같이 편지를 쓸 거예요? → ______ 같이 쓸 거예요. (엄마)", "answers": ["엄마하고"] },
+              { "prompt": "누구하고 같이 음악을 들을 거예요? → ______ 같이 들을 거예요. (친구)", "answers": ["친구하고"] },
+              { "prompt": "누구하고 같이 쉴 거예요? → ______ 같이 쉴 거예요. (동생)", "answers": ["동생하고"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 6",
+            "fixedQuestion": "보기: 친구 / 한국어 / 공부하다 → 친구하고 같이 한국어를 공부할 거예요.",
+            "items": [
+              { "prompt": "친구 / 영화 / 보다", "sample": "친구하고 같이 영화를 볼 거예요." },
+              { "prompt": "선생님 / 밥 / 먹다", "sample": "선생님하고 같이 밥을 먹을 거예요." },
+              { "prompt": "동생 / 책 / 읽다", "sample": "동생하고 같이 책을 읽을 거예요." },
+              { "prompt": "엄마 / 편지 / 쓰다", "sample": "엄마하고 같이 편지를 쓸 거예요." },
+              { "prompt": "친구 / 음악 / 듣다", "sample": "친구하고 같이 음악을 들을 거예요." },
+              { "prompt": "동생 / 쉬다", "sample": "동생하고 같이 쉴 거예요." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

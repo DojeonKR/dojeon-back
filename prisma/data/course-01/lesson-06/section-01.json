@@ -1,0 +1,22 @@
+{
+  "type": "VOCAB",
+  "title": "Vocabulary",
+  "orderNum": 1,
+  "totalPages": 12,
+  "cards": [
+    { "sequence": 1, "wordFront": "내일", "wordBack": "tomorrow", "notes": null, "locales": { "he": { "back": "מחר", "notes": null } }, "audioUrl": null },
+    { "sequence": 2, "wordFront": "시험", "wordBack": "exam / test", "notes": null, "locales": { "he": { "back": "מבחן", "notes": null } }, "audioUrl": null },
+    { "sequence": 3, "wordFront": "왜", "wordBack": "why", "notes": null, "locales": { "he": { "back": "למה", "notes": null } }, "audioUrl": null },
+    { "sequence": 4, "wordFront": "그래서", "wordBack": "so / therefore", "notes": null, "locales": { "he": { "back": "לכן / אז", "notes": null } }, "audioUrl": null },
+    { "sequence": 5, "wordFront": "무슨", "wordBack": "what kind of / which", "notes": null, "locales": { "he": { "back": "איזה / מה", "notes": null } }, "audioUrl": null },
+    { "sequence": 6, "wordFront": "음악", "wordBack": "music", "notes": null, "locales": { "he": { "back": "מוזיקה", "notes": null } }, "audioUrl": null },
+    { "sequence": 7, "wordFront": "불고기", "wordBack": "bulgogi", "notes": "Korean grilled meat dish", "locales": { "he": { "back": "בולגוגי", "notes": "מנה קוריאנית של בשר צלוי" } }, "audioUrl": null },
+    { "sequence": 8, "wordFront": "듣다", "wordBack": "to listen", "notes": null, "locales": { "he": { "back": "להקשיב", "notes": null } }, "audioUrl": null },
+    { "sequence": 9, "wordFront": "일", "wordBack": "work / thing / matter", "notes": "meaning changes depending on the context", "locales": { "he": { "back": "עבודה / דבר / עניין", "notes": "משמעות תלוית הקשר" } }, "audioUrl": null },
+    { "sequence": 10, "wordFront": "동생", "wordBack": "younger sibling", "notes": null, "locales": { "he": { "back": "אח/אחות צעיר/ה", "notes": null } }, "audioUrl": null },
+    { "sequence": 11, "wordFront": "엄마", "wordBack": "mom", "notes": null, "locales": { "he": { "back": "אמא", "notes": null } }, "audioUrl": null },
+    { "sequence": 12, "wordFront": "는요?", "wordBack": "and…? / what about…?", "notes": null, "locales": { "he": { "back": "ו…? / מה עם…?", "notes": null } }, "audioUrl": null }
+  ],
+  "materials": [],
+  "questions": []
+}

@@ -1,0 +1,30 @@
+{
+  "type": "READING",
+  "title": "Reading",
+  "orderNum": 4,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "READING_PASSAGE",
+      "isExtra": false,
+      "contentText": {
+        "title": "읽기",
+        "body": "나나코: 엠마 씨, 내일 뭐 할 거예요?\n엠마: 친구하고 같이 영화를 볼 거예요! 나나코 씨는요?\n나나코: 저는 공부할 거예요. 내일 시험이 있어요.\n엠마: 무슨 시험이에요?\n나나코: 한국어 시험이에요. 화이팅!",
+        "dialogue": [
+          { "speaker": "나나코", "ko": "엠마 씨, 내일 뭐 할 거예요?" },
+          { "speaker": "엠마", "ko": "친구하고 같이 영화를 볼 거예요! 나나코 씨는요?" },
+          { "speaker": "나나코", "ko": "저는 공부할 거예요. 내일 시험이 있어요." },
+          { "speaker": "엠마", "ko": "무슨 시험이에요?" },
+          { "speaker": "나나코", "ko": "한국어 시험이에요. 화이팅!" }
+        ],
+        "questions": [
+          { "kind": "free", "questionText": "엠마 씨는 내일 뭐 할 거예요?", "sample": "친구하고 같이 영화를 볼 거예요." },
+          { "kind": "free", "questionText": "나나코 씨는 내일 왜 공부할 거예요?", "sample": "한국어 시험이 있어요." }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

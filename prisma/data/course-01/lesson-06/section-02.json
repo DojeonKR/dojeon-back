@@ -1,0 +1,91 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 1",
+  "orderNum": 2,
+  "totalPages": 8,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "을 거예요",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "זמן עתיד. מצרפים את הסיומת לשורש הפועל. אם השורש מסתיים בתנועה, מוסיפים ㄹ 거예요. אם הוא מסתיים בעיצור סופי, מוסיפים 을 거예요." },
+          { "lang": "en", "text": "The future tense attaches to the verb stem. If the stem ends in a vowel, add ㄹ 거예요. If it ends in a final consonant, add 을 거예요." }
+        ],
+        "table": {
+          "headers": ["받침", "형태", "예시"],
+          "rows": [
+            { "condition": "받침 O", "form": "을 거예요", "examples": ["먹다 → 먹을 거예요", "읽다 → 읽을 거예요"] },
+            { "condition": "받침 X", "form": "ㄹ 거예요", "examples": ["오다 → 올 거예요", "가다 → 갈 거예요", "공부하다 → 공부할 거예요"] }
+          ]
+        },
+        "dialogues": [
+          {
+            "lines": [
+              { "speaker": "가", "ko": "마이클 씨, 내일 뭐 할 거예요?", "en": "Michael-ssi, what are you going to do tomorrow?", "he": "מייקל-שי, מה אתה הולך לעשות מחר?" },
+              { "speaker": "나", "ko": "한국어를 공부할 거예요!", "en": "I'm going to study Korean!", "he": "אני הולך ללמוד קוריאנית!" }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "자영 씨, 무슨 일이 있어요?", "en": "Jayoung-ssi, did something happen?", "he": "ג’איונג-שי, קרה משהו?" },
+              { "speaker": "나", "ko": "아니요, 그냥 피곤해요. 내일 공부할 거예요.", "en": "No, I'm just tired. I'm going to study tomorrow.", "he": "לא, סתם עייפה. מחר אני הולכת ללמוד." }
+            ]
+          },
+          {
+            "lines": [
+              { "speaker": "가", "ko": "베른 씨, 내일 뭐 먹을 거예요?", "en": "Bern-ssi, what are you going to eat tomorrow?", "he": "ברן-שי, מה אתה הולך לאכול מחר?" },
+              { "speaker": "나", "ko": "불고기를 먹을 거예요!", "en": "I'm going to eat bulgogi!", "he": "אני הולך לאכול בולגוגי!" }
+            ]
+          }
+        ],
+        "practices": [
+          {
+            "kind": "choose",
+            "label": "Practice 1",
+            "fixedQuestion": "보기: 내일 한국어를 공부할 거예요? → 공부할 거예요.",
+            "items": [
+              { "prompt": "내일 영화를 볼 거예요?", "options": ["봐요", "볼 거예요", "봤어요", "안 봐요"], "answers": ["볼 거예요"] },
+              { "prompt": "내일 불고기를 먹을 거예요?", "options": ["먹었어요", "안 먹어요", "먹을 거예요", "먹어요"], "answers": ["먹을 거예요"] },
+              { "prompt": "내일 책을 읽을 거예요?", "options": ["읽어요", "읽었어요", "안 읽어요", "읽을 거예요"], "answers": ["읽을 거예요"] },
+              { "prompt": "내일 편지를 쓸 거예요?", "options": ["써요", "썼어요", "쓸 거예요", "안 써요"], "answers": ["쓸 거예요"] },
+              { "prompt": "내일 음악을 들을 거예요?", "options": ["들었어요", "들어요", "안 들어요", "들을 거예요"], "answers": ["들을 거예요"] },
+              { "prompt": "내일 쉴 거예요?", "options": ["쉬어요", "쉬었어요", "쉴 거예요", "안 쉬어요"], "answers": ["쉴 거예요"] }
+            ]
+          },
+          {
+            "kind": "fill",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 나나코 씨가 내일 한국어를 공부할 거예요? → 네, 한국어를 ______.",
+            "items": [
+              { "prompt": "내일 영화를 볼 거예요? → 네, 영화를 ______.", "answers": ["볼 거예요"] },
+              { "prompt": "내일 불고기를 먹을 거예요? → 네, 불고기를 ______.", "answers": ["먹을 거예요"] },
+              { "prompt": "내일 책을 읽을 거예요? → 네, 책을 ______.", "answers": ["읽을 거예요"] },
+              { "prompt": "내일 편지를 쓸 거예요? → 네, 편지를 ______.", "answers": ["쓸 거예요"] },
+              { "prompt": "내일 음악을 들을 거예요? → 네, 음악을 ______.", "answers": ["들을 거예요"] },
+              { "prompt": "내일 쉴 거예요? → 네, ______.", "answers": ["쉴 거예요"] }
+            ]
+          },
+          {
+            "kind": "free",
+            "label": "Practice 3",
+            "fixedQuestion": "보기: 내일 / 한국어 / 공부하다 → 내일 한국어를 공부할 거예요.",
+            "items": [
+              { "prompt": "내일 / 영화 / 보다", "sample": "내일 영화를 볼 거예요." },
+              { "prompt": "내일 / 불고기 / 먹다", "sample": "내일 불고기를 먹을 거예요." },
+              { "prompt": "내일 / 책 / 읽다", "sample": "내일 책을 읽을 거예요." },
+              { "prompt": "내일 / 편지 / 쓰다", "sample": "내일 편지를 쓸 거예요." },
+              { "prompt": "내일 / 음악 / 듣다", "sample": "내일 음악을 들을 거예요." },
+              { "prompt": "내일 / 쉬다", "sample": "내일 쉴 거예요." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}
