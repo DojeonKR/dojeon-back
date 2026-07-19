@@ -1,0 +1,29 @@
+{
+  "type": "VOCAB",
+  "title": "Vocabulary",
+  "orderNum": 1,
+  "totalPages": 19,
+  "cards": [
+    { "sequence": 1, "wordFront": "월요일", "wordBack": "Monday", "notes": null, "locales": { "he": { "back": "יום שני", "notes": null } }, "audioUrl": null },
+    { "sequence": 2, "wordFront": "화요일", "wordBack": "Tuesday", "notes": null, "locales": { "he": { "back": "יום שלישי", "notes": null } }, "audioUrl": null },
+    { "sequence": 3, "wordFront": "수요일", "wordBack": "Wednesday", "notes": null, "locales": { "he": { "back": "יום רביעי", "notes": null } }, "audioUrl": null },
+    { "sequence": 4, "wordFront": "목요일", "wordBack": "Thursday", "notes": null, "locales": { "he": { "back": "יום חמישי", "notes": null } }, "audioUrl": null },
+    { "sequence": 5, "wordFront": "금요일", "wordBack": "Friday", "notes": null, "locales": { "he": { "back": "יום שישי", "notes": null } }, "audioUrl": null },
+    { "sequence": 6, "wordFront": "토요일", "wordBack": "Saturday", "notes": null, "locales": { "he": { "back": "יום שבת", "notes": null } }, "audioUrl": null },
+    { "sequence": 7, "wordFront": "일요일", "wordBack": "Sunday", "notes": null, "locales": { "he": { "back": "יום ראשון", "notes": null } }, "audioUrl": null },
+    { "sequence": 8, "wordFront": "주말", "wordBack": "weekend", "notes": null, "locales": { "he": { "back": "סוף שבוע", "notes": null } }, "audioUrl": null },
+    { "sequence": 9, "wordFront": "이번 주", "wordBack": "this week", "notes": "이번 = this time/current", "locales": { "he": { "back": "השבוע", "notes": null } }, "audioUrl": null },
+    { "sequence": 10, "wordFront": "월", "wordBack": "month", "notes": "used for dates", "locales": { "he": { "back": "חודש", "notes": null } }, "audioUrl": null },
+    { "sequence": 11, "wordFront": "일", "wordBack": "day (date)", "notes": null, "locales": { "he": { "back": "יום (תאריך)", "notes": null } }, "audioUrl": null },
+    { "sequence": 12, "wordFront": "그저께", "wordBack": "the day before yesterday", "notes": null, "locales": { "he": { "back": "שלשום", "notes": null } }, "audioUrl": null },
+    { "sequence": 13, "wordFront": "모레", "wordBack": "the day after tomorrow", "notes": null, "locales": { "he": { "back": "מחרתיים", "notes": null } }, "audioUrl": null },
+    { "sequence": 14, "wordFront": "작년", "wordBack": "last year", "notes": null, "locales": { "he": { "back": "שנה שעברה", "notes": null } }, "audioUrl": null },
+    { "sequence": 15, "wordFront": "드디어", "wordBack": "finally", "notes": null, "locales": { "he": { "back": "סוף סוף", "notes": null } }, "audioUrl": null },
+    { "sequence": 16, "wordFront": "곳", "wordBack": "place", "notes": null, "locales": { "he": { "back": "מקום", "notes": null } }, "audioUrl": null },
+    { "sequence": 17, "wordFront": "부럽다", "wordBack": "to be envious / jealous", "notes": null, "locales": { "he": { "back": "לקנא", "notes": null } }, "audioUrl": null },
+    { "sequence": 18, "wordFront": "알바", "wordBack": "part-time job", "notes": "short for 아르바이트", "locales": { "he": { "back": "עבודה חלקית", "notes": "קיצור של 아르바이트" } }, "audioUrl": null },
+    { "sequence": 19, "wordFront": "두 사람", "wordBack": "the two of them / both people", "notes": "두 (two) + 사람 (person)", "locales": { "he": { "back": "שניהם / שתיהם", "notes": null } }, "audioUrl": null }
+  ],
+  "materials": [],
+  "questions": []
+}

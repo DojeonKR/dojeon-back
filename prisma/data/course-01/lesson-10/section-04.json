@@ -1,0 +1,30 @@
+{
+  "type": "READING",
+  "title": "Reading",
+  "orderNum": 4,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "READING_PASSAGE",
+      "isExtra": false,
+      "contentText": {
+        "title": "읽기",
+        "body": "가: 드디어 방학이에요! 여행에 언제 가요?\n나: 7월 5일부터 8일까지 일본에 가요.\n가: 너무 좋아요! 일본에서 뭐 해요?\n나: 밥을 먹고 예쁜 곳을 볼 거예요!\n가: 부러워요.",
+        "dialogue": [
+          { "speaker": "가", "ko": "드디어 방학이에요! 여행에 언제 가요?" },
+          { "speaker": "나", "ko": "7월 5일부터 8일까지 일본에 가요." },
+          { "speaker": "가", "ko": "너무 좋아요! 일본에서 뭐 해요?" },
+          { "speaker": "나", "ko": "밥을 먹고 예쁜 곳을 볼 거예요!" },
+          { "speaker": "가", "ko": "부러워요." }
+        ],
+        "questions": [
+          { "kind": "free", "questionText": "여행이 언제부터 언제까지예요?", "sample": "7월 5일부터 8일까지예요." },
+          { "kind": "free", "questionText": "일본에서 뭐 할 거예요?", "sample": "밥을 먹고 예쁜 곳을 볼 거예요." }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

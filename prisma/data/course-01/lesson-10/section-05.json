@@ -1,0 +1,32 @@
+{
+  "type": "LISTENING",
+  "title": "Listening",
+  "orderNum": 5,
+  "totalPages": 3,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "LISTENING_AUDIO",
+      "isExtra": false,
+      "contentText": {
+        "title": "듣기",
+        "mode": "text",
+        "audioUrl": "",
+        "audioUnavailable": true,
+        "transcript": "가: 내일 알바를 언제까지 해요?\n나: 알바는 5시까지예요.\n가: 그러면 6시에 만나요? 저녁을 먹어요!\n나: 네, 좋아요. 6시에 같이 저녁을 먹어요.",
+        "dialogue": [
+          { "speaker": "가", "ko": "내일 알바를 언제까지 해요?" },
+          { "speaker": "나", "ko": "알바는 5시까지예요." },
+          { "speaker": "가", "ko": "그러면 6시에 만나요? 저녁을 먹어요!" },
+          { "speaker": "나", "ko": "네, 좋아요. 6시에 같이 저녁을 먹어요." }
+        ],
+        "questions": [
+          { "kind": "choose", "questionText": "알바가 몇 시까지예요?", "options": ["네 시까지", "다섯 시까지", "여섯 시까지", "일곱 시까지"], "answer": "다섯 시까지" },
+          { "kind": "free", "questionText": "두 사람은 내일 뭐 해요?", "sample": "같이 저녁을 먹어요." }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}

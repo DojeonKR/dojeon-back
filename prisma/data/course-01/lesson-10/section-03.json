@@ -1,0 +1,47 @@
+{
+  "type": "GRAMMAR",
+  "title": "Grammar 2",
+  "orderNum": 3,
+  "totalPages": 7,
+  "cards": [],
+  "materials": [
+    {
+      "sequence": 1,
+      "type": "GRAMMAR_TABLE",
+      "isExtra": false,
+      "contentText": {
+        "title": "부터 까지",
+        "imageUrl": "",
+        "explanations": [
+          { "lang": "he", "text": "תרגול כתיבה עם 부터 לנקודת ההתחלה ו-까지 לנקודת הסיום." },
+          { "lang": "en", "text": "Writing practice using 부터 for the starting point and 까지 for the ending point." }
+        ],
+        "table": {
+          "headers": ["구분", "부터", "까지"],
+          "rows": [
+            { "condition": "시간", "form": "아홉 시부터", "examples": ["열두 시까지"] },
+            { "condition": "요일", "form": "월요일부터", "examples": ["금요일까지"] },
+            { "condition": "날짜", "form": "3월 1일부터", "examples": ["3월 5일까지"] }
+          ]
+        },
+        "dialogues": [],
+        "practices": [
+          {
+            "kind": "free",
+            "label": "Practice 2",
+            "fixedQuestion": "보기: 수업 / 9시 ~ 12시 → 수업이 아홉 시부터 열두 시까지예요.",
+            "items": [
+              { "prompt": "알바 / 월요일 ~ 금요일", "sample": "알바가 월요일부터 금요일까지예요." },
+              { "prompt": "시험 / 6월 10일 ~ 6월 12일", "sample": "시험이 유월 십일부터 십이일까지예요." },
+              { "prompt": "도서관 / 10시 ~ 6시", "sample": "도서관에 열 시부터 여섯 시까지 가요." },
+              { "prompt": "여행 / 3월 5일 ~ 3월 8일", "sample": "여행이 삼월 오일부터 팔일까지예요." },
+              { "prompt": "가족 / 금요일 ~ 일요일", "sample": "금요일부터 일요일까지 가족을 만나요." },
+              { "prompt": "한국어 수업 / 오전 9시 ~ 오후 1시", "sample": "한국어 수업이 오전 아홉 시부터 오후 한 시까지예요." }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "questions": []
+}
