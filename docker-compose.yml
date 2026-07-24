@@ -36,7 +36,7 @@ services:
     image: redis:7-alpine
     container_name: dojeon-redis
     restart: unless-stopped
-    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru --appendonly yes
+    command: redis-server --maxmemory 128mb --maxmemory-policy noeviction --appendonly yes
     volumes:
       - dojeon_redis_data:/data
     healthcheck:
