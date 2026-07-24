@@ -23,6 +23,10 @@ describe('LearningService', () => {
       sectionCard: { groupBy: jest.fn() },
       sectionMaterial: { groupBy: jest.fn() },
       sectionQuestion: { groupBy: jest.fn() },
+      userLessonPreference: {
+        findUnique: jest.fn(),
+        upsert: jest.fn(),
+      },
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -138,10 +142,66 @@ describe('LearningService', () => {
       mockPrismaService.sectionCard.groupBy.mockResolvedValue([{ sectionId: 1, _count: { _all: 5 } }]);
       mockPrismaService.sectionMaterial.groupBy.mockResolvedValue([]);
       mockPrismaService.sectionQuestion.groupBy.mockResolvedValue([]);
+      mockPrismaService.userLessonPreference.findUnique.mockResolvedValue(null);
 
       const res = await service.getLessonSections(1n, 1);
       expect(res.sections[0].progressPercent).toBe(50);
       expect(res.sections[0].hasContent).toBe(true);
+      expect(res.selectedTypes).toEqual(['VOCAB', 'GRAMMAR', 'READING', 'LISTENING']);
+    });
+
+    it('should return saved lesson preferences', async () => {
+      mockPrismaService.lesson.findUnique.mockResolvedValue({
+        id: 1,
+        courseId: 1,
+        title: 'Lesson',
+        course: { lessons: [] },
+        sections: [],
+      });
+      mockPrismaService.userSectionLog.findMany.mockResolvedValue([]);
+      mockPrismaService.sectionCard.groupBy.mockResolvedValue([]);
+      mockPrismaService.sectionMaterial.groupBy.mockResolvedValue([]);
+      mockPrismaService.sectionQuestion.groupBy.mockResolvedValue([]);
+      mockPrismaService.userLessonPreference.findUnique.mockResolvedValue({
+        selectedTypes: ['VOCAB', 'READING'],
+      });
+
+      const res = await service.getLessonSections(1n, 1);
+      expect(res.selectedTypes).toEqual(['VOCAB', 'READING']);
+    });
+  });
+
+  describe('updateLessonPreferences', () => {
+    it('should save and return selected lesson section types', async () => {
+      mockPrismaService.lesson.findUnique.mockResolvedValue({ id: 1 });
+      mockPrismaService.userLessonPreference.upsert.mockResolvedValue({
+        selectedTypes: ['VOCAB', 'LISTENING'],
+      });
+
+      const res = await service.updateLessonPreferences(1n, 1, ['VOCAB', 'LISTENING']);
+
+      expect(mockPrismaService.userLessonPreference.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { userId_lessonId: { userId: 1n, lessonId: 1 } },
+          update: { selectedTypes: ['VOCAB', 'LISTENING'] },
+        }),
+      );
+      expect(res).toEqual({ lessonId: 1, selectedTypes: ['VOCAB', 'LISTENING'] });
+    });
+
+    it('should preserve an empty selection', async () => {
+      mockPrismaService.lesson.findUnique.mockResolvedValue({ id: 1 });
+      mockPrismaService.userLessonPreference.upsert.mockResolvedValue({ selectedTypes: [] });
+
+      const res = await service.updateLessonPreferences(1n, 1, []);
+      expect(res.selectedTypes).toEqual([]);
+    });
+
+    it('should throw if lesson not found', async () => {
+      mockPrismaService.lesson.findUnique.mockResolvedValue(null);
+      await expect(service.updateLessonPreferences(1n, 1, ['VOCAB'])).rejects.toThrow(
+        AppException,
+      );
     });
   });
 });

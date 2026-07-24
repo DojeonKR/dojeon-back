@@ -99,18 +99,47 @@ export class LogService {
   }
 
   async getSectionProgressForUser(userId: bigint, sectionId: number) {
-    const section = await this.prisma.section.findUnique({ where: { id: sectionId } });
+    const section = await this.prisma.section.findUnique({
+      where: { id: sectionId },
+      select: {
+        id: true,
+        type: true,
+        difficultyEasyCount: true,
+        difficultyNormalCount: true,
+        difficultyHardCount: true,
+      },
+    });
     if (!section) {
       throw new AppException('SECTION_NOT_FOUND', '섹션을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
     }
-    const log = await this.prisma.userSectionLog.findUnique({
-      where: { userId_sectionId: { userId, sectionId } },
-    });
+    const [log, pageLogs] = await Promise.all([
+      this.prisma.userSectionLog.findUnique({
+        where: { userId_sectionId: { userId, sectionId } },
+      }),
+      this.prisma.userSectionPageLog.findMany({
+        where: { userId, sectionId },
+        orderBy: { pageNumber: 'asc' },
+        select: { pageNumber: true, totalStaySeconds: true },
+      }),
+    ]);
     return {
       sectionId,
       currentPage: log?.maxPageReached ?? 0,
       isCompleted: log?.isCompleted ?? false,
       stayTimeSeconds: log?.totalStaySeconds ?? 0,
+      difficulty: log?.difficulty ?? null,
+      pageStayTimes: pageLogs.map((page) => ({
+        pageNumber: page.pageNumber,
+        stayTimeSeconds: page.totalStaySeconds,
+      })),
+      difficultyCounts:
+        section.type === 'GRAMMAR'
+          ? {
+              easy: section.difficultyEasyCount,
+              normal: section.difficultyNormalCount,
+              hard: section.difficultyHardCount,
+            }
+          : null,
     };
   }
 
@@ -160,6 +189,23 @@ export class LogService {
     }
 
     const totalPages = section.totalPages;
+    if (
+      dto.pageNumber !== undefined &&
+      (totalPages <= 0 || dto.pageNumber >= totalPages)
+    ) {
+      throw new AppException(
+        'INVALID_PAGE_NUMBER',
+        '페이지 번호가 섹션의 페이지 범위를 벗어났습니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (dto.difficulty && section.type !== 'GRAMMAR') {
+      throw new AppException(
+        'DIFFICULTY_GRAMMAR_ONLY',
+        '난이도 평가는 Grammar 섹션에만 저장할 수 있습니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const nextMax = Math.max(dto.currentPage, 0);
     const completed =
       dto.forceComplete === true || (totalPages > 0 && nextMax >= totalPages);
@@ -175,12 +221,26 @@ export class LogService {
         },
       });
 
+      if (dto.difficulty) {
+        await tx.$queryRaw(
+          Prisma.sql`SELECT "section_id" FROM "sections" WHERE "section_id" = ${sectionId} FOR UPDATE`,
+        );
+      }
+
       const beforeLog = await tx.userSectionLog.findUnique({
         where: { userId_sectionId: { userId, sectionId } },
       });
 
       const isFirstEverSectionStart =
         !beforeLog && (await tx.userSectionLog.count({ where: { userId } })) === 0;
+
+      if (dto.difficulty && !completed && !beforeLog?.isCompleted) {
+        throw new AppException(
+          'DIFFICULTY_REQUIRES_COMPLETION',
+          'Grammar 섹션을 완료한 후 난이도를 평가할 수 있습니다.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
 
       const log = await tx.userSectionLog.upsert({
         where: { userId_sectionId: { userId, sectionId } },
@@ -200,11 +260,62 @@ export class LogService {
         },
       });
 
-      if (dto.stayTimeSeconds > 0) {
+      if (dto.pageNumber !== undefined && dto.stayTimeSeconds > 0) {
+        await tx.userSectionPageLog.upsert({
+          where: {
+            userId_sectionId_pageNumber: {
+              userId,
+              sectionId,
+              pageNumber: dto.pageNumber,
+            },
+          },
+          create: {
+            userId,
+            sectionId,
+            pageNumber: dto.pageNumber,
+            totalStaySeconds: dto.stayTimeSeconds,
+          },
+          update: {
+            totalStaySeconds: { increment: dto.stayTimeSeconds },
+          },
+        });
+      }
+
+      if (dto.difficulty && dto.difficulty !== beforeLog?.difficulty) {
+        const counterUpdate: Prisma.SectionUpdateInput = {};
+        switch (beforeLog?.difficulty) {
+          case 'EASY':
+            counterUpdate.difficultyEasyCount = { decrement: 1 };
+            break;
+          case 'NORMAL':
+            counterUpdate.difficultyNormalCount = { decrement: 1 };
+            break;
+          case 'HARD':
+            counterUpdate.difficultyHardCount = { decrement: 1 };
+            break;
+        }
+        switch (dto.difficulty) {
+          case 'EASY':
+            counterUpdate.difficultyEasyCount = { increment: 1 };
+            break;
+          case 'NORMAL':
+            counterUpdate.difficultyNormalCount = { increment: 1 };
+            break;
+          case 'HARD':
+            counterUpdate.difficultyHardCount = { increment: 1 };
+            break;
+        }
+        await tx.section.update({ where: { id: sectionId }, data: counterUpdate });
+      }
+
+      const addedStudyMinutes =
+        Math.floor(log.totalStaySeconds / 60) -
+        Math.floor((beforeLog?.totalStaySeconds ?? 0) / 60);
+      if (addedStudyMinutes > 0) {
         await tx.userStats.update({
           where: { userId },
           data: {
-            totalStudyMin: { increment: Math.floor(dto.stayTimeSeconds / 60) },
+            totalStudyMin: { increment: addedStudyMinutes },
           },
         });
       }

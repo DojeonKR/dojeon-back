@@ -2,6 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AppException } from '../../common/exceptions/app.exception';
 import { HttpStatus } from '@nestjs/common';
+import { SectionType } from '@prisma/client';
+
+const DEFAULT_SELECTED_TYPES: SectionType[] = [
+  SectionType.VOCAB,
+  SectionType.GRAMMAR,
+  SectionType.READING,
+  SectionType.LISTENING,
+];
 
 @Injectable()
 export class LearningService {
@@ -234,7 +242,7 @@ export class LearningService {
     }));
 
     const sectionIds = lesson.sections.map((sec) => sec.id);
-    const [logs, cardGroups, materialGroups, questionGroups] = await Promise.all([
+    const [logs, cardGroups, materialGroups, questionGroups, preference] = await Promise.all([
       this.prisma.userSectionLog.findMany({
         where: { userId, sectionId: { in: sectionIds } },
       }),
@@ -252,6 +260,10 @@ export class LearningService {
         by: ['sectionId'],
         where: { sectionId: { in: sectionIds } },
         _count: { _all: true },
+      }),
+      this.prisma.userLessonPreference.findUnique({
+        where: { userId_lessonId: { userId, lessonId } },
+        select: { selectedTypes: true },
       }),
     ]);
     const logMap = new Map(logs.map((l) => [l.sectionId, l]));
@@ -311,7 +323,34 @@ export class LearningService {
       subtitle: lesson.subtitle,
       siblingLessons,
       overallProgressPercent,
+      selectedTypes: preference?.selectedTypes ?? [...DEFAULT_SELECTED_TYPES],
       sections,
+    };
+  }
+
+  async updateLessonPreferences(
+    userId: bigint,
+    lessonId: number,
+    selectedTypes: SectionType[],
+  ) {
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: lessonId },
+      select: { id: true },
+    });
+    if (!lesson) {
+      throw new AppException('LESSON_NOT_FOUND', '레슨을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+    }
+
+    const preference = await this.prisma.userLessonPreference.upsert({
+      where: { userId_lessonId: { userId, lessonId } },
+      create: { userId, lessonId, selectedTypes },
+      update: { selectedTypes },
+      select: { selectedTypes: true },
+    });
+
+    return {
+      lessonId,
+      selectedTypes: preference.selectedTypes,
     };
   }
 }

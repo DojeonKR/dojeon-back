@@ -57,6 +57,7 @@ describe('AuthService', () => {
 
     mockRedisService = {
       get: jest.fn(),
+      claimRefreshToken: jest.fn(),
       set: jest.fn(),
       del: jest.fn(),
       sAdd: jest.fn().mockResolvedValue(1),
@@ -240,6 +241,46 @@ describe('AuthService', () => {
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
       await expect(service.login({ email: 'test@test.com', password: 'wrong' })).rejects.toThrow(AppException);
+    });
+  });
+
+  describe('refresh', () => {
+    const rotatedTokens = {
+      userId: '1',
+      accessToken: 'cached_access',
+      refreshToken: 'cached_refresh',
+      tokenType: 'Bearer',
+      expiresIn: '30m',
+    };
+
+    it('should return a recent rotation result for a concurrent refresh request', async () => {
+      mockRedisService.get.mockResolvedValueOnce(JSON.stringify(rotatedTokens));
+
+      await expect(service.refresh('old_refresh')).resolves.toEqual(rotatedTokens);
+      expect(mockRedisService.claimRefreshToken).not.toHaveBeenCalled();
+    });
+
+    it('should claim and rotate a refresh token', async () => {
+      mockRedisService.get.mockResolvedValueOnce(null);
+      mockRedisService.claimRefreshToken.mockResolvedValue('1');
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: 1n,
+        email: 'test@test.com',
+      });
+
+      const result = await service.refresh('old_refresh');
+
+      expect(result.accessToken).toBe('mock_jwt_token');
+      expect(mockRedisService.claimRefreshToken).toHaveBeenCalledWith(
+        'refresh:old_refresh',
+        expect.stringMatching(/^refresh:pending:/),
+        5,
+      );
+      expect(mockRedisService.set).toHaveBeenCalledWith(
+        expect.stringMatching(/^refresh:result:/),
+        expect.any(String),
+        10,
+      );
     });
   });
 });

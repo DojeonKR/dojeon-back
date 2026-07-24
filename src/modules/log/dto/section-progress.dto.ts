@@ -7,7 +7,19 @@ export class SectionProgressDto {
   @Min(0)
   currentPage!: number;
 
-  @ApiProperty({ description: '해당 섹션에서 머문 누적 시간(초)', example: 120 })
+  @ApiPropertyOptional({
+    description: '이번 체류 시간이 발생한 페이지 번호 (0-based). 전달하면 페이지별 시간이 누적됩니다.',
+    example: 2,
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  pageNumber?: number;
+
+  @ApiProperty({
+    description: '마지막 저장 이후 추가로 머문 시간(초). 서버에서 섹션·페이지 누적값에 더합니다.',
+    example: 30,
+  })
   @IsInt()
   @Min(0)
   stayTimeSeconds!: number;

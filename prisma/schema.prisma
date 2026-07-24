@@ -62,6 +62,8 @@ model User {
   scraps              Scrap[]
   nlpJobs             NlpJob[]
   courseCompletions   UserCourseCompletion[]
+  lessonPreferences  UserLessonPreference[]
+  sectionPageLogs    UserSectionPageLog[]
 
   @@unique([socialProvider, socialUid], name: "uk_social")
   @@map("users")
@@ -155,8 +157,22 @@ model Lesson {
 
   course   Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
   sections Section[]
+  userPreferences UserLessonPreference[]
 
   @@map("lessons")
+}
+
+model UserLessonPreference {
+  userId        BigInt        @map("user_id")
+  lessonId      Int           @map("lesson_id")
+  selectedTypes SectionType[] @default([VOCAB, GRAMMAR, READING, LISTENING]) @map("selected_types")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@id([userId, lessonId])
+  @@map("user_lesson_preferences")
 }
 
 model Section {
@@ -166,6 +182,9 @@ model Section {
   title      String
   totalPages Int         @map("total_pages")
   orderNum   Int         @map("order_num")
+  difficultyEasyCount   Int @default(0) @map("difficulty_easy_count")
+  difficultyNormalCount Int @default(0) @map("difficulty_normal_count")
+  difficultyHardCount   Int @default(0) @map("difficulty_hard_count")
 
   lesson      Lesson           @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   sectionLogs UserSectionLog[]
@@ -173,6 +192,7 @@ model Section {
   cards       SectionCard[]
   materials   SectionMaterial[]
   questions   SectionQuestion[]
+  pageLogs    UserSectionPageLog[]
 
   @@map("sections")
 }
@@ -243,6 +263,21 @@ model UserSectionLog {
   @@index([userId, isCompleted], map: "idx_logs_user_completed")
   @@index([userId, updatedAt], map: "idx_logs_user_updated")
   @@map("user_section_logs")
+}
+
+model UserSectionPageLog {
+  userId           BigInt   @map("user_id")
+  sectionId        Int      @map("section_id")
+  pageNumber       Int      @map("page_number")
+  totalStaySeconds Int      @default(0) @map("total_stay_seconds")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@id([userId, sectionId, pageNumber])
+  @@index([sectionId, pageNumber], map: "idx_page_logs_section_page")
+  @@map("user_section_page_logs")
 }
 
 model Scrap {

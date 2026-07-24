@@ -143,15 +143,37 @@ export class SectionsController {
 
   @ApiOperation({
     summary: '섹션 학습 진행 조회',
-    description: '해당 섹션에 대한 사용자의 진행(현재 페이지, 완료 여부, 머문 시간)을 반환합니다.',
+    description:
+      '해당 섹션에 대한 사용자의 진행, 페이지별 체류 시간, Grammar 난이도 평가 및 전체 집계를 반환합니다.',
   })
   @ApiParam({ name: 'sectionId', description: '섹션 ID' })
+  @ApiResponse({
+    status: 200,
+    schema: {
+      example: successExample({
+        sectionId: 5,
+        currentPage: 5,
+        isCompleted: true,
+        stayTimeSeconds: 120,
+        difficulty: 'NORMAL',
+        pageStayTimes: [
+          { pageNumber: 0, stayTimeSeconds: 20 },
+          { pageNumber: 1, stayTimeSeconds: 35 },
+        ],
+        difficultyCounts: { easy: 3, normal: 8, hard: 2 },
+      }),
+    },
+  })
   @Get(':sectionId/progress')
   async getProgress(@CurrentUser() user: JwtPayloadUser, @Param('sectionId', ParseIntPipe) sectionId: number) {
     return this.logService.getSectionProgressForUser(user.userId, sectionId);
   }
 
-  @ApiOperation({ summary: '섹션 학습 진행 저장', description: '현재 페이지, 머문 시간, 난이도를 저장하고 다음 섹션 정보를 반환합니다. (Idempotency-Key 헤더 권장)' })
+  @ApiOperation({
+    summary: '섹션 학습 진행 저장',
+    description:
+      '`stayTimeSeconds`는 마지막 저장 이후의 증가분입니다. `pageNumber`를 함께 보내면 해당 페이지 체류 시간에도 누적됩니다. 난이도는 완료된 Grammar 섹션에만 저장되며 전체 집계도 함께 갱신됩니다. (Idempotency-Key 헤더 권장)',
+  })
   @ApiParam({ name: 'sectionId', description: '섹션 ID', example: 5 })
   @ApiHeader({ name: 'Idempotency-Key', description: '중복 요청 방지 키 (UUID 권장)', required: false })
   @ApiResponse({

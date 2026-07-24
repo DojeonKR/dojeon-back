@@ -64,6 +64,7 @@
 |--------|------|------|
 | GET | `/courses/dashboard` | 코스 대시보드 조회 |
 | GET | `/lessons/{lessonId}/sections` | 레슨 섹션 목록 조회 |
+| PUT | `/lessons/{lessonId}/preferences` | 레슨 학습 유형 선택 상태 저장 |
 
 ### 섹션 (Section)
 
@@ -71,8 +72,8 @@
 |--------|------|------|
 | GET | `/section/{sectionId}/card` | 섹션 단어 카드 목록 |
 | GET | `/section/{sectionId}/material` | 섹션 학습 자료 목록 |
-| GET | `/section/{sectionId}/progress` | 섹션 학습 진행 조회 |
-| POST | `/section/{sectionId}/progress` | 섹션 학습 진행 저장 |
+| GET | `/section/{sectionId}/progress` | 섹션 진행·페이지별 체류 시간·Grammar 난이도 집계 조회 |
+| POST | `/section/{sectionId}/progress` | 섹션 진행 저장 (`pageNumber` 전달 시 페이지별 체류 시간 누적) |
 | GET | `/section/{sectionId}/question` | 섹션 문제 목록 |
 | POST | `/section/{sectionId}/questions/check` | 섹션 문제 채점 |
 

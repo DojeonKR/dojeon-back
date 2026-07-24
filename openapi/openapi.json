@@ -1300,6 +1300,12 @@
                         }
                       ],
                       "overallProgressPercent": 50,
+                      "selectedTypes": [
+                        "VOCAB",
+                        "GRAMMAR",
+                        "READING",
+                        "LISTENING"
+                      ],
                       "sections": [
                         {
                           "sectionId": 5,
@@ -1355,6 +1361,68 @@
           }
         ],
         "summary": "레슨 섹션 목록 조회",
+        "tags": [
+          "학습 (Learning)"
+        ]
+      }
+    },
+    "/lessons/{lessonId}/preferences": {
+      "put": {
+        "operationId": "LearningController_updateLessonPreferences",
+        "parameters": [
+          {
+            "name": "lessonId",
+            "required": true,
+            "in": "path",
+            "description": "레슨 ID",
+            "schema": {
+              "example": 2,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLessonPreferencesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "저장된 학습 유형 선택 상태를 반환합니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "lessonId": 2,
+                      "selectedTypes": [
+                        "VOCAB",
+                        "GRAMMAR",
+                        "READING",
+                        "LISTENING"
+                      ]
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "레슨 학습 유형 선택 상태 저장",
         "tags": [
           "학습 (Learning)"
         ]
@@ -1992,7 +2060,7 @@
     },
     "/section/{sectionId}/progress": {
       "get": {
-        "description": "해당 섹션에 대한 사용자의 진행(현재 페이지, 완료 여부, 머문 시간)을 반환합니다.",
+        "description": "해당 섹션에 대한 사용자의 진행, 페이지별 체류 시간, Grammar 난이도 평가 및 전체 집계를 반환합니다.",
         "operationId": "SectionsController_getProgress",
         "parameters": [
           {
@@ -2007,7 +2075,41 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "isSuccess": true,
+                    "code": "200",
+                    "message": "요청이 성공했습니다.",
+                    "data": {
+                      "sectionId": 5,
+                      "currentPage": 5,
+                      "isCompleted": true,
+                      "stayTimeSeconds": 120,
+                      "difficulty": "NORMAL",
+                      "pageStayTimes": [
+                        {
+                          "pageNumber": 0,
+                          "stayTimeSeconds": 20
+                        },
+                        {
+                          "pageNumber": 1,
+                          "stayTimeSeconds": 35
+                        }
+                      ],
+                      "difficultyCounts": {
+                        "easy": 3,
+                        "normal": 8,
+                        "hard": 2
+                      }
+                    },
+                    "timestamp": "2026-04-05T00:00:00.000Z"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -2021,7 +2123,7 @@
         ]
       },
       "post": {
-        "description": "현재 페이지, 머문 시간, 난이도를 저장하고 다음 섹션 정보를 반환합니다. (Idempotency-Key 헤더 권장)",
+        "description": "`stayTimeSeconds`는 마지막 저장 이후의 증가분입니다. `pageNumber`를 함께 보내면 해당 페이지 체류 시간에도 누적됩니다. 난이도는 완료된 Grammar 섹션에만 저장되며 전체 집계도 함께 갱신됩니다. (Idempotency-Key 헤더 권장)",
         "operationId": "SectionsController_progress",
         "parameters": [
           {
@@ -3678,6 +3780,33 @@
           "fileExtension"
         ]
       },
+      "UpdateLessonPreferencesDto": {
+        "type": "object",
+        "properties": {
+          "selectedTypes": {
+            "type": "array",
+            "description": "다음 접속 때 복원할 레슨 학습 유형",
+            "example": [
+              "VOCAB",
+              "GRAMMAR",
+              "READING",
+              "LISTENING"
+            ],
+            "items": {
+              "type": "string",
+              "enum": [
+                "VOCAB",
+                "GRAMMAR",
+                "READING",
+                "LISTENING"
+              ]
+            }
+          }
+        },
+        "required": [
+          "selectedTypes"
+        ]
+      },
       "CheckPracticeQuestionDto": {
         "type": "object",
         "properties": {
@@ -3724,10 +3853,15 @@
             "description": "현재까지 본 페이지 번호 (0-based)",
             "example": 3
           },
+          "pageNumber": {
+            "type": "number",
+            "description": "이번 체류 시간이 발생한 페이지 번호 (0-based). 전달하면 페이지별 시간이 누적됩니다.",
+            "example": 2
+          },
           "stayTimeSeconds": {
             "type": "number",
-            "description": "해당 섹션에서 머문 누적 시간(초)",
-            "example": 120
+            "description": "마지막 저장 이후 추가로 머문 시간(초). 서버에서 섹션·페이지 누적값에 더합니다.",
+            "example": 30
           },
           "forceComplete": {
             "type": "boolean",

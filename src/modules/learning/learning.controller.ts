@@ -1,8 +1,9 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LearningService } from './learning.service';
 import { CurrentUser, JwtPayloadUser } from '../../common/decorators/current-user.decorator';
 import { successExample, errorExample } from '../../common/swagger/swagger-response.helper';
+import { UpdateLessonPreferencesDto } from './dto/update-lesson-preferences.dto';
 
 @ApiTags('학습 (Learning)')
 @ApiBearerAuth('access-token')
@@ -88,6 +89,7 @@ export class LearningController {
           { lessonId: 2, title: '기초 문법 1', orderNum: 2 },
         ],
         overallProgressPercent: 50,
+        selectedTypes: ['VOCAB', 'GRAMMAR', 'READING', 'LISTENING'],
         sections: [
           {
             sectionId: 5,
@@ -126,5 +128,30 @@ export class LearningController {
     @Param('lessonId', ParseIntPipe) lessonId: number,
   ) {
     return this.learningService.getLessonSections(user.userId, lessonId);
+  }
+
+  @ApiOperation({ summary: '레슨 학습 유형 선택 상태 저장' })
+  @ApiParam({ name: 'lessonId', description: '레슨 ID', example: 2 })
+  @ApiResponse({
+    status: 200,
+    description: '저장된 학습 유형 선택 상태를 반환합니다.',
+    schema: {
+      example: successExample({
+        lessonId: 2,
+        selectedTypes: ['VOCAB', 'GRAMMAR', 'READING', 'LISTENING'],
+      }),
+    },
+  })
+  @Put('lessons/:lessonId/preferences')
+  async updateLessonPreferences(
+    @CurrentUser() user: JwtPayloadUser,
+    @Param('lessonId', ParseIntPipe) lessonId: number,
+    @Body() dto: UpdateLessonPreferencesDto,
+  ) {
+    return this.learningService.updateLessonPreferences(
+      user.userId,
+      lessonId,
+      dto.selectedTypes,
+    );
   }
 }

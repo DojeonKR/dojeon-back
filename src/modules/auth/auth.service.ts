@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { randomBytes, randomInt } from 'crypto';
+import { createHash, randomBytes, randomInt } from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RedisService } from '../../infra/redis/redis.service';
@@ -19,6 +19,10 @@ import { AchievementService } from '../achievement/achievement.service';
 const OTP_TTL = 300;
 const VERIFY_TTL = 1800;
 const REFRESH_TTL_SECONDS = 7 * 24 * 60 * 60;
+const REFRESH_PENDING_TTL_SECONDS = 5;
+const REFRESH_RESULT_TTL_SECONDS = 10;
+const REFRESH_RESULT_POLL_INTERVAL_MS = 50;
+const REFRESH_RESULT_POLL_ATTEMPTS = 20;
 const OTP_COOLDOWN_SECONDS = 60;
 const OTP_MAX_FAILS = 5;
 
@@ -257,16 +261,52 @@ export class AuthService {
   }
 
   async refresh(refreshToken: string) {
-    // GET + DEL을 Lua로 원자 실행 — 동시 요청 시 토큰 중복 발급 방지
-    const userIdStr = await this.redis.getAndDel(`refresh:${refreshToken}`);
+    const tokenHash = createHash('sha256').update(refreshToken).digest('hex');
+    const resultKey = `refresh:result:${tokenHash}`;
+    const pendingKey = `refresh:pending:${tokenHash}`;
+    const cachedResult = await this.redis.get(resultKey);
+    if (cachedResult) {
+      return JSON.parse(cachedResult) as Awaited<ReturnType<AuthService['issueTokens']>>;
+    }
+
+    const userIdStr = await this.redis.claimRefreshToken(
+      `refresh:${refreshToken}`,
+      pendingKey,
+      REFRESH_PENDING_TTL_SECONDS,
+    );
     if (!userIdStr) {
+      if (await this.redis.get(pendingKey)) {
+        for (let attempt = 0; attempt < REFRESH_RESULT_POLL_ATTEMPTS; attempt += 1) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, REFRESH_RESULT_POLL_INTERVAL_MS),
+          );
+          const concurrentResult = await this.redis.get(resultKey);
+          if (concurrentResult) {
+            return JSON.parse(concurrentResult) as Awaited<
+              ReturnType<AuthService['issueTokens']>
+            >;
+          }
+        }
+      }
       throw new AppException('INVALID_TOKEN', '리프레시 토큰이 유효하지 않습니다.', HttpStatus.UNAUTHORIZED);
     }
     const user = await this.prisma.user.findUnique({ where: { id: BigInt(userIdStr) } });
     if (!user) {
+      await this.redis.del(pendingKey);
       throw new AppException('USER_NOT_FOUND', '사용자를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
     }
-    return this.issueTokens(user.id, user.email);
+    try {
+      const tokens = await this.issueTokens(user.id, user.email);
+      await this.redis.set(resultKey, JSON.stringify(tokens), REFRESH_RESULT_TTL_SECONDS);
+      await this.redis.del(pendingKey);
+      return tokens;
+    } catch (error) {
+      await Promise.all([
+        this.redis.set(`refresh:${refreshToken}`, userIdStr, REFRESH_TTL_SECONDS),
+        this.redis.del(pendingKey),
+      ]);
+      throw error;
+    }
   }
 
   async logout(refreshToken: string): Promise<{ loggedOut: boolean }> {

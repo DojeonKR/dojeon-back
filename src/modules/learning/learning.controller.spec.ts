@@ -10,6 +10,7 @@ describe('LearningController', () => {
     mockLearningService = {
       getCoursesDashboard: jest.fn(),
       getLessonSections: jest.fn(),
+      updateLessonPreferences: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -36,5 +37,24 @@ describe('LearningController', () => {
     mockLearningService.getLessonSections.mockResolvedValue({ sections: [] });
     const res = await controller.lessonSections({ userId: 1n } as any, 1);
     expect(res).toEqual({ sections: [] });
+  });
+
+  it('should update lesson preferences', async () => {
+    mockLearningService.updateLessonPreferences.mockResolvedValue({
+      lessonId: 1,
+      selectedTypes: ['VOCAB', 'READING'],
+    });
+
+    const res = await controller.updateLessonPreferences(
+      { userId: 1n } as any,
+      1,
+      { selectedTypes: ['VOCAB', 'READING'] } as any,
+    );
+
+    expect(mockLearningService.updateLessonPreferences).toHaveBeenCalledWith(1n, 1, [
+      'VOCAB',
+      'READING',
+    ]);
+    expect(res.selectedTypes).toEqual(['VOCAB', 'READING']);
   });
 });

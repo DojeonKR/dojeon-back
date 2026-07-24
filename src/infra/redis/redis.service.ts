@@ -79,6 +79,33 @@ return val
     return typeof result === 'string' ? result : null;
   }
 
+  /**
+   * 리프레시 토큰을 한 요청만 소비하도록 원자적으로 선점하고,
+   * 짧은 pending 키를 함께 남겨 동시 재발급 요청이 결과를 기다릴 수 있게 한다.
+   */
+  async claimRefreshToken(
+    tokenKey: string,
+    pendingKey: string,
+    pendingTtlSeconds: number,
+  ): Promise<string | null> {
+    const script = `
+local val = redis.call('GET', KEYS[1])
+if val then
+  redis.call('DEL', KEYS[1])
+  redis.call('SET', KEYS[2], val, 'EX', ARGV[1])
+end
+return val
+`;
+    const result = await this.client.eval(
+      script,
+      2,
+      tokenKey,
+      pendingKey,
+      pendingTtlSeconds,
+    );
+    return typeof result === 'string' ? result : null;
+  }
+
   async sAdd(key: string, member: string): Promise<void> {
     await this.client.sadd(key, member);
   }
