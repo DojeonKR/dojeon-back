@@ -284,9 +284,10 @@ docker compose --profile api up -d --build
 
 ```bash
 # 재배포 (코드 갱신 후)
+# --force-recreate 필수: --build만으로는 새 이미지가 만들어져도 기존 컨테이너가 교체되지 않음
 cd ~/dojeon-back
 git pull
-docker compose --profile api up -d --build
+docker compose --profile api up -d --build --force-recreate api
 
 # 중지
 docker compose --profile api down
