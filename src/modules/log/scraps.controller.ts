@@ -44,7 +44,7 @@ export class ScrapsController {
   @ApiOperation({
     summary: '스크랩 목록 조회',
     description:
-      '`type=VOCAB`이면 `{ targetType, groups: [{ courseId, courseTitle, items: [...] }], nextCursor }`, `type=GRAMMAR`이면 `{ targetType, items, nextCursor }`입니다. `hasMore` 필드는 없고 `nextCursor`가 null이 아니면 다음 페이지가 있습니다.',
+      '`type=VOCAB`이면 `{ targetType, groups: [{ courseId, courseTitle, items: [...] }], nextCursor }`, `type=GRAMMAR`이면 `{ targetType, items, nextCursor }`입니다. VOCAB item은 `{ scrapId, sectionId, cardId, lessonId, lessonTitle, card: { id, wordFront, wordBack, notes, locales, audioUrl, sequence }, createdAt }` 형태입니다. `hasMore` 필드는 없고 `nextCursor`가 null이 아니면 다음 페이지가 있습니다.',
   })
   @ApiQuery({ name: 'type', description: '스크랩 유형', enum: ['VOCAB', 'GRAMMAR'], required: true })
   @ApiQuery({ name: 'sort', description: '정렬 기준 (기본: recent)', enum: ['recent'], required: false })

@@ -506,11 +506,11 @@ export class LogService {
         id: true,
         sectionId: true,
         createdAt: true,
-        card: { select: { id: true, wordFront: true, wordBack: true, notes: true, locales: true, audioUrl: true } },
+        card: { select: { id: true, wordFront: true, wordBack: true, notes: true, locales: true, audioUrl: true, sequence: true } },
         section: {
           select: {
             lesson: {
-              select: { courseId: true, course: { select: { title: true } } },
+              select: { courseId: true, orderNum: true, title: true, course: { select: { title: true } } },
             },
           },
         },
@@ -653,20 +653,27 @@ export class LogService {
       notes: string | null;
       locales: unknown;
       audioUrl: string | null;
+      sequence: number;
     } | null;
+    section: { lesson: { orderNum: number; title: string } } | null;
   }) {
     return {
       scrapId: s.id.toString(),
       sectionId: s.sectionId,
       targetType: 'VOCAB' as const,
-      content: s.card
+      cardId: s.card?.id ?? null,
+      // 프론트는 lessonId를 코스 내 레슨 번호(Lesson 1 칩)로 사용한다.
+      lessonId: s.section?.lesson.orderNum ?? null,
+      lessonTitle: s.section?.lesson.title ?? null,
+      card: s.card
         ? {
-            cardId: s.card.id,
-            front: s.card.wordFront,
-            back: s.card.wordBack,
+            id: s.card.id,
+            wordFront: s.card.wordFront,
+            wordBack: s.card.wordBack,
             notes: s.card.notes,
             locales: s.card.locales,
             audioUrl: s.card.audioUrl,
+            sequence: s.card.sequence,
           }
         : null,
       createdAt: s.createdAt,
