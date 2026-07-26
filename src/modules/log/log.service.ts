@@ -211,7 +211,9 @@ export class LogService {
     }
     const nextMax = Math.max(dto.currentPage, 0);
     const completed =
-      dto.forceComplete === true || (totalPages > 0 && nextMax >= totalPages);
+      dto.forceComplete === true ||
+      dto.isCompleted === true ||
+      (totalPages > 0 && nextMax >= totalPages);
 
     const lessonSectionIds = section.lesson.sections.map((s) => s.id);
 

@@ -88,6 +88,33 @@ describe('LogService - saveSectionProgress', () => {
     expect(mockAchievementService.checkStatBadges).toHaveBeenCalledWith(mockTx, 1n);
   });
 
+  it('should complete the section when the isCompleted alias is sent', async () => {
+    mockPrismaService.section.findUnique.mockResolvedValue({
+      id: 1,
+      totalPages: 5,
+      lessonId: 10,
+      orderNum: 1,
+      lesson: { courseId: 1, sections: [{ id: 1 }, { id: 2 }] },
+    });
+    mockTx.userSectionLog.count.mockResolvedValue(0);
+    mockTx.userSectionLog.findUnique.mockResolvedValue(null);
+    mockTx.userSectionLog.upsert.mockResolvedValue({
+      isCompleted: true,
+      maxPageReached: 1,
+      totalStaySeconds: 10,
+    });
+    mockTx.section.findFirst.mockResolvedValue(null);
+
+    const dto: SectionProgressDto = { currentPage: 1, stayTimeSeconds: 10, isCompleted: true };
+    await service.saveSectionProgress(1n, 1, dto);
+
+    expect(mockTx.userSectionLog.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({ isCompleted: true }),
+      }),
+    );
+  });
+
   it('should NOT enqueue section.completed if log was already completed before', async () => {
     mockPrismaService.section.findUnique.mockResolvedValue({
       id: 1,

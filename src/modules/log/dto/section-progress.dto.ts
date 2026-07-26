@@ -29,6 +29,14 @@ export class SectionProgressDto {
   @IsBoolean()
   forceComplete?: boolean;
 
+  @ApiPropertyOptional({
+    description: '완료 처리 여부. 응답의 `log.isCompleted`와 이름을 맞춘 `forceComplete` 별칭입니다.',
+    example: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  isCompleted?: boolean;
+
   @ApiPropertyOptional({ description: '학습 난이도 자가 평가', enum: ['EASY', 'NORMAL', 'HARD'], example: 'NORMAL' })
   @IsOptional()
   @IsIn(['EASY', 'NORMAL', 'HARD'])
