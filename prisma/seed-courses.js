@@ -46,6 +46,46 @@ function getSectionFiles(lessonDir) {
     .sort();
 }
 
+/**
+ * 섹션의 채점 가능한 문제 목록을 만든다.
+ * 최상위 questions에 더해, materials JSON 안에만 있던 practice를 SectionQuestion 형태로 평탄화한다.
+ * (GRAMMAR: contentText.practices, READING/LISTENING: contentText.questions)
+ * free·cards 유형은 자동 채점이 불가능하므로 제외한다.
+ */
+function extractSectionQuestions(sectionData) {
+  const derived = [...(sectionData.questions ?? [])];
+
+  for (const material of sectionData.materials ?? []) {
+    const ct = material.contentText ?? {};
+
+    for (const practice of ct.practices ?? []) {
+      if (practice.kind !== 'choose' && practice.kind !== 'fill') continue;
+      for (const item of practice.items ?? []) {
+        derived.push({
+          type: practice.kind === 'choose' ? 'MCQ' : 'FILL',
+          questionText: item.prompt,
+          options: item.options ?? [],
+          answer: item.answers?.[0] ?? '',
+          explanation: null,
+        });
+      }
+    }
+
+    for (const q of ct.questions ?? []) {
+      if (q.kind !== 'choose' && q.kind !== 'fill') continue;
+      derived.push({
+        type: q.kind === 'choose' ? 'MCQ' : 'FILL',
+        questionText: q.questionText,
+        options: q.options ?? [],
+        answer: q.answer ?? q.answers?.[0] ?? '',
+        explanation: q.explanation ?? null,
+      });
+    }
+  }
+
+  return derived.filter((q) => q.questionText && q.answer);
+}
+
 async function seedSection(lessonId, sectionData) {
   let section = await prisma.section.findFirst({
     where: { lessonId, orderNum: sectionData.orderNum },
@@ -77,12 +117,13 @@ async function seedSection(lessonId, sectionData) {
     prisma.sectionQuestion.count({ where: { sectionId: section.id } }),
   ]);
 
+  const sectionQuestions = extractSectionQuestions(sectionData);
   const hasContent = existingCards > 0 || existingMaterials > 0 || existingQuestions > 0;
   const shouldSeedCards = (FORCE || existingCards === 0) && sectionData.cards.length > 0;
   const shouldSeedMaterials =
     (FORCE || existingMaterials === 0) && sectionData.materials.length > 0;
   const shouldSeedQuestions =
-    (FORCE || existingQuestions === 0) && sectionData.questions.length > 0;
+    (FORCE || existingQuestions === 0) && sectionQuestions.length > 0;
 
   if (hasContent && !FORCE && !MISSING_ONLY) {
     console.log(
@@ -125,12 +166,12 @@ async function seedSection(lessonId, sectionData) {
 
   if (shouldSeedQuestions) {
     await prisma.sectionQuestion.createMany({
-      data: sectionData.questions.map((q) => ({ ...q, sectionId: section.id })),
+      data: sectionQuestions.map((q) => ({ ...q, sectionId: section.id })),
     });
   }
 
   console.log(
-    `    ✅ 섹션 "${sectionData.title}" — 카드 ${shouldSeedCards ? sectionData.cards.length : 0}개, 자료 ${shouldSeedMaterials ? sectionData.materials.length : 0}개, 문제 ${shouldSeedQuestions ? sectionData.questions.length : 0}개 추가`,
+    `    ✅ 섹션 "${sectionData.title}" — 카드 ${shouldSeedCards ? sectionData.cards.length : 0}개, 자료 ${shouldSeedMaterials ? sectionData.materials.length : 0}개, 문제 ${shouldSeedQuestions ? sectionQuestions.length : 0}개 추가`,
   );
 }
 
