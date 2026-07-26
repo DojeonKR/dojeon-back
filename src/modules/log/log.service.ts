@@ -12,6 +12,9 @@ import { normalizeQuizAnswer } from '../../common/utils/quiz-answer.util';
 import { SECTION_EVENT_QUEUE, SectionEventJobData } from './log-event.queue';
 import { AchievementService } from '../achievement/achievement.service';
 
+/** 노트북 대시보드에서 코스별로 노출하는 단어 미리보기 개수 (프론트 미리보기 카드와 동일) */
+const DASHBOARD_PREVIEW_WORD_LIMIT = 5;
+
 @Injectable()
 export class LogService {
   constructor(
@@ -409,7 +412,8 @@ export class LogService {
       this.prisma.scrap.findMany({
         where: { userId, type: ScrapType.VOCAB },
         orderBy: { createdAt: 'desc' },
-        take: 10,
+        // 코스별로 미리보기 개수를 채우려면 전체 상한이 코스 수만큼 여유가 있어야 한다.
+        take: 50,
         select: {
           id: true,
           card: { select: { wordFront: true } },
@@ -472,8 +476,11 @@ export class LogService {
       if (!map.has(courseId)) {
         map.set(courseId, { courseId, courseTitle, words: [] });
       }
+      const group = map.get(courseId)!;
+      // 노트북 메인과 Vocabulary 목록 카드가 같은 개수를 보여주도록 코스별 상한을 맞춘다.
+      if (group.words.length >= DASHBOARD_PREVIEW_WORD_LIMIT) continue;
       const w = s.card?.wordFront;
-      if (w) map.get(courseId)!.words.push(w);
+      if (w) group.words.push(w);
     }
     return { groups: Array.from(map.values()) };
   }
