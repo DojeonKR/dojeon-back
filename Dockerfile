@@ -24,8 +24,8 @@ RUN apt-get update -y && apt-get install -y openssl ca-certificates && rm -rf /v
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# production deps + prisma CLI (migrate deploy) + pm2
-RUN npm ci --omit=dev && npm install prisma@5.22.0 pm2 --no-save
+# production deps are locked; only Prisma CLI is added for migrate deploy.
+RUN npm ci --omit=dev && npm install prisma@5.22.0 --no-save
 RUN npx prisma generate
 
 COPY --from=builder /app/dist ./dist
