@@ -14,7 +14,8 @@ export default () => ({
   redisUrl: process.env.REDIS_URL ?? 'redis://localhost:6379',
   jwt: {
     accessSecret: process.env.JWT_ACCESS_SECRET ?? 'dev-access-secret-change-in-production-min-32',
-    refreshSecret: process.env.JWT_REFRESH_SECRET ?? 'dev-refresh-secret-change-in-production-min-32',
+    refreshSecret:
+      process.env.JWT_REFRESH_SECRET ?? 'dev-refresh-secret-change-in-production-min-32',
     accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN ?? '30m',
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN ?? '7d',
   },
@@ -40,4 +41,5 @@ export default () => ({
     pass: process.env.SMTP_PASS ?? '',
   },
   nlpQueueUrl: process.env.NLP_QUEUE_URL ?? '',
+  subscriptionMutationsEnabled: process.env.SUBSCRIPTION_MUTATIONS_ENABLED === 'true',
 });

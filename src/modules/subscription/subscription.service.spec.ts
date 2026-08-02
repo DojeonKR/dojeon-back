@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SubscriptionService } from './subscription.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { ConfigService } from '@nestjs/config';
 
 describe('SubscriptionService', () => {
   let service: SubscriptionService;
@@ -8,11 +9,16 @@ describe('SubscriptionService', () => {
 
   beforeEach(async () => {
     mockPrismaService = {
-      subscriptionPlan: { findMany: jest.fn() },
+      subscriptionPlan: { findMany: jest.fn(), findUnique: jest.fn() },
+      user: { findUnique: jest.fn(), update: jest.fn() },
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [SubscriptionService, { provide: PrismaService, useValue: mockPrismaService }],
+      providers: [
+        SubscriptionService,
+        { provide: PrismaService, useValue: mockPrismaService },
+        { provide: ConfigService, useValue: { get: jest.fn() } },
+      ],
     }).compile();
 
     service = module.get<SubscriptionService>(SubscriptionService);
@@ -66,5 +72,17 @@ describe('SubscriptionService', () => {
       expect(res.plans[1].priceUsd).toBe(15);
       expect(res.plans[2].priceUsd).toBe(99);
     });
+  });
+
+  it('blocks an unverified paid subscription mutation in production', async () => {
+    const config = (service as any).configService;
+    config.get.mockImplementation((key: string) => (key === 'nodeEnv' ? 'production' : false));
+    mockPrismaService.subscriptionPlan.findUnique.mockResolvedValue({
+      id: 'pro',
+      billingCycleMonths: 1,
+    });
+
+    await expect(service.subscribe(1n, 'pro')).rejects.toThrow();
+    expect(mockPrismaService.user.update).not.toHaveBeenCalled();
   });
 });

@@ -4,11 +4,13 @@ import { ConfigService } from '@nestjs/config';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'crypto';
+import { OAuth2Client } from 'google-auth-library';
 import { Prisma, ScrapType } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AppException } from '../../common/exceptions/app.exception';
 import { PatchUserDto } from './dto/patch-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { ReauthenticationDto } from './dto/reauthentication.dto';
 import { PresignedProfileImageDto } from './dto/presigned-profile-image.dto';
 import { LearningService } from '../learning/learning.service';
 import { buildS3ObjectPublicUrl } from '../../common/utils/public-asset-url.util';
@@ -39,6 +41,7 @@ const ACHIEVEMENT_CATEGORY_TITLES: Record<string, string> = {
 export class UserService {
   private readonly s3: S3Client;
   private readonly bucket: string;
+  private readonly googleClient: OAuth2Client | null;
 
   constructor(
     private readonly prisma: PrismaService,
@@ -48,6 +51,8 @@ export class UserService {
   ) {
     const region = this.configService.get<string>('aws.region');
     this.bucket = this.configService.get<string>('aws.s3Bucket') ?? '';
+    const googleClientId = this.configService.get<string>('google.clientId');
+    this.googleClient = googleClientId ? new OAuth2Client(googleClientId) : null;
     this.s3 = new S3Client({
       region,
       credentials:
@@ -241,19 +246,82 @@ export class UserService {
   }
 
   async changePassword(userId: bigint, dto: ChangePasswordDto) {
+    await this.assertRecentlyAuthenticated(userId, dto);
     const passwordHash = await bcrypt.hash(dto.newPassword, 10);
     await this.prisma.user.update({
       where: { id: userId },
-      data: { passwordHash },
+      data: { passwordHash, sessionVersion: { increment: 1 } },
     });
-    await this.redis.del(`jwt:user:${userId}`);
+    await this.revokeSessions(userId);
     return { updated: true };
   }
 
-  async deleteAccount(userId: bigint): Promise<{ deleted: boolean }> {
-    await this.redis.del(`jwt:user:${userId}`);
+  async deleteAccount(userId: bigint, dto: ReauthenticationDto): Promise<{ deleted: boolean }> {
+    await this.assertRecentlyAuthenticated(userId, dto);
+    await this.revokeSessions(userId);
     await this.prisma.user.delete({ where: { id: userId } });
     return { deleted: true };
+  }
+
+  private async assertRecentlyAuthenticated(
+    userId: bigint,
+    dto: ReauthenticationDto,
+  ): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        passwordHash: true,
+        socialProvider: true,
+        socialUid: true,
+      },
+    });
+    const invalid = () =>
+      new AppException(
+        'REAUTHENTICATION_REQUIRED',
+        'Please verify your identity again before this sensitive operation.',
+        HttpStatus.UNAUTHORIZED,
+      );
+
+    if (!user) throw invalid();
+
+    if (user.passwordHash) {
+      if (!dto.currentPassword || !(await bcrypt.compare(dto.currentPassword, user.passwordHash))) {
+        throw invalid();
+      }
+      return;
+    }
+
+    if (
+      user.socialProvider !== 'google' ||
+      !user.socialUid ||
+      !dto.googleIdToken ||
+      !this.googleClient
+    ) {
+      throw invalid();
+    }
+
+    try {
+      const ticket = await this.googleClient.verifyIdToken({
+        idToken: dto.googleIdToken,
+        audience: this.configService.get<string>('google.clientId'),
+      });
+      const payload = ticket.getPayload();
+      if (!payload || payload.sub !== user.socialUid || payload.email_verified === false) {
+        throw invalid();
+      }
+    } catch {
+      throw invalid();
+    }
+  }
+
+  private async revokeSessions(userId: bigint): Promise<void> {
+    const userTokensKey = `user:tokens:${userId}`;
+    const activeTokens = await this.redis.sMembers(userTokensKey);
+    await this.redis.delMany([
+      ...activeTokens.map((token) => `refresh:${token}`),
+      userTokensKey,
+      `jwt:user:${userId}`,
+    ]);
   }
 
   async getAchievementsList(userId: bigint) {
@@ -305,12 +373,26 @@ export class UserService {
       );
     }
     const key = `profiles/${userId}/${randomUUID()}.${dto.fileExtension}`;
+    const expectedContentType =
+      dto.fileExtension === 'png'
+        ? 'image/png'
+        : dto.fileExtension === 'webp'
+          ? 'image/webp'
+          : 'image/jpeg';
+    if (dto.contentType !== expectedContentType) {
+      throw new AppException(
+        'INVALID_IMAGE_TYPE',
+        'File extension and content type do not match.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const command = new PutObjectCommand({
       Bucket: this.bucket,
       Key: key,
       ContentType: dto.contentType,
+      ContentLength: dto.fileSizeBytes,
     });
-    const uploadUrl = await getSignedUrl(this.s3, command, { expiresIn: 3600 });
+    const uploadUrl = await getSignedUrl(this.s3, command, { expiresIn: 300 });
     const region = this.configService.get<string>('aws.region') ?? 'ap-northeast-2';
     const fileUrl = buildS3ObjectPublicUrl({
       cloudfrontBaseUrl: this.configService.get<string>('cloudfrontBaseUrl'),

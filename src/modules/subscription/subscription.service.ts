@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { SubscriptionTier } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AppException } from '../../common/exceptions/app.exception';
+import { ConfigService } from '@nestjs/config';
 
 const BENEFITS_BY_PLAN: Record<string, string[]> = {
   free: [],
@@ -36,7 +37,10 @@ const PLAN_ORDER = ['free', 'basic', 'pro', 'pro-3month', 'pro-6month', 'annual'
 
 @Injectable()
 export class SubscriptionService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async listPlans() {
     const rows = await this.prisma.subscriptionPlan.findMany();
@@ -71,6 +75,17 @@ export class SubscriptionService {
         'PLAN_NOT_FOUND',
         '존재하지 않는 구독 플랜입니다.',
         HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const isProd = this.configService.get<string>('nodeEnv') === 'production';
+    const mutationsEnabled =
+      this.configService.get<boolean>('subscriptionMutationsEnabled') === true;
+    if (isProd && plan.billingCycleMonths > 0 && !mutationsEnabled) {
+      throw new AppException(
+        'PAYMENT_VERIFICATION_REQUIRED',
+        'Paid subscriptions can only be activated by a verified payment callback.',
+        HttpStatus.SERVICE_UNAVAILABLE,
       );
     }
 

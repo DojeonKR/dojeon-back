@@ -61,6 +61,10 @@ describe('AuthService', () => {
       set: jest.fn(),
       del: jest.fn(),
       sAdd: jest.fn().mockResolvedValue(1),
+      sRem: jest.fn().mockResolvedValue(1),
+      getAndDel: jest.fn(),
+      sMembers: jest.fn().mockResolvedValue([]),
+      delMany: jest.fn(),
       expire: jest.fn().mockResolvedValue(1),
       incrWithTtlOnFirst: jest.fn(),
     };
@@ -150,7 +154,9 @@ describe('AuthService', () => {
   describe('verifyEmailCode', () => {
     it('should throw if code is invalid', async () => {
       mockRedisService.get.mockResolvedValue('123456');
-      await expect(service.verifyEmailCode('test@test.com', '999999')).rejects.toThrow(AppException);
+      await expect(service.verifyEmailCode('test@test.com', '999999')).rejects.toThrow(
+        AppException,
+      );
     });
 
     it('should return verifyToken and delete otp on success', async () => {
@@ -196,9 +202,7 @@ describe('AuthService', () => {
 
     it('should signup a new user successfully', async () => {
       mockRedisService.get.mockResolvedValue('test@test.com');
-      mockPrismaService.user.findUnique
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce(null);
+      mockPrismaService.user.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce(null);
       mockPrismaService.user.findFirst.mockResolvedValueOnce(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed_pw');
       mockTx.user.create.mockResolvedValue({ id: 1n, email: 'test@test.com' });
@@ -240,7 +244,9 @@ describe('AuthService', () => {
       });
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      await expect(service.login({ email: 'test@test.com', password: 'wrong' })).rejects.toThrow(AppException);
+      await expect(service.login({ email: 'test@test.com', password: 'wrong' })).rejects.toThrow(
+        AppException,
+      );
     });
   });
 
@@ -266,13 +272,14 @@ describe('AuthService', () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
         id: 1n,
         email: 'test@test.com',
+        sessionVersion: 0,
       });
 
       const result = await service.refresh('old_refresh');
 
       expect(result.accessToken).toBe('mock_jwt_token');
       expect(mockRedisService.claimRefreshToken).toHaveBeenCalledWith(
-        'refresh:old_refresh',
+        expect.stringMatching(/^refresh:[a-f0-9]{64}$/),
         expect.stringMatching(/^refresh:pending:/),
         5,
       );
@@ -281,6 +288,20 @@ describe('AuthService', () => {
         expect.any(String),
         10,
       );
+    });
+
+    it('should reject a refresh token from a revoked session version', async () => {
+      mockRedisService.get.mockResolvedValueOnce(null);
+      mockRedisService.claimRefreshToken.mockResolvedValue('1:0');
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: 1n,
+        email: 'test@test.com',
+        sessionVersion: 1,
+      });
+
+      await expect(service.refresh('old_refresh')).rejects.toThrow(AppException);
+      expect(mockRedisService.sRem).toHaveBeenCalledWith('user:tokens:1', expect.any(String));
+      expect(mockJwtService.signAsync).not.toHaveBeenCalled();
     });
   });
 });

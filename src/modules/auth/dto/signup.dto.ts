@@ -1,13 +1,23 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsEmail, IsOptional, IsString, Matches, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsEmail,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class SignupDto {
   @ApiProperty({ description: '이메일 인증 후 발급된 verifyToken', example: 'a3f9c...' })
   @IsString()
+  @MaxLength(128)
   verifyToken!: string;
 
   @ApiProperty({ description: '이메일 주소', example: 'user@example.com' })
   @IsEmail()
+  @MaxLength(254)
   email!: string;
 
   @ApiProperty({
@@ -16,6 +26,7 @@ export class SignupDto {
   })
   @IsString()
   @MinLength(8)
+  @MaxLength(128)
   @Matches(/[A-Z]/, { message: '비밀번호에 대문자가 1자 이상 포함되어야 합니다.' })
   @Matches(/[a-z]/, { message: '비밀번호에 소문자가 1자 이상 포함되어야 합니다.' })
   @Matches(/[0-9]/, { message: '비밀번호에 숫자가 1자 이상 포함되어야 합니다.' })

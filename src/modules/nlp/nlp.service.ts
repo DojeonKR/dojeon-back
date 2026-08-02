@@ -22,6 +22,20 @@ export class NlpService {
       );
     }
 
+    const jobsInLastDay = await this.prisma.nlpJob.count({
+      where: {
+        userId,
+        createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+      },
+    });
+    if (jobsInLastDay >= 100) {
+      throw new AppException(
+        'NLP_DAILY_LIMIT_EXCEEDED',
+        'Daily NLP analysis limit exceeded.',
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
+
     const job = await this.prisma.nlpJob.create({
       data: {
         userId,
@@ -47,7 +61,10 @@ export class NlpService {
     return { jobId: job.id };
   }
 
-  async getJob(userId: bigint, jobId: string): Promise<{ jobId: string; status: string; result: unknown }> {
+  async getJob(
+    userId: bigint,
+    jobId: string,
+  ): Promise<{ jobId: string; status: string; result: unknown }> {
     const job = await this.prisma.nlpJob.findFirst({
       where: { id: jobId, userId },
     });

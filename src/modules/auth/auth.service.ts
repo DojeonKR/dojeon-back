@@ -85,9 +85,11 @@ export class AuthService {
     const code = String(randomInt(100000, 1000000));
     const isProd = (this.configService.get<string>('nodeEnv') ?? '') === 'production';
     if (isProd) {
-      this.logger.log(`OTP requested for ${email} (code not logged in production)`);
+      this.logger.log('OTP requested (address and code omitted in production)');
     } else {
-      this.logger.log(`OTP for ${email}: ${code} (실제 발송 시 메일함 확인, 미발송 시 이 로그 사용)`);
+      this.logger.log(
+        `OTP for ${email}: ${code} (실제 발송 시 메일함 확인, 미발송 시 이 로그 사용)`,
+      );
     }
     const otpKey = `email:otp:${email}`;
     await this.redis.set(otpKey, code, OTP_TTL);
@@ -168,7 +170,7 @@ export class AuthService {
       return u;
     });
     await this.redis.del(`signup:verify:${dto.verifyToken}`);
-    return this.issueTokens(user.id, user.email);
+    return this.issueTokens(user.id, user.email, user.sessionVersion);
   }
 
   private async generateTempNickname(email: string): Promise<string> {
@@ -185,18 +187,30 @@ export class AuthService {
   async login(dto: LoginDto) {
     const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
     if (!user || !user.passwordHash) {
-      throw new AppException('INVALID_CREDENTIALS', '이메일 또는 비밀번호가 올바르지 않습니다.', HttpStatus.UNAUTHORIZED);
+      throw new AppException(
+        'INVALID_CREDENTIALS',
+        '이메일 또는 비밀번호가 올바르지 않습니다.',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     const ok = await bcrypt.compare(dto.password, user.passwordHash);
     if (!ok) {
-      throw new AppException('INVALID_CREDENTIALS', '이메일 또는 비밀번호가 올바르지 않습니다.', HttpStatus.UNAUTHORIZED);
+      throw new AppException(
+        'INVALID_CREDENTIALS',
+        '이메일 또는 비밀번호가 올바르지 않습니다.',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
-    return this.issueTokens(user.id, user.email);
+    return this.issueTokens(user.id, user.email, user.sessionVersion);
   }
 
   async googleAuth(dto: GoogleAuthDto) {
     if (!this.googleClient) {
-      throw new AppException('GOOGLE_NOT_CONFIGURED', 'Google OAuth가 설정되지 않았습니다.', HttpStatus.SERVICE_UNAVAILABLE);
+      throw new AppException(
+        'GOOGLE_NOT_CONFIGURED',
+        'Google OAuth가 설정되지 않았습니다.',
+        HttpStatus.SERVICE_UNAVAILABLE,
+      );
     }
     let ticket;
     try {
@@ -208,11 +222,19 @@ export class AuthService {
       this.logger.warn(
         `Google ID token verification failed: ${error instanceof Error ? error.message : String(error)}`,
       );
-      throw new AppException('INVALID_GOOGLE_TOKEN', 'Google 토큰이 유효하지 않습니다.', HttpStatus.UNAUTHORIZED);
+      throw new AppException(
+        'INVALID_GOOGLE_TOKEN',
+        'Google 토큰이 유효하지 않습니다.',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     const payload = ticket.getPayload();
     if (!payload?.email || !payload.sub) {
-      throw new AppException('INVALID_GOOGLE_TOKEN', 'Google 토큰이 유효하지 않습니다.', HttpStatus.UNAUTHORIZED);
+      throw new AppException(
+        'INVALID_GOOGLE_TOKEN',
+        'Google 토큰이 유효하지 않습니다.',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     const email = payload.email;
     const sub = payload.sub;
@@ -256,7 +278,7 @@ export class AuthService {
         isNewUser = true;
       }
     }
-    const tokens = await this.issueTokens(user.id, user.email);
+    const tokens = await this.issueTokens(user.id, user.email, user.sessionVersion);
     return { ...tokens, isNewUser };
   }
 
@@ -269,40 +291,64 @@ export class AuthService {
       return JSON.parse(cachedResult) as Awaited<ReturnType<AuthService['issueTokens']>>;
     }
 
-    const userIdStr = await this.redis.claimRefreshToken(
-      `refresh:${refreshToken}`,
+    let storedTokenId = tokenHash;
+    let userIdStr = await this.redis.claimRefreshToken(
+      `refresh:${tokenHash}`,
       pendingKey,
       REFRESH_PENDING_TTL_SECONDS,
     );
+    // Transitional fallback for refresh tokens issued before hashed storage was deployed.
+    if (!userIdStr) {
+      storedTokenId = refreshToken;
+      userIdStr = await this.redis.claimRefreshToken(
+        `refresh:${refreshToken}`,
+        pendingKey,
+        REFRESH_PENDING_TTL_SECONDS,
+      );
+    }
     if (!userIdStr) {
       if (await this.redis.get(pendingKey)) {
         for (let attempt = 0; attempt < REFRESH_RESULT_POLL_ATTEMPTS; attempt += 1) {
-          await new Promise((resolve) =>
-            setTimeout(resolve, REFRESH_RESULT_POLL_INTERVAL_MS),
-          );
+          await new Promise((resolve) => setTimeout(resolve, REFRESH_RESULT_POLL_INTERVAL_MS));
           const concurrentResult = await this.redis.get(resultKey);
           if (concurrentResult) {
-            return JSON.parse(concurrentResult) as Awaited<
-              ReturnType<AuthService['issueTokens']>
-            >;
+            return JSON.parse(concurrentResult) as Awaited<ReturnType<AuthService['issueTokens']>>;
           }
         }
       }
-      throw new AppException('INVALID_TOKEN', '리프레시 토큰이 유효하지 않습니다.', HttpStatus.UNAUTHORIZED);
+      throw new AppException(
+        'INVALID_TOKEN',
+        '리프레시 토큰이 유효하지 않습니다.',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
-    const user = await this.prisma.user.findUnique({ where: { id: BigInt(userIdStr) } });
-    if (!user) {
+    const [storedUserId, storedSessionVersionRaw] = userIdStr.split(':', 2);
+    const storedSessionVersion = Number(storedSessionVersionRaw ?? 0);
+    const user = await this.prisma.user.findUnique({ where: { id: BigInt(storedUserId) } });
+    if (
+      !user ||
+      !Number.isSafeInteger(storedSessionVersion) ||
+      user.sessionVersion !== storedSessionVersion
+    ) {
       await this.redis.del(pendingKey);
-      throw new AppException('USER_NOT_FOUND', '사용자를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+      if (user) {
+        await this.redis.sRem(`user:tokens:${user.id}`, storedTokenId);
+      }
+      throw new AppException(
+        'INVALID_TOKEN',
+        'Refresh token is invalid or has been revoked.',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     try {
-      const tokens = await this.issueTokens(user.id, user.email);
+      const tokens = await this.issueTokens(user.id, user.email, user.sessionVersion);
       await this.redis.set(resultKey, JSON.stringify(tokens), REFRESH_RESULT_TTL_SECONDS);
+      await this.redis.sRem(`user:tokens:${user.id}`, storedTokenId);
       await this.redis.del(pendingKey);
       return tokens;
     } catch (error) {
       await Promise.all([
-        this.redis.set(`refresh:${refreshToken}`, userIdStr, REFRESH_TTL_SECONDS),
+        this.redis.set(`refresh:${storedTokenId}`, userIdStr, REFRESH_TTL_SECONDS),
         this.redis.del(pendingKey),
       ]);
       throw error;
@@ -310,14 +356,24 @@ export class AuthService {
   }
 
   async logout(refreshToken: string): Promise<{ loggedOut: boolean }> {
-    await this.redis.del(`refresh:${refreshToken}`);
+    const tokenHash = createHash('sha256').update(refreshToken).digest('hex');
+    let storedTokenId = tokenHash;
+    let userIdStr = await this.redis.getAndDel(`refresh:${tokenHash}`);
+    if (!userIdStr) {
+      storedTokenId = refreshToken;
+      userIdStr = await this.redis.getAndDel(`refresh:${refreshToken}`);
+    }
+    if (userIdStr) {
+      const [storedUserId] = userIdStr.split(':', 1);
+      await this.redis.sRem(`user:tokens:${storedUserId}`, storedTokenId);
+    }
     return { loggedOut: true };
   }
 
   async passwordResetRequest(email: string): Promise<{ sent: boolean }> {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user || !user.passwordHash) {
-      this.logger.log(`[password-reset] no local account for ${email}`);
+      this.logger.log('[password-reset] request completed without a local account match');
       return { sent: true };
     }
 
@@ -335,7 +391,7 @@ export class AuthService {
     const code = String(randomInt(100000, 1000000));
     const isProd = (this.configService.get<string>('nodeEnv') ?? '') === 'production';
     if (isProd) {
-      this.logger.log(`Password reset OTP requested for ${email} (code not logged in production)`);
+      this.logger.log('Password reset OTP requested (address and code omitted in production)');
     } else {
       this.logger.log(`Password reset OTP for ${email}: ${code}`);
     }
@@ -379,7 +435,7 @@ export class AuthService {
     const passwordHash = await bcrypt.hash(dto.newPassword, 10);
     await this.prisma.user.update({
       where: { id: user.id },
-      data: { passwordHash },
+      data: { passwordHash, sessionVersion: { increment: 1 } },
     });
 
     // 비밀번호 변경 후 해당 사용자의 모든 활성 세션 무효화
@@ -387,8 +443,8 @@ export class AuthService {
     const activeTokens = await this.redis.sMembers(userTokensKey);
     await this.redis.delMany([
       ...activeTokens.map((t) => `refresh:${t}`), // 리프레시 토큰 전체 삭제
-      `jwt:user:${user.id}`,                       // 액세스 토큰 캐시 무효화
-      userTokensKey,                               // 인덱스 정리
+      `jwt:user:${user.id}`, // 액세스 토큰 캐시 무효화
+      userTokensKey, // 인덱스 정리
       `pwdreset:otp:${dto.email}`,
       `pwdreset:otp:fail:${dto.email}`,
     ]);
@@ -401,21 +457,26 @@ export class AuthService {
     return { available: !taken };
   }
 
-  private async issueTokens(userId: bigint, email: string) {
+  private async issueTokens(userId: bigint, email: string, sessionVersion = 0) {
     const accessSecret = this.configService.get<string>('jwt.accessSecret');
     const accessExpiresIn = this.configService.get<string>('jwt.accessExpiresIn') ?? '30m';
 
     const accessToken = await this.jwtService.signAsync(
-      { sub: userId.toString(), email },
+      { sub: userId.toString(), email, sv: sessionVersion },
       { secret: accessSecret, expiresIn: accessExpiresIn },
     );
 
     const refreshToken = randomBytes(48).toString('hex');
+    const refreshTokenHash = createHash('sha256').update(refreshToken).digest('hex');
     const userTokensKey = `user:tokens:${userId}`;
     await Promise.all([
-      this.redis.set(`refresh:${refreshToken}`, userId.toString(), REFRESH_TTL_SECONDS),
+      this.redis.set(
+        `refresh:${refreshTokenHash}`,
+        `${userId}:${sessionVersion}`,
+        REFRESH_TTL_SECONDS,
+      ),
       // 역방향 인덱스: 사용자별 활성 리프레시 토큰 집합 (비밀번호 재설정 시 일괄 무효화에 사용)
-      this.redis.sAdd(userTokensKey, refreshToken),
+      this.redis.sAdd(userTokensKey, refreshTokenHash),
       this.redis.expire(userTokensKey, REFRESH_TTL_SECONDS + 3600),
     ]);
 

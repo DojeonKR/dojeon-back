@@ -54,6 +54,7 @@ model User {
   isAgeVerified         Boolean          @default(false) @map("is_age_verified")
   isOnboarded           Boolean          @default(false) @map("is_onboarded")
   role                  String           @default("user") @map("role")
+  sessionVersion        Int              @default(0) @map("session_version")
   createdAt             DateTime         @default(now()) @map("created_at")
   updatedAt             DateTime         @updatedAt @map("updated_at")
 

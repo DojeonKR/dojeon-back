@@ -40,7 +40,7 @@ export class EmailProcessor extends WorkerHost {
         const active = await this.redis.get(data.otpRedisKey);
         if (active !== data.code) {
           this.logger.warn(
-            `Skipping stale OTP email job ${job.id} for ${data.to} (Redis no longer has this code)`,
+            `Skipping stale OTP email job ${job.id} (Redis no longer has this code)`,
           );
           return true;
         }

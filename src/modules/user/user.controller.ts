@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Patch, Post, Query } from '@nestjs/commo
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CurrentUser, JwtPayloadUser } from '../../common/decorators/current-user.decorator';
+import { ReauthenticationDto } from './dto/reauthentication.dto';
 import { PatchUserDto } from './dto/patch-user.dto';
 import { PresignedProfileImageDto } from './dto/presigned-profile-image.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
@@ -155,8 +156,8 @@ export class UserController {
     schema: { example: successExample({ deleted: true }) },
   })
   @Delete('me')
-  async deleteMe(@CurrentUser() user: JwtPayloadUser) {
-    return this.userService.deleteAccount(user.userId);
+  async deleteMe(@CurrentUser() user: JwtPayloadUser, @Body() dto: ReauthenticationDto) {
+    return this.userService.deleteAccount(user.userId, dto);
   }
 
   @ApiOperation({

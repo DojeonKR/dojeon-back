@@ -7,6 +7,8 @@ import {
   IsString,
   IsTimeZone,
   Length,
+  Max,
+  MaxLength,
   Min,
 } from 'class-validator';
 
@@ -54,6 +56,7 @@ export class PatchUserDto {
   @ApiPropertyOptional({ description: '전화번호', example: '010-1234-5678' })
   @IsOptional()
   @IsString()
+  @MaxLength(32)
   phoneNumber?: string;
 
   @ApiPropertyOptional({ description: '생년월일 (YYYY-MM-DD)', example: '1995-03-15' })
@@ -63,6 +66,7 @@ export class PatchUserDto {
   @ApiPropertyOptional({ description: '모국어', example: 'English' })
   @IsOptional()
   @IsString()
+  @MaxLength(64)
   motherLanguage?: string;
 
   @ApiPropertyOptional({
@@ -101,6 +105,7 @@ export class PatchUserDto {
   @IsOptional()
   @IsInt()
   @Min(1)
+  @Max(10_080)
   weeklyGoalMin?: number | null;
 
   @ApiPropertyOptional({
@@ -134,6 +139,7 @@ export class PatchUserDto {
   @ApiPropertyOptional({ description: 'FCM 디바이스 토큰', example: 'fcm-token-abc...' })
   @IsOptional()
   @IsString()
+  @MaxLength(4096)
   deviceToken?: string;
 
   @ApiPropertyOptional({
@@ -142,6 +148,7 @@ export class PatchUserDto {
   })
   @IsOptional()
   @IsString()
+  @MaxLength(2048)
   profileImgUrl?: string;
 
   @ApiPropertyOptional({

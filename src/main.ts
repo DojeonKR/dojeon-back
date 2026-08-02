@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SwaggerModule } from '@nestjs/swagger';
+import { NextFunction, Request, Response } from 'express';
 import { AppModule } from './app.module';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -39,13 +40,31 @@ function buildCorsOptions(configService: ConfigService) {
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
+  const expressApp = app.getHttpAdapter().getInstance();
+  // There is exactly one trusted reverse-proxy hop (nginx -> API container).
+  expressApp.set('trust proxy', 1);
+  expressApp.disable('x-powered-by');
+  app.use((_req: Request, res: Response, next: NextFunction) => {
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Pragma', 'no-cache');
+    next();
+  });
   app.enableShutdownHooks();
   const configService = app.get(ConfigService);
   const nodeEnv = configService.get<string>('nodeEnv') ?? 'development';
   const isProd = nodeEnv === 'production';
   const corsRaw = configService.get<string>('corsOrigin')?.trim() ?? '';
-  if (isProd && !corsRaw) {
-    logger.error('production에서는 CORS_ORIGIN을 반드시 설정하세요. (비어 있으면 기동하지 않습니다)');
+  const accessSecret = configService.get<string>('jwt.accessSecret') ?? '';
+  const refreshSecret = configService.get<string>('jwt.refreshSecret') ?? '';
+  const unsafeSecret = (value: string) => value.length < 32 || value.startsWith('dev-');
+  if (isProd && (!corsRaw || corsRaw.split(',').map(normalizeOrigin).includes('*'))) {
+    logger.error(
+      'production에서는 CORS_ORIGIN을 반드시 설정하세요. (비어 있으면 기동하지 않습니다)',
+    );
+    process.exit(1);
+  }
+  if (isProd && (unsafeSecret(accessSecret) || unsafeSecret(refreshSecret))) {
+    logger.error('Production JWT secrets must be non-default values of at least 32 characters.');
     process.exit(1);
   }
   app.useGlobalPipes(

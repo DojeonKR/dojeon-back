@@ -11,15 +11,14 @@ describe('UserController', () => {
       getDashboard: jest.fn(),
       patchMe: jest.fn(),
       changePassword: jest.fn(),
+      deleteAccount: jest.fn(),
       getAchievementsList: jest.fn(),
       createProfileImagePresignedUrl: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
-      providers: [
-        { provide: UserService, useValue: mockUserService },
-      ],
+      providers: [{ provide: UserService, useValue: mockUserService }],
     }).compile();
 
     controller = module.get<UserController>(UserController);
@@ -45,7 +44,10 @@ describe('UserController', () => {
 
   it('should change password', async () => {
     mockUserService.changePassword.mockResolvedValue({ updated: true });
-    const res = await controller.changePassword({ userId: 1n } as any, { newPassword: 'Password1!' });
+    const res = await controller.changePassword({ userId: 1n } as any, {
+      currentPassword: 'OldPassword1!',
+      newPassword: 'Password1!',
+    });
     expect(res).toEqual({ updated: true });
   });
 
@@ -57,7 +59,11 @@ describe('UserController', () => {
 
   it('should get presigned url', async () => {
     mockUserService.createProfileImagePresignedUrl.mockResolvedValue({ uploadUrl: 'http' });
-    const res = await controller.presignedProfileImage({ userId: 1n } as any, { fileExtension: 'jpg', contentType: 'image/jpeg' });
+    const res = await controller.presignedProfileImage({ userId: 1n } as any, {
+      fileExtension: 'jpg',
+      contentType: 'image/jpeg',
+      fileSizeBytes: 1024,
+    });
     expect(res).toEqual({ uploadUrl: 'http' });
   });
 });

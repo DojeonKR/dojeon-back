@@ -4,6 +4,7 @@ import { NlpService } from './nlp.service';
 import { AnalyzeNlpDto } from './dto/analyze-nlp.dto';
 import { CurrentUser, JwtPayloadUser } from '../../common/decorators/current-user.decorator';
 import { successExample, errorExample } from '../../common/swagger/swagger-response.helper';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('NLP')
 @ApiBearerAuth('access-token')
@@ -12,8 +13,12 @@ export class NlpController {
   constructor(private readonly nlpService: NlpService) {}
 
   @Post('analyze')
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @HttpCode(HttpStatus.ACCEPTED)
-  @ApiOperation({ summary: '문장 분석 작업 요청', description: 'SQS에 작업을 넣고 jobId를 반환합니다.' })
+  @ApiOperation({
+    summary: '문장 분석 작업 요청',
+    description: 'SQS에 작업을 넣고 jobId를 반환합니다.',
+  })
   @ApiResponse({
     status: 202,
     description: '작업 접수',
@@ -22,7 +27,9 @@ export class NlpController {
   @ApiResponse({
     status: 503,
     description: '큐 미설정',
-    schema: { example: errorExample('NLP 큐가 설정되지 않았습니다.', 503, 'NLP_QUEUE_NOT_CONFIGURED') },
+    schema: {
+      example: errorExample('NLP 큐가 설정되지 않았습니다.', 503, 'NLP_QUEUE_NOT_CONFIGURED'),
+    },
   })
   async analyze(@CurrentUser() user: JwtPayloadUser, @Body() dto: AnalyzeNlpDto) {
     return this.nlpService.analyze(user.userId, dto.text);

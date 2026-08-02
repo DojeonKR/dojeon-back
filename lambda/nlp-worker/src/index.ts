@@ -14,7 +14,7 @@ async function processRecord(record: SQSRecord): Promise<void> {
     body = JSON.parse(record.body) as NlpMessageBody;
   } catch {
     // 파싱 불가 메시지는 재시도해도 동일하므로 itemFailures에 넣지 않음 (DLQ로 즉시 이동)
-    console.error(`[nlp-worker] Invalid SQS body (messageId=${record.messageId}): ${record.body?.slice(0, 200)}`);
+    console.error(`[nlp-worker] Invalid SQS body (messageId=${record.messageId})`);
     return;
   }
 

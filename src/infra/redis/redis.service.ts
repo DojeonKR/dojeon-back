@@ -96,18 +96,16 @@ if val then
 end
 return val
 `;
-    const result = await this.client.eval(
-      script,
-      2,
-      tokenKey,
-      pendingKey,
-      pendingTtlSeconds,
-    );
+    const result = await this.client.eval(script, 2, tokenKey, pendingKey, pendingTtlSeconds);
     return typeof result === 'string' ? result : null;
   }
 
   async sAdd(key: string, member: string): Promise<void> {
     await this.client.sadd(key, member);
+  }
+
+  async sRem(key: string, member: string): Promise<void> {
+    await this.client.srem(key, member);
   }
 
   async sMembers(key: string): Promise<string[]> {

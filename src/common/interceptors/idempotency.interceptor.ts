@@ -4,6 +4,7 @@ import {
   ExecutionContext,
   CallHandler,
   ConflictException,
+  BadRequestException,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
@@ -13,7 +14,9 @@ import { RedisService } from '../../infra/redis/redis.service';
 import { Request, Response } from 'express';
 import { createHash } from 'crypto';
 
-const TTL_SECONDS = 86400;
+const TTL_SECONDS = 3600;
+const QUOTA_TTL_SECONDS = 3600;
+const MAX_NEW_KEYS_PER_HOUR = 300;
 /** 동일 키 동시 요청이 처리 완료되길 기다리는 최대 시간 (ms) */
 const LOCK_TTL_SECONDS = 30;
 const LOCK_POLL_INTERVAL_MS = 100;
@@ -34,19 +37,33 @@ export class IdempotencyInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const req = context.switchToHttp().getRequest<Request>();
     const res = context.switchToHttp().getResponse<Response>();
-    const key = req.headers['idempotency-key'] as string | undefined;
-    if (!key) {
+    const key = req.headers['idempotency-key'];
+    if (key === undefined) {
       return next.handle();
     }
+    if (
+      typeof key !== 'string' ||
+      key.length === 0 ||
+      key.length > 128 ||
+      !/^[A-Za-z0-9._:-]+$/.test(key)
+    ) {
+      throw new BadRequestException(
+        'Idempotency-Key must be 1-128 ASCII letters, numbers, dot, underscore, colon, or hyphen.',
+      );
+    }
 
-    const userId = (req as Request & { user?: { userId: bigint } }).user?.userId?.toString() ?? 'anon';
+    const userId = (req as Request & { user?: { userId: bigint } }).user?.userId?.toString();
+    const principal = userId ? `user:${userId}` : `ip:${req.ip}`;
+    const keyHash = createHash('sha256').update(key).digest('hex');
     const bodyHash = createHash('sha256')
       .update(JSON.stringify(req.body ?? {}))
       .digest('hex');
-    const redisKey = `idempotency:${req.method}:${req.path}:${userId}:${key}`;
-    const lockKey = `idempotency:lock:${req.method}:${req.path}:${userId}:${key}`;
+    const namespace = `${req.method}:${req.path}:${principal}:${keyHash}`;
+    const redisKey = `idempotency:${namespace}`;
+    const lockKey = `idempotency:lock:${namespace}`;
+    const quotaKey = `idempotency:quota:${principal}`;
 
-    return from(this.processIdempotent(redisKey, lockKey, bodyHash, res, next)).pipe(
+    return from(this.processIdempotent(redisKey, lockKey, quotaKey, bodyHash, res, next)).pipe(
       switchMap((result) => {
         return new Observable((subscriber) => {
           subscriber.next(result);
@@ -59,6 +76,7 @@ export class IdempotencyInterceptor implements NestInterceptor {
   private async processIdempotent(
     redisKey: string,
     lockKey: string,
+    quotaKey: string,
     bodyHash: string,
     res: Response,
     next: CallHandler,
@@ -84,12 +102,15 @@ export class IdempotencyInterceptor implements NestInterceptor {
 
     // 4. 잠금 획득 성공 → 핸들러 실행
     try {
+      const newKeys = await this.redis.incrWithTtlOnFirst(quotaKey, QUOTA_TTL_SECONDS);
+      if (newKeys > MAX_NEW_KEYS_PER_HOUR) {
+        throw new HttpException(
+          'Too many new idempotency keys. Try again later.',
+          HttpStatus.TOO_MANY_REQUESTS,
+        );
+      }
       const data = await lastValueFrom(next.handle());
-      await this.redis.set(
-        redisKey,
-        JSON.stringify({ bodyHash, response: data }),
-        TTL_SECONDS,
-      );
+      await this.redis.set(redisKey, JSON.stringify({ bodyHash, response: data }), TTL_SECONDS);
       return data;
     } finally {
       // 잠금 해제 (실패해도 TTL로 자동 만료)
@@ -97,11 +118,7 @@ export class IdempotencyInterceptor implements NestInterceptor {
     }
   }
 
-  private async pollForResult(
-    redisKey: string,
-    bodyHash: string,
-    res: Response,
-  ): Promise<unknown> {
+  private async pollForResult(redisKey: string, bodyHash: string, res: Response): Promise<unknown> {
     const deadline = Date.now() + LOCK_MAX_WAIT_MS;
     while (Date.now() < deadline) {
       await new Promise((r) => setTimeout(r, LOCK_POLL_INTERVAL_MS));

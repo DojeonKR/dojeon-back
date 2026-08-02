@@ -25,7 +25,11 @@ describe('UserService', () => {
   let mockPrismaService: any;
   let mockConfigService: any;
   let mockLearningService: any;
-  const mockRedisService = { del: jest.fn().mockResolvedValue(undefined) };
+  const mockRedisService = {
+    del: jest.fn().mockResolvedValue(undefined),
+    sMembers: jest.fn().mockResolvedValue([]),
+    delMany: jest.fn().mockResolvedValue(undefined),
+  };
 
   beforeEach(async () => {
     mockPrismaService = {
@@ -111,11 +115,39 @@ describe('UserService', () => {
   describe('changePassword', () => {
     it('should change password successfully', async () => {
       (bcrypt.hash as jest.Mock).mockResolvedValue('new_hash');
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        passwordHash: 'old_hash',
+        socialProvider: null,
+        socialUid: null,
+      });
       mockPrismaService.user.update.mockResolvedValue({ id: 1n });
 
-      const res = await service.changePassword(1n, { newPassword: 'Password1!' });
+      const res = await service.changePassword(1n, {
+        currentPassword: 'OldPassword1!',
+        newPassword: 'Password1!',
+      });
       expect(res.updated).toBe(true);
-      expect(mockRedisService.del).toHaveBeenCalledWith('jwt:user:1');
+      expect(mockRedisService.delMany).toHaveBeenCalledWith(
+        expect.arrayContaining(['jwt:user:1', 'user:tokens:1']),
+      );
+    });
+
+    it('should reject a password change without the correct current password', async () => {
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        passwordHash: 'old_hash',
+        socialProvider: null,
+        socialUid: null,
+      });
+
+      await expect(
+        service.changePassword(1n, {
+          currentPassword: 'wrong',
+          newPassword: 'Password1!',
+        }),
+      ).rejects.toThrow(AppException);
+      expect(mockPrismaService.user.update).not.toHaveBeenCalled();
     });
   });
 
@@ -159,6 +191,7 @@ describe('UserService', () => {
       const res = await service.createProfileImagePresignedUrl(1n, {
         fileExtension: 'jpg',
         contentType: 'image/jpeg',
+        fileSizeBytes: 1024,
       });
       expect(res.uploadUrl).toBe('https://mock-presigned-url.com');
       expect(res.fileUrl).toContain('cloudfront');

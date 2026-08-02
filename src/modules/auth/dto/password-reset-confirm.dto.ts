@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, Length, Matches, MinLength } from 'class-validator';
+import { IsEmail, IsString, Length, Matches, MaxLength, MinLength } from 'class-validator';
 
 export class PasswordResetConfirmDto {
   @ApiProperty({ example: 'user@example.com' })
   @IsEmail()
+  @MaxLength(254)
   email!: string;
 
   @ApiProperty({ description: '이메일로 받은 6자리 인증 코드', example: '123456' })
@@ -17,6 +18,7 @@ export class PasswordResetConfirmDto {
   })
   @IsString()
   @MinLength(8)
+  @MaxLength(128)
   @Matches(/[A-Z]/, { message: '비밀번호에 대문자가 1자 이상 포함되어야 합니다.' })
   @Matches(/[a-z]/, { message: '비밀번호에 소문자가 1자 이상 포함되어야 합니다.' })
   @Matches(/[0-9]/, { message: '비밀번호에 숫자가 1자 이상 포함되어야 합니다.' })
