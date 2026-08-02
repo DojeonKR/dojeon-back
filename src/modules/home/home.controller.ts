@@ -21,9 +21,10 @@ export class HomeController {
     schema: {
       example: successExample({
         nickname: '도전이',
+        timezone: 'Asia/Jerusalem',
         dailyStreak: 7,
         todayGoal: { targetMin: 30, studiedMin: 15 },
-        weekGoal: { targetMin: 210, studiedMin: 45 },
+        weekGoal: { targetMin: 210, studiedMin: 45, isConfigured: true },
         weeklyAttendance: [true, true, false, false, false, false, false],
         lastLesson: {
           courseId: 1,

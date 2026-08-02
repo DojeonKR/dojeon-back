@@ -7,6 +7,7 @@ describe('HomeService', () => {
   let service: HomeService;
 
   beforeEach(async () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-08-02T12:00:00.000Z'));
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         HomeService,
@@ -17,16 +18,31 @@ describe('HomeService', () => {
               findUnique: jest.fn().mockResolvedValue({
                 nickname: 'Lior',
                 dailyGoalMin: 15,
+                weeklyGoalMin: null,
+                timezone: 'UTC',
                 stats: { currentStreak: 5 },
               }),
             },
-            userSectionLog: {
-              aggregate: jest
+            userDailyActivity: {
+              findMany: jest
                 .fn()
-                .mockResolvedValueOnce({ _sum: { totalStaySeconds: 180 } })
-                .mockResolvedValueOnce({ _sum: { totalStaySeconds: 600 } }),
+                .mockResolvedValueOnce([
+                  {
+                    activityDate: new Date('2026-08-01T00:00:00.000Z'),
+                    studySeconds: 420,
+                    goalAchieved: true,
+                  },
+                  {
+                    activityDate: new Date('2026-08-02T00:00:00.000Z'),
+                    studySeconds: 180,
+                    goalAchieved: true,
+                  },
+                ])
+                .mockResolvedValueOnce([
+                  { activityDate: new Date('2026-08-02T00:00:00.000Z') },
+                  { activityDate: new Date('2026-08-01T00:00:00.000Z') },
+                ]),
             },
-            userAttendance: { findMany: jest.fn().mockResolvedValue([]) },
           },
         },
         {
@@ -44,10 +60,15 @@ describe('HomeService', () => {
 
     expect(result).toMatchObject({
       nickname: 'Lior',
-      dailyStreak: 5,
+      timezone: 'UTC',
+      dailyStreak: 2,
       todayGoal: { targetMin: 15, studiedMin: 3 },
-      weekGoal: { targetMin: 105, studiedMin: 10 },
+      weekGoal: { targetMin: 105, studiedMin: 10, isConfigured: false },
     });
     expect(result).not.toHaveProperty('userFirstName');
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 });

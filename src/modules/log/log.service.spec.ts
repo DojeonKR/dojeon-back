@@ -6,6 +6,7 @@ import { SectionProgressDto } from './dto/section-progress.dto';
 import { AppException } from '../../common/exceptions/app.exception';
 import { SECTION_EVENT_QUEUE } from './log-event.queue';
 import { AchievementService } from '../achievement/achievement.service';
+import { ScrapType } from '@prisma/client';
 
 describe('LogService - saveSectionProgress', () => {
   let service: LogService;
@@ -20,14 +21,46 @@ describe('LogService - saveSectionProgress', () => {
       section: { findUnique: jest.fn(), findFirst: jest.fn(), update: jest.fn() },
       userSectionLog: { upsert: jest.fn(), count: jest.fn(), findUnique: jest.fn() },
       userSectionPageLog: { upsert: jest.fn() },
-      userStats: { update: jest.fn() },
+      userDailyActivity: {
+        findUnique: jest.fn().mockResolvedValue(null),
+        upsert: jest.fn().mockImplementation(({ create }) =>
+          Promise.resolve({
+            ...create,
+            goalAchieved: false,
+            dailyGoalMinSnapshot: create.dailyGoalMinSnapshot ?? null,
+          }),
+        ),
+        updateMany: jest.fn().mockResolvedValue({ count: 0 }),
+        findMany: jest.fn().mockResolvedValue([]),
+        findFirst: jest.fn().mockResolvedValue(null),
+      },
+      userStats: {
+        findUnique: jest.fn().mockResolvedValue({ currentStreak: 0, maxStreak: 0 }),
+        update: jest.fn(),
+        updateMany: jest.fn(),
+      },
     };
 
     mockPrismaService = {
       $transaction: jest.fn().mockImplementation((cb) => cb(mockTx)),
       section: { findUnique: jest.fn() },
+      sectionQuestion: { findFirst: jest.fn() },
+      userSectionQuestionStat: { upsert: jest.fn() },
+      user: {
+        findUnique: jest.fn().mockResolvedValue({ timezone: 'UTC', dailyGoalMin: 15 }),
+      },
       userSectionLog: { findUnique: jest.fn() },
       userSectionPageLog: { findMany: jest.fn() },
+      sectionCard: { findUnique: jest.fn() },
+      sectionMaterial: { findUnique: jest.fn() },
+      scrap: {
+        updateMany: jest.fn(),
+        findFirst: jest.fn(),
+        findFirstOrThrow: jest.fn(),
+        findUnique: jest.fn(),
+        findUniqueOrThrow: jest.fn(),
+        create: jest.fn(),
+      },
     };
 
     mockSectionEventQueue = { add: jest.fn().mockResolvedValue(undefined) };
@@ -84,7 +117,7 @@ describe('LogService - saveSectionProgress', () => {
       expect.objectContaining({ type: 'section.completed', userId: '1' }),
       expect.any(Object),
     );
-    expect(mockTx.userStats.update).toHaveBeenCalled();
+    expect(mockTx.userDailyActivity.upsert).toHaveBeenCalled();
     expect(mockAchievementService.checkStatBadges).toHaveBeenCalledWith(mockTx, 1n);
   });
 
@@ -150,7 +183,7 @@ describe('LogService - saveSectionProgress', () => {
   it('should accumulate stay time for the specified page', async () => {
     mockPrismaService.section.findUnique.mockResolvedValue({
       id: 1,
-      type: 'VOCAB',
+      type: ScrapType.VOCAB,
       totalPages: 5,
       lessonId: 10,
       orderNum: 1,
@@ -255,5 +288,132 @@ describe('LogService - saveSectionProgress', () => {
       { pageNumber: 1, stayTimeSeconds: 30 },
     ]);
     expect(result.difficultyCounts).toEqual({ easy: 3, normal: 5, hard: 2 });
+  });
+
+  it('should atomically increment the per-user section question counter', async () => {
+    mockPrismaService.section.findUnique.mockResolvedValue({ id: 1 });
+    mockPrismaService.sectionQuestion.findFirst.mockResolvedValue({
+      id: 11,
+      answer: '정답',
+      explanation: null,
+    });
+
+    const result = await service.checkSectionQuestion(1n, 1, {
+      questionId: 11,
+      userAnswer: '오답',
+    });
+
+    expect(result).toEqual({ correct: false });
+    expect(mockPrismaService.userSectionQuestionStat.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { userId_questionId: { userId: 1n, questionId: 11 } },
+        create: expect.objectContaining({ correctCount: 0, wrongCount: 1 }),
+        update: expect.objectContaining({ wrongCount: { increment: 1 } }),
+      }),
+    );
+  });
+
+  it('should mark the local daily goal achieved and calculate a goal-based streak', async () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-08-02T12:00:00.000Z'));
+    mockPrismaService.user.findUnique.mockResolvedValue({ timezone: 'UTC', dailyGoalMin: 1 });
+    mockPrismaService.section.findUnique.mockResolvedValue({
+      id: 1,
+      type: 'VOCAB',
+      totalPages: 5,
+      lessonId: 10,
+      orderNum: 1,
+      lesson: { courseId: 1, sections: [{ id: 1 }] },
+    });
+    mockTx.userSectionLog.count.mockResolvedValue(0);
+    mockTx.userSectionLog.findUnique.mockResolvedValue(null);
+    mockTx.userSectionLog.upsert.mockResolvedValue({
+      isCompleted: false,
+      maxPageReached: 1,
+      totalStaySeconds: 60,
+      difficulty: null,
+    });
+    mockTx.userDailyActivity.upsert.mockResolvedValue({
+      activityDate: new Date('2026-08-02T00:00:00.000Z'),
+      studySeconds: 60,
+      dailyGoalMinSnapshot: 1,
+      goalAchieved: false,
+    });
+    mockTx.userDailyActivity.updateMany.mockResolvedValue({ count: 1 });
+    mockTx.userDailyActivity.findMany.mockResolvedValue([
+      { activityDate: new Date('2026-08-02T00:00:00.000Z') },
+    ]);
+    mockTx.section.findFirst.mockResolvedValue(null);
+
+    await service.saveSectionProgress(1n, 1, {
+      currentPage: 1,
+      stayTimeSeconds: 60,
+    });
+
+    expect(mockTx.userDailyActivity.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ goalAchieved: false }),
+        data: expect.objectContaining({ goalAchieved: true }),
+      }),
+    );
+    expect(mockTx.userStats.update).toHaveBeenCalledWith({
+      where: { userId: 1n },
+      data: expect.objectContaining({ currentStreak: 1 }),
+    });
+    jest.useRealTimers();
+  });
+
+  it('should reactivate an existing notebook item and debounce the add counter', async () => {
+    const stateChangedAt = new Date('2026-08-02T12:00:00.000Z');
+    mockPrismaService.sectionCard.findUnique.mockResolvedValue({ id: 7, sectionId: 3 });
+    mockPrismaService.scrap.findFirst.mockResolvedValueOnce(null).mockResolvedValueOnce({ id: 9n });
+    mockPrismaService.scrap.updateMany.mockResolvedValue({ count: 1 });
+    mockPrismaService.scrap.findUniqueOrThrow.mockResolvedValue({
+      id: 9n,
+      cardId: 7,
+      isActive: true,
+      countedIsActive: false,
+      addCount: 1,
+      lastStateChangedAt: stateChangedAt,
+    });
+
+    const result = await service.createScrap(1n, {
+      type: 'VOCAB',
+      cardId: 7,
+      sectionId: 3,
+    });
+
+    expect(mockPrismaService.scrap.updateMany).toHaveBeenCalledWith({
+      where: { id: 9n, userId: 1n, isActive: false },
+      data: expect.objectContaining({ isActive: true }),
+    });
+    expect(mockSectionEventQueue.add).toHaveBeenCalledWith(
+      'scrap.state.settled',
+      expect.objectContaining({ scrapId: '9', stateChangedAt: stateChangedAt.toISOString() }),
+      expect.objectContaining({ delay: 3000 }),
+    );
+    expect(result).toEqual(expect.objectContaining({ isActive: true, addCount: 1 }));
+  });
+
+  it('should soft-delete a notebook item and debounce the remove counter', async () => {
+    mockPrismaService.scrap.findUnique.mockResolvedValue({
+      id: 9n,
+      userId: 1n,
+      isActive: true,
+      countedIsActive: true,
+    });
+    mockPrismaService.scrap.updateMany.mockResolvedValue({ count: 1 });
+
+    await expect(service.deleteScrap(1n, 9n)).resolves.toEqual({ deleted: true });
+    expect(mockPrismaService.scrap.updateMany).toHaveBeenCalledWith({
+      where: { id: 9n, userId: 1n, isActive: true },
+      data: expect.objectContaining({
+        isActive: false,
+      }),
+    });
+    expect(mockSectionEventQueue.add).toHaveBeenCalledWith(
+      'scrap.state.settled',
+      expect.objectContaining({ scrapId: '9' }),
+      expect.objectContaining({ delay: 3000 }),
+    );
   });
 });

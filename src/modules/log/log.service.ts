@@ -11,9 +11,65 @@ import { CheckSectionQuestionDto } from './dto/check-section-question.dto';
 import { normalizeQuizAnswer } from '../../common/utils/quiz-answer.util';
 import { SECTION_EVENT_QUEUE, SectionEventJobData } from './log-event.queue';
 import { AchievementService } from '../achievement/achievement.service';
+import {
+  addDaysToDateKey,
+  calendarDayDifference,
+  dateKeyToUtcDate,
+  localDateKey,
+} from '../../common/utils/local-date.util';
 
 /** 노트북 대시보드에서 코스별로 노출하는 단어 미리보기 개수 (프론트 미리보기 카드와 동일) */
 const DASHBOARD_PREVIEW_WORD_LIMIT = 5;
+const SCRAP_COUNTER_DEBOUNCE_MS = 3_000;
+
+const VOCAB_SCRAP_SELECT = {
+  id: true,
+  sectionId: true,
+  type: true,
+  cardId: true,
+  materialId: true,
+  isActive: true,
+  countedIsActive: true,
+  addCount: true,
+  removeCount: true,
+  lastStateChangedAt: true,
+  createdAt: true,
+  updatedAt: true,
+  card: {
+    select: {
+      id: true,
+      wordFront: true,
+      wordBack: true,
+      notes: true,
+      locales: true,
+      audioUrl: true,
+      sequence: true,
+    },
+  },
+} satisfies Prisma.ScrapSelect;
+
+const GRAMMAR_SCRAP_SELECT = {
+  id: true,
+  sectionId: true,
+  type: true,
+  cardId: true,
+  materialId: true,
+  isActive: true,
+  countedIsActive: true,
+  addCount: true,
+  removeCount: true,
+  lastStateChangedAt: true,
+  createdAt: true,
+  updatedAt: true,
+  material: {
+    select: {
+      id: true,
+      type: true,
+      sequence: true,
+      contentText: true,
+    },
+  },
+} satisfies Prisma.ScrapSelect;
 
 @Injectable()
 export class LogService {
@@ -56,7 +112,7 @@ export class LogService {
     if (userId !== undefined && cards.length > 0) {
       const cardIds = cards.map((c) => c.id);
       const scraps = await this.prisma.scrap.findMany({
-        where: { userId, type: ScrapType.VOCAB, cardId: { in: cardIds } },
+        where: { userId, type: ScrapType.VOCAB, isActive: true, cardId: { in: cardIds } },
         select: { id: true, cardId: true },
       });
       scrapMap = new Map(
@@ -152,10 +208,8 @@ export class LogService {
     sectionId: number,
     dto: CheckSectionQuestionDto,
   ): Promise<
-    | { correct: false }
-    | { correct: true; correctAnswer: string; explanation: string | null }
+    { correct: false } | { correct: true; correctAnswer: string; explanation: string | null }
   > {
-    void userId;
     const section = await this.prisma.section.findUnique({ where: { id: sectionId } });
     if (!section) {
       throw new AppException('SECTION_NOT_FOUND', '섹션을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
@@ -164,10 +218,29 @@ export class LogService {
       where: { id: dto.questionId, sectionId },
     });
     if (!q) {
-      throw new AppException('QUESTION_NOT_FOUND', '문제를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+      throw new AppException(
+        'QUESTION_NOT_FOUND',
+        '문제를 찾을 수 없습니다.',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    const correct =
-      normalizeQuizAnswer(dto.userAnswer) === normalizeQuizAnswer(q.answer);
+    const correct = normalizeQuizAnswer(dto.userAnswer) === normalizeQuizAnswer(q.answer);
+
+    await this.prisma.userSectionQuestionStat.upsert({
+      where: { userId_questionId: { userId, questionId: q.id } },
+      create: {
+        userId,
+        questionId: q.id,
+        correctCount: correct ? 1 : 0,
+        wrongCount: correct ? 0 : 1,
+      },
+      update: {
+        correctCount: correct ? { increment: 1 } : undefined,
+        wrongCount: correct ? undefined : { increment: 1 },
+        lastAnsweredAt: new Date(),
+      },
+    });
+
     if (!correct) {
       return { correct: false };
     }
@@ -179,23 +252,31 @@ export class LogService {
   }
 
   async saveSectionProgress(userId: bigint, sectionId: number, dto: SectionProgressDto) {
-    const section = await this.prisma.section.findUnique({
-      where: { id: sectionId },
-      include: {
-        lesson: {
-          include: { sections: { select: { id: true, orderNum: true, title: true, type: true } } },
+    const [section, userSettings] = await Promise.all([
+      this.prisma.section.findUnique({
+        where: { id: sectionId },
+        include: {
+          lesson: {
+            include: {
+              sections: { select: { id: true, orderNum: true, title: true, type: true } },
+            },
+          },
         },
-      },
-    });
+      }),
+      this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { timezone: true, dailyGoalMin: true },
+      }),
+    ]);
     if (!section) {
       throw new AppException('SECTION_NOT_FOUND', '섹션을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
     }
+    if (!userSettings) {
+      throw new AppException('USER_NOT_FOUND', '사용자를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+    }
 
     const totalPages = section.totalPages;
-    if (
-      dto.pageNumber !== undefined &&
-      (totalPages <= 0 || dto.pageNumber >= totalPages)
-    ) {
+    if (dto.pageNumber !== undefined && (totalPages <= 0 || dto.pageNumber >= totalPages)) {
       throw new AppException(
         'INVALID_PAGE_NUMBER',
         '페이지 번호가 섹션의 페이지 범위를 벗어났습니다.',
@@ -313,16 +394,14 @@ export class LogService {
         await tx.section.update({ where: { id: sectionId }, data: counterUpdate });
       }
 
-      const addedStudyMinutes =
-        Math.floor(log.totalStaySeconds / 60) -
-        Math.floor((beforeLog?.totalStaySeconds ?? 0) / 60);
-      if (addedStudyMinutes > 0) {
-        await tx.userStats.update({
-          where: { userId },
-          data: {
-            totalStudyMin: { increment: addedStudyMinutes },
-          },
-        });
+      if (dto.stayTimeSeconds > 0) {
+        await this.recordDailyActivity(
+          tx,
+          userId,
+          dto.stayTimeSeconds,
+          userSettings.timezone,
+          userSettings.dailyGoalMin,
+        );
       }
 
       const wasCompleted = beforeLog?.isCompleted ?? false;
@@ -330,8 +409,7 @@ export class LogService {
       const isFirstCompletion = !wasCompleted && nowCompleted;
       const completedAfter = completedBefore + (isFirstCompletion ? 1 : 0);
       const isLessonCompleted =
-        completedAfter === lessonSectionIds.length &&
-        completedBefore < lessonSectionIds.length;
+        completedAfter === lessonSectionIds.length && completedBefore < lessonSectionIds.length;
 
       if (isLessonCompleted) {
         await tx.userStats.update({
@@ -407,12 +485,126 @@ export class LogService {
     return result.response;
   }
 
+  private async recordDailyActivity(
+    tx: Prisma.TransactionClient,
+    userId: bigint,
+    stayTimeSeconds: number,
+    timezone: string,
+    dailyGoalMin: number | null,
+  ): Promise<void> {
+    const now = new Date();
+    const dateKey = localDateKey(now, timezone);
+    const activityDate = dateKeyToUtcDate(dateKey);
+    const existing = await tx.userDailyActivity.findUnique({
+      where: { userId_activityDate: { userId, activityDate } },
+      select: { dailyGoalMinSnapshot: true },
+    });
+
+    const activity = await tx.userDailyActivity.upsert({
+      where: { userId_activityDate: { userId, activityDate } },
+      create: {
+        userId,
+        activityDate,
+        timezone,
+        studySeconds: stayTimeSeconds,
+        dailyGoalMinSnapshot: dailyGoalMin,
+      },
+      update: {
+        timezone,
+        studySeconds: { increment: stayTimeSeconds },
+        dailyGoalMinSnapshot: existing?.dailyGoalMinSnapshot ?? dailyGoalMin,
+      },
+    });
+
+    const previousSeconds = Math.max(activity.studySeconds - stayTimeSeconds, 0);
+    const addedStudyMinutes =
+      Math.floor(activity.studySeconds / 60) - Math.floor(previousSeconds / 60);
+    if (addedStudyMinutes > 0) {
+      await tx.userStats.update({
+        where: { userId },
+        data: { totalStudyMin: { increment: addedStudyMinutes } },
+      });
+    }
+
+    const goalMin = activity.dailyGoalMinSnapshot;
+    if (!goalMin || activity.studySeconds < goalMin * 60 || activity.goalAchieved) {
+      await this.expireCachedGoalStreak(tx, userId, dateKey, activityDate);
+      return;
+    }
+
+    const claimed = await tx.userDailyActivity.updateMany({
+      where: { userId, activityDate, goalAchieved: false },
+      data: { goalAchieved: true, goalAchievedAt: now },
+    });
+    if (claimed.count === 0) return;
+
+    await this.recalculateGoalStreak(tx, userId, dateKey, activityDate);
+  }
+
+  private async expireCachedGoalStreak(
+    tx: Prisma.TransactionClient,
+    userId: bigint,
+    todayKey: string,
+    todayDate: Date,
+  ): Promise<void> {
+    const latestGoal = await tx.userDailyActivity.findFirst({
+      where: { userId, goalAchieved: true, activityDate: { lte: todayDate } },
+      orderBy: { activityDate: 'desc' },
+      select: { activityDate: true },
+    });
+    const latestGoalKey = latestGoal?.activityDate.toISOString().slice(0, 10);
+    if (latestGoalKey && calendarDayDifference(todayKey, latestGoalKey) <= 1) return;
+
+    await tx.userStats.updateMany({
+      where: { userId, currentStreak: { gt: 0 } },
+      data: { currentStreak: 0 },
+    });
+  }
+
+  private async recalculateGoalStreak(
+    tx: Prisma.TransactionClient,
+    userId: bigint,
+    achievedDateKey: string,
+    achievedDate: Date,
+  ): Promise<void> {
+    const rows = await tx.userDailyActivity.findMany({
+      where: {
+        userId,
+        goalAchieved: true,
+        activityDate: { lte: achievedDate },
+      },
+      orderBy: { activityDate: 'desc' },
+      select: { activityDate: true },
+      take: 366,
+    });
+
+    let streak = 0;
+    let expectedDateKey = achievedDateKey;
+    for (const row of rows) {
+      const rowDateKey = row.activityDate.toISOString().slice(0, 10);
+      if (rowDateKey !== expectedDateKey) break;
+      streak += 1;
+      expectedDateKey = addDaysToDateKey(expectedDateKey, -1);
+    }
+
+    const stats = await tx.userStats.findUnique({ where: { userId } });
+    if (!stats) return;
+    await tx.userStats.update({
+      where: { userId },
+      data: {
+        currentStreak: streak,
+        maxStreak: Math.max(stats.maxStreak, streak),
+        lastAttendanceDate: achievedDate,
+      },
+    });
+  }
+
   async getScrapsDashboard(userId: bigint) {
     // 3개 독립 쿼리를 Promise.all로 병렬 실행
     const [user, vocab, grammar] = await Promise.all([
       this.prisma.user.findUnique({ where: { id: userId } }),
       this.prisma.scrap.findMany({
-        where: { userId, type: ScrapType.VOCAB },
+        where: { userId, type: ScrapType.VOCAB, isActive: true },
         orderBy: { createdAt: 'desc' },
         // 코스별로 미리보기 개수를 채우려면 전체 상한이 코스 수만큼 여유가 있어야 한다.
         take: 50,
@@ -429,7 +621,7 @@ export class LogService {
         },
       }),
       this.prisma.scrap.findMany({
-        where: { userId, type: ScrapType.GRAMMAR },
+        where: { userId, type: ScrapType.GRAMMAR, isActive: true },
         orderBy: { createdAt: 'desc' },
         take: 10,
         select: {
@@ -507,6 +699,7 @@ export class LogService {
       where: {
         userId,
         type: ScrapType.VOCAB,
+        isActive: true,
         ...(cursor ? { id: { lt: BigInt(cursor) } } : {}),
       },
       orderBy: { id: 'desc' },
@@ -515,11 +708,26 @@ export class LogService {
         id: true,
         sectionId: true,
         createdAt: true,
-        card: { select: { id: true, wordFront: true, wordBack: true, notes: true, locales: true, audioUrl: true, sequence: true } },
+        card: {
+          select: {
+            id: true,
+            wordFront: true,
+            wordBack: true,
+            notes: true,
+            locales: true,
+            audioUrl: true,
+            sequence: true,
+          },
+        },
         section: {
           select: {
             lesson: {
-              select: { courseId: true, orderNum: true, title: true, course: { select: { title: true } } },
+              select: {
+                courseId: true,
+                orderNum: true,
+                title: true,
+                course: { select: { title: true } },
+              },
             },
           },
         },
@@ -549,6 +757,7 @@ export class LogService {
       where: {
         userId,
         type: ScrapType.GRAMMAR,
+        isActive: true,
         ...(cursor ? { id: { lt: BigInt(cursor) } } : {}),
       },
       orderBy: { id: 'desc' },
@@ -582,64 +791,159 @@ export class LogService {
   async createScrap(userId: bigint, dto: CreateScrapDto) {
     if (dto.type === ScrapType.VOCAB) {
       if (dto.cardId == null) {
-        throw new AppException('INVALID_SCRAP', 'VOCAB 타입에는 cardId가 필요합니다.', HttpStatus.BAD_REQUEST);
+        throw new AppException(
+          'INVALID_SCRAP',
+          'VOCAB 타입에는 cardId가 필요합니다.',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       const card = await this.prisma.sectionCard.findUnique({ where: { id: dto.cardId } });
       if (!card) {
         throw new AppException('CARD_NOT_FOUND', '카드를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
       }
-      return this.prisma.scrap.create({
-        data: {
-          userId,
-          sectionId: dto.sectionId ?? card.sectionId,
-          type: ScrapType.VOCAB,
-          cardId: dto.cardId,
-          materialId: null,
-        },
-        select: {
-          id: true,
-          sectionId: true,
-          type: true,
-          cardId: true,
-          materialId: true,
-          createdAt: true,
-          card: { select: { id: true, wordFront: true, wordBack: true, notes: true, locales: true, audioUrl: true, sequence: true } },
-        },
+      const sectionId = dto.sectionId ?? card.sectionId;
+      const active = await this.prisma.scrap.findFirst({
+        where: { userId, cardId: dto.cardId, isActive: true },
+        select: VOCAB_SCRAP_SELECT,
       });
+      if (active) return this.scheduleScrapCounterSettlement(active);
+
+      const inactive = await this.prisma.scrap.findFirst({
+        where: { userId, cardId: dto.cardId, isActive: false },
+        orderBy: { id: 'asc' },
+        select: { id: true },
+      });
+      const activated = inactive
+        ? await this.prisma.scrap.updateMany({
+            where: { id: inactive.id, userId, isActive: false },
+            data: {
+              sectionId,
+              isActive: true,
+              lastStateChangedAt: new Date(),
+            },
+          })
+        : { count: 0 };
+
+      if (inactive && activated.count > 0) {
+        const scrap = await this.prisma.scrap.findUniqueOrThrow({
+          where: { id: inactive.id },
+          select: VOCAB_SCRAP_SELECT,
+        });
+        return this.scheduleScrapCounterSettlement(scrap);
+      }
+
+      if (inactive) {
+        const scrap = await this.prisma.scrap.findFirstOrThrow({
+          where: { userId, cardId: dto.cardId, isActive: true },
+          select: VOCAB_SCRAP_SELECT,
+        });
+        return this.scheduleScrapCounterSettlement(scrap);
+      }
+
+      try {
+        const scrap = await this.prisma.scrap.create({
+          data: {
+            userId,
+            sectionId,
+            type: ScrapType.VOCAB,
+            cardId: dto.cardId,
+            materialId: null,
+            countedIsActive: false,
+            addCount: 0,
+          },
+          select: VOCAB_SCRAP_SELECT,
+        });
+        return this.scheduleScrapCounterSettlement(scrap);
+      } catch (error) {
+        if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== 'P2002') {
+          throw error;
+        }
+        const scrap = await this.prisma.scrap.findFirstOrThrow({
+          where: { userId, cardId: dto.cardId, isActive: true },
+          select: VOCAB_SCRAP_SELECT,
+        });
+        return this.scheduleScrapCounterSettlement(scrap);
+      }
     }
 
     if (dto.materialId == null) {
-      throw new AppException('INVALID_SCRAP', 'GRAMMAR 타입에는 materialId가 필요합니다.', HttpStatus.BAD_REQUEST);
+      throw new AppException(
+        'INVALID_SCRAP',
+        'GRAMMAR 타입에는 materialId가 필요합니다.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const mat = await this.prisma.sectionMaterial.findUnique({ where: { id: dto.materialId } });
     if (!mat) {
-      throw new AppException('MATERIAL_NOT_FOUND', '머티리얼을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+      throw new AppException(
+        'MATERIAL_NOT_FOUND',
+        '머티리얼을 찾을 수 없습니다.',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    return this.prisma.scrap.create({
-      data: {
-        userId,
-        sectionId: dto.sectionId ?? mat.sectionId,
-        type: ScrapType.GRAMMAR,
-        cardId: null,
-        materialId: dto.materialId,
-      },
-      select: {
-        id: true,
-        sectionId: true,
-        type: true,
-        cardId: true,
-        materialId: true,
-        createdAt: true,
-        material: {
-          select: {
-            id: true,
-            type: true,
-            sequence: true,
-            contentText: true,
-          },
-        },
-      },
+    const sectionId = dto.sectionId ?? mat.sectionId;
+    const active = await this.prisma.scrap.findFirst({
+      where: { userId, materialId: dto.materialId, isActive: true },
+      select: GRAMMAR_SCRAP_SELECT,
     });
+    if (active) return this.scheduleScrapCounterSettlement(active);
+
+    const inactive = await this.prisma.scrap.findFirst({
+      where: { userId, materialId: dto.materialId, isActive: false },
+      orderBy: { id: 'asc' },
+      select: { id: true },
+    });
+    const activated = inactive
+      ? await this.prisma.scrap.updateMany({
+          where: { id: inactive.id, userId, isActive: false },
+          data: {
+            sectionId,
+            isActive: true,
+            lastStateChangedAt: new Date(),
+          },
+        })
+      : { count: 0 };
+
+    if (inactive && activated.count > 0) {
+      const scrap = await this.prisma.scrap.findUniqueOrThrow({
+        where: { id: inactive.id },
+        select: GRAMMAR_SCRAP_SELECT,
+      });
+      return this.scheduleScrapCounterSettlement(scrap);
+    }
+
+    if (inactive) {
+      const scrap = await this.prisma.scrap.findFirstOrThrow({
+        where: { userId, materialId: dto.materialId, isActive: true },
+        select: GRAMMAR_SCRAP_SELECT,
+      });
+      return this.scheduleScrapCounterSettlement(scrap);
+    }
+
+    try {
+      const scrap = await this.prisma.scrap.create({
+        data: {
+          userId,
+          sectionId,
+          type: ScrapType.GRAMMAR,
+          cardId: null,
+          materialId: dto.materialId,
+          countedIsActive: false,
+          addCount: 0,
+        },
+        select: GRAMMAR_SCRAP_SELECT,
+      });
+      return this.scheduleScrapCounterSettlement(scrap);
+    } catch (error) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== 'P2002') {
+        throw error;
+      }
+      const scrap = await this.prisma.scrap.findFirstOrThrow({
+        where: { userId, materialId: dto.materialId, isActive: true },
+        select: GRAMMAR_SCRAP_SELECT,
+      });
+      return this.scheduleScrapCounterSettlement(scrap);
+    }
   }
 
   async deleteScrap(userId: bigint, scrapId: bigint) {
@@ -647,8 +951,58 @@ export class LogService {
     if (!scrap || scrap.userId !== userId) {
       throw new AppException('SCRAP_NOT_FOUND', '스크랩을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
     }
-    await this.prisma.scrap.delete({ where: { id: scrapId } });
+    if (!scrap.isActive) {
+      await this.scheduleScrapCounterSettlement(scrap);
+      return { deleted: true };
+    }
+
+    const stateChangedAt = new Date();
+    const updated = await this.prisma.scrap.updateMany({
+      where: { id: scrapId, userId, isActive: true },
+      data: {
+        isActive: false,
+        lastStateChangedAt: stateChangedAt,
+      },
+    });
+    if (updated.count > 0) {
+      await this.scheduleScrapCounterSettlement({
+        id: scrapId,
+        isActive: false,
+        countedIsActive: scrap.countedIsActive,
+        lastStateChangedAt: stateChangedAt,
+      });
+    } else {
+      const current = await this.prisma.scrap.findUniqueOrThrow({ where: { id: scrapId } });
+      await this.scheduleScrapCounterSettlement(current);
+    }
     return { deleted: true };
+  }
+
+  private async scheduleScrapCounterSettlement<
+    T extends {
+      id: bigint;
+      isActive: boolean;
+      countedIsActive: boolean;
+      lastStateChangedAt: Date;
+    },
+  >(scrap: T): Promise<T> {
+    if (scrap.isActive === scrap.countedIsActive) return scrap;
+
+    await this.sectionEventQueue.add(
+      'scrap.state.settled',
+      {
+        type: 'scrap.state.settled',
+        scrapId: scrap.id.toString(),
+        stateChangedAt: scrap.lastStateChangedAt.toISOString(),
+      },
+      {
+        delay: SCRAP_COUNTER_DEBOUNCE_MS,
+        jobId: `scrap-state-${scrap.id}-${scrap.lastStateChangedAt.getTime()}`,
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 2_000 },
+      },
+    );
+    return scrap;
   }
 
   private mapScrapVocab(s: {

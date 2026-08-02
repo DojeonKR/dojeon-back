@@ -13,8 +13,17 @@ import { successExample, errorExample } from '../../common/swagger/swagger-respo
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @ApiOperation({ summary: '내 정보 조회', description: '사용자 프로필, 출석 달력, 통계, 최근 학습 코스를 반환합니다. year/month 미지정 시 현재 연월 기준.' })
-  @ApiQuery({ name: 'year', description: '조회 연도 (기본: 현재 연도)', required: false, example: 2026 })
+  @ApiOperation({
+    summary: '내 정보 조회',
+    description:
+      '사용자 프로필, 출석 달력, 통계, 최근 학습 코스를 반환합니다. year/month 미지정 시 현재 연월 기준.',
+  })
+  @ApiQuery({
+    name: 'year',
+    description: '조회 연도 (기본: 현재 연도)',
+    required: false,
+    example: 2026,
+  })
   @ApiQuery({ name: 'month', description: '조회 월 (기본: 현재 월)', required: false, example: 4 })
   @ApiResponse({
     status: 200,
@@ -35,6 +44,8 @@ export class UserController {
           proficiencyLevel: 'Intermediate',
           ageGroup: '18-24',
           dailyGoalMin: 30,
+          weeklyGoalMin: 120,
+          timezone: 'Asia/Jerusalem',
           learningGoal: 'Tourism',
           subscriptionTier: 'FREE',
           subscriptionPlanId: null,
@@ -49,8 +60,11 @@ export class UserController {
           currentStreak: 3,
           bestStreak: 7,
           totalCompletedLessons: 2,
+          savedVocabularyCount: 12,
+          savedGrammarCount: 3,
         },
         attendance: { year: 2026, month: 4, activeDays: [1, 3, 5, 7] },
+        notebookCounts: { vocabulary: 12, grammar: 3 },
         recentCourse: {
           courseId: 1,
           courseTitle: '한국어 기초',
@@ -62,11 +76,22 @@ export class UserController {
           grammarPreview: '동사 + 아요/어요',
           overallProgressPercent: 60,
         },
-        recentAchievements: [{ badgeId: 1, title: 'Signed up', imageUrl: 'https://...', earnedAt: '2026-04-01T00:00:00.000Z' }],
+        recentAchievements: [
+          {
+            badgeId: 1,
+            title: 'Signed up',
+            imageUrl: 'https://...',
+            earnedAt: '2026-04-01T00:00:00.000Z',
+          },
+        ],
       }),
     },
   })
-  @ApiResponse({ status: 404, description: 'JWT와 불일치하는 사용자', schema: { example: errorExample('사용자를 찾을 수 없습니다.', 404, 'USER_NOT_FOUND') } })
+  @ApiResponse({
+    status: 404,
+    description: 'JWT와 불일치하는 사용자',
+    schema: { example: errorExample('사용자를 찾을 수 없습니다.', 404, 'USER_NOT_FOUND') },
+  })
   @Get('me')
   async getMe(
     @CurrentUser() user: JwtPayloadUser,
@@ -78,7 +103,11 @@ export class UserController {
     return this.userService.getDashboard(user.userId, year, month);
   }
 
-  @ApiOperation({ summary: '내 정보 수정 / 온보딩 정보 저장', description: '닉네임(온보딩 1단계), 모국어·수준·연령대·목표(온보딩 이후) 등을 수정합니다. 온보딩 단계에서도 이 API를 사용합니다.' })
+  @ApiOperation({
+    summary: '내 정보 수정 / 온보딩 정보 저장',
+    description:
+      '닉네임(온보딩 1단계), 모국어·수준·연령대·목표(온보딩 이후) 등을 수정합니다. 온보딩 단계에서도 이 API를 사용합니다.',
+  })
   @ApiResponse({
     status: 200,
     description: '정보 수정 성공',
@@ -87,7 +116,9 @@ export class UserController {
   @ApiResponse({
     status: 409,
     description: '닉네임·username 중복',
-    schema: { example: errorExample('이미 사용 중인 닉네임 또는 사용자명입니다.', 409, 'DUPLICATE_ENTRY') },
+    schema: {
+      example: errorExample('이미 사용 중인 닉네임 또는 사용자명입니다.', 409, 'DUPLICATE_ENTRY'),
+    },
   })
   @ApiResponse({
     status: 400,
@@ -101,7 +132,8 @@ export class UserController {
 
   @ApiOperation({
     summary: '비밀번호 변경 (로그인 상태)',
-    description: '새 비밀번호로 변경합니다. 소셜 전용 계정(hasPassword: false)은 프론트에서 이 기능을 비활성화해야 합니다.',
+    description:
+      '새 비밀번호로 변경합니다. 소셜 전용 계정(hasPassword: false)은 프론트에서 이 기능을 비활성화해야 합니다.',
   })
   @ApiResponse({
     status: 200,
@@ -127,7 +159,10 @@ export class UserController {
     return this.userService.deleteAccount(user.userId);
   }
 
-  @ApiOperation({ summary: '업적(뱃지) 목록 조회', description: '카테고리별 전체 뱃지 목록과 획득 여부, 획득 날짜를 반환합니다.' })
+  @ApiOperation({
+    summary: '업적(뱃지) 목록 조회',
+    description: '카테고리별 전체 뱃지 목록과 획득 여부, 획득 날짜를 반환합니다.',
+  })
   @ApiResponse({
     status: 200,
     description: '업적 목록 조회 성공',

@@ -22,13 +22,11 @@ describe('PracticeService', () => {
         findMany: jest.fn(),
         findFirst: jest.fn(),
       },
+      userPracticeQuestionStat: { upsert: jest.fn() },
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        PracticeService,
-        { provide: PrismaService, useValue: mockPrismaService },
-      ],
+      providers: [PracticeService, { provide: PrismaService, useValue: mockPrismaService }],
     }).compile();
 
     service = module.get<PracticeService>(PracticeService);
@@ -59,7 +57,9 @@ describe('PracticeService', () => {
 
     it('should return list of questions', async () => {
       mockPrismaService.practiceTopic.findUnique.mockResolvedValue({ id: 1 });
-      mockPrismaService.practiceQuestion.findMany.mockResolvedValue([{ id: 1, questionText: 'q1' }]);
+      mockPrismaService.practiceQuestion.findMany.mockResolvedValue([
+        { id: 1, questionText: 'q1' },
+      ]);
       const res = await service.listQuestions(1);
       expect(res.questions.length).toBe(1);
       expect(res.topicId).toBe(1);
@@ -69,13 +69,17 @@ describe('PracticeService', () => {
   describe('checkPracticeQuestion', () => {
     it('should throw if topic not found', async () => {
       mockPrismaService.practiceTopic.findUnique.mockResolvedValue(null);
-      await expect(service.checkPracticeQuestion(1n, 1, { questionId: 1, userAnswer: 'ans' })).rejects.toThrow(AppException);
+      await expect(
+        service.checkPracticeQuestion(1n, 1, { questionId: 1, userAnswer: 'ans' }),
+      ).rejects.toThrow(AppException);
     });
 
     it('should throw if question not found', async () => {
       mockPrismaService.practiceTopic.findUnique.mockResolvedValue({ id: 1 });
       mockPrismaService.practiceQuestion.findFirst.mockResolvedValue(null);
-      await expect(service.checkPracticeQuestion(1n, 1, { questionId: 1, userAnswer: 'ans' })).rejects.toThrow(AppException);
+      await expect(
+        service.checkPracticeQuestion(1n, 1, { questionId: 1, userAnswer: 'ans' }),
+      ).rejects.toThrow(AppException);
     });
 
     it('should return correct false for wrong answer', async () => {
@@ -86,19 +90,34 @@ describe('PracticeService', () => {
         .mockReturnValueOnce('real_ans'); // correct
       const res = await service.checkPracticeQuestion(1n, 1, { questionId: 1, userAnswer: 'ans' });
       expect(res.correct).toBe(false);
+      expect(mockPrismaService.userPracticeQuestionStat.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          create: expect.objectContaining({ correctCount: 0, wrongCount: 1 }),
+          update: expect.objectContaining({ wrongCount: { increment: 1 } }),
+        }),
+      );
     });
 
     it('should return correct true and metadata for correct answer', async () => {
       mockPrismaService.practiceTopic.findUnique.mockResolvedValue({ id: 1 });
-      mockPrismaService.practiceQuestion.findFirst.mockResolvedValue({ id: 1, answer: 'ans', explanation: 'exp' });
-      (quizAnswerUtil.normalizeQuizAnswer as jest.Mock)
-        .mockReturnValue('ans');
+      mockPrismaService.practiceQuestion.findFirst.mockResolvedValue({
+        id: 1,
+        answer: 'ans',
+        explanation: 'exp',
+      });
+      (quizAnswerUtil.normalizeQuizAnswer as jest.Mock).mockReturnValue('ans');
       const res = await service.checkPracticeQuestion(1n, 1, { questionId: 1, userAnswer: 'ans' });
       expect(res.correct).toBe(true);
       if (res.correct) {
         expect(res.correctAnswer).toBe('ans');
         expect(res.explanation).toBe('exp');
       }
+      expect(mockPrismaService.userPracticeQuestionStat.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          create: expect.objectContaining({ correctCount: 1, wrongCount: 0 }),
+          update: expect.objectContaining({ correctCount: { increment: 1 } }),
+        }),
+      );
     });
   });
 });

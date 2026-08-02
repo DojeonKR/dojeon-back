@@ -9,10 +9,7 @@ import { IdempotencyInterceptor } from '../../common/interceptors/idempotency.in
 import { SECTION_EVENT_QUEUE } from './log-event.queue';
 
 @Module({
-  imports: [
-    AchievementModule,
-    BullModule.registerQueue({ name: SECTION_EVENT_QUEUE }),
-  ],
+  imports: [AchievementModule, BullModule.registerQueue({ name: SECTION_EVENT_QUEUE })],
   controllers: [SectionsController, ScrapsController],
   providers: [LogService, LogEventProcessor, IdempotencyInterceptor],
 })

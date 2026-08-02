@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PracticeController } from './practice.controller';
 import { PracticeService } from './practice.service';
+import { RedisService } from '../../infra/redis/redis.service';
 
 describe('PracticeController', () => {
   let controller: PracticeController;
@@ -17,6 +18,15 @@ describe('PracticeController', () => {
       controllers: [PracticeController],
       providers: [
         { provide: PracticeService, useValue: mockPracticeService },
+        {
+          provide: RedisService,
+          useValue: {
+            get: jest.fn(),
+            set: jest.fn(),
+            setNx: jest.fn(),
+            del: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -41,7 +51,10 @@ describe('PracticeController', () => {
 
   it('should check question', async () => {
     mockPracticeService.checkPracticeQuestion.mockResolvedValue({ correct: true });
-    const res = await controller.checkQuestion({ userId: 1n } as any, 1, { questionId: 1, userAnswer: 'ans' });
+    const res = await controller.checkQuestion({ userId: 1n } as any, 1, {
+      questionId: 1,
+      userAnswer: 'ans',
+    });
     expect(res).toEqual({ correct: true });
   });
 });

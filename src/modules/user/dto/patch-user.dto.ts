@@ -1,7 +1,21 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsIn, IsInt, IsOptional, IsString, Length } from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsTimeZone,
+  Length,
+  Min,
+} from 'class-validator';
 
-export const PROFICIENCY_ONBOARDING = ['Nothing', 'Only hangul', 'Intermediate', 'Advanced'] as const;
+export const PROFICIENCY_ONBOARDING = [
+  'Nothing',
+  'Only hangul',
+  'Intermediate',
+  'Advanced',
+] as const;
 
 export const AGE_GROUP_ONBOARDING = [
   '0-17',
@@ -77,7 +91,26 @@ export class PatchUserDto {
   @IsOptional()
   @IsInt()
   @IsIn(DAILY_GOAL_MIN_ONBOARDING)
-  dailyGoalMin?: number;
+  dailyGoalMin?: number | null;
+
+  @ApiPropertyOptional({
+    description: '주간 목표 학습 시간(분). null이면 주간 목표를 사용하지 않습니다.',
+    example: 120,
+    nullable: true,
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  weeklyGoalMin?: number | null;
+
+  @ApiPropertyOptional({
+    description: '사용자 현지 날짜 계산용 IANA timezone',
+    example: 'Asia/Jerusalem',
+  })
+  @IsOptional()
+  @IsString()
+  @IsTimeZone()
+  timezone?: string;
 
   @ApiPropertyOptional({
     description: '학습 목표 (온보딩 UI 선택지와 동일한 문자열)',
@@ -103,12 +136,18 @@ export class PatchUserDto {
   @IsString()
   deviceToken?: string;
 
-  @ApiPropertyOptional({ description: '프로필 이미지 URL (S3 presigned 업로드 완료 후 저장)', example: 'https://bucket.s3.region.amazonaws.com/profiles/1/photo.jpg' })
+  @ApiPropertyOptional({
+    description: '프로필 이미지 URL (S3 presigned 업로드 완료 후 저장)',
+    example: 'https://bucket.s3.region.amazonaws.com/profiles/1/photo.jpg',
+  })
   @IsOptional()
   @IsString()
   profileImgUrl?: string;
 
-  @ApiPropertyOptional({ description: '온보딩 완료 여부. 온보딩 마지막 단계 완료 시 true로 전송.', example: true })
+  @ApiPropertyOptional({
+    description: '온보딩 완료 여부. 온보딩 마지막 단계 완료 시 true로 전송.',
+    example: true,
+  })
   @IsOptional()
   @IsBoolean()
   isOnboarded?: boolean;

@@ -31,6 +31,8 @@ describe('UserService', () => {
     mockPrismaService = {
       user: { findUnique: jest.fn(), update: jest.fn() },
       userAttendance: { findMany: jest.fn() },
+      userDailyActivity: { findMany: jest.fn().mockResolvedValue([]) },
+      scrap: { count: jest.fn().mockResolvedValue(0) },
       badge: { findMany: jest.fn() },
       userBadge: { findMany: jest.fn() },
     };
@@ -79,11 +81,13 @@ describe('UserService', () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
         id: 1n,
         email: 'test@example.com',
+        timezone: 'UTC',
+        weeklyGoalMin: null,
         userBadges: [],
-        stats: { totalStudyMin: 10 }
+        stats: { totalStudyMin: 10 },
       });
       mockPrismaService.userAttendance.findMany.mockResolvedValue([]);
-      
+
       const res = await service.getDashboard(1n, 2026, 4);
       expect(res.profile.email).toBe('test@example.com');
       expect(res.stats?.totalStudyMin).toBe(10);
@@ -137,7 +141,9 @@ describe('UserService', () => {
           imageUrl: 'https://...',
         },
       ]);
-      mockPrismaService.userBadge.findMany.mockResolvedValue([{ badgeId: 1, earnedAt: new Date() }]);
+      mockPrismaService.userBadge.findMany.mockResolvedValue([
+        { badgeId: 1, earnedAt: new Date() },
+      ]);
 
       const res = await service.getAchievementsList(1n);
       expect(res.totalEarned).toBe(1);
@@ -150,7 +156,10 @@ describe('UserService', () => {
 
   describe('createProfileImagePresignedUrl', () => {
     it('should return upload url', async () => {
-      const res = await service.createProfileImagePresignedUrl(1n, { fileExtension: 'jpg', contentType: 'image/jpeg' });
+      const res = await service.createProfileImagePresignedUrl(1n, {
+        fileExtension: 'jpg',
+        contentType: 'image/jpeg',
+      });
       expect(res.uploadUrl).toBe('https://mock-presigned-url.com');
       expect(res.fileUrl).toContain('cloudfront');
     });

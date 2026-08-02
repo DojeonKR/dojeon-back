@@ -14,6 +14,12 @@ export interface LessonCompletedJobData {
   lessonId: number;
 }
 
+export interface ScrapStateSettledJobData {
+  scrapId: string;
+  stateChangedAt: string;
+}
+
 export type SectionEventJobData =
   | ({ type: 'section.completed' } & SectionCompletedJobData)
-  | ({ type: 'lesson.completed' } & LessonCompletedJobData);
+  | ({ type: 'lesson.completed' } & LessonCompletedJobData)
+  | ({ type: 'scrap.state.settled' } & ScrapStateSettledJobData);

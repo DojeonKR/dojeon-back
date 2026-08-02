@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'crypto';
-import { Prisma } from '@prisma/client';
+import { Prisma, ScrapType } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AppException } from '../../common/exceptions/app.exception';
 import { PatchUserDto } from './dto/patch-user.dto';
@@ -13,6 +13,11 @@ import { PresignedProfileImageDto } from './dto/presigned-profile-image.dto';
 import { LearningService } from '../learning/learning.service';
 import { buildS3ObjectPublicUrl } from '../../common/utils/public-asset-url.util';
 import { RedisService } from '../../infra/redis/redis.service';
+import {
+  currentGoalStreakFromDates,
+  dateKeyToUtcDate,
+  localDateKey,
+} from '../../common/utils/local-date.util';
 
 const ACHIEVEMENT_CATEGORY_ORDER = [
   'onboarding',
@@ -71,6 +76,8 @@ export class UserService {
         proficiencyLevel: true,
         ageGroup: true,
         dailyGoalMin: true,
+        weeklyGoalMin: true,
+        timezone: true,
         learningGoal: true,
         subscriptionTier: true,
         subscriptionPlanId: true,
@@ -96,23 +103,46 @@ export class UserService {
     }
 
     const now = new Date();
-    const y = year ?? now.getUTCFullYear();
-    const mo = month ?? now.getUTCMonth() + 1;
+    const todayKey = localDateKey(now, user.timezone);
+    const [localYear, localMonth] = todayKey.split('-').map(Number);
+    const y = year ?? localYear;
+    const mo = month ?? localMonth;
 
     const start = new Date(Date.UTC(y, mo - 1, 1));
-    const end = new Date(Date.UTC(y, mo, 0));
+    const end = new Date(Date.UTC(y, mo, 1));
+    const todayDate = dateKeyToUtcDate(todayKey);
 
-    const attendances = await this.prisma.userAttendance.findMany({
-      where: {
-        userId,
-        attendanceDate: { gte: start, lte: end },
-      },
-      orderBy: { attendanceDate: 'asc' },
-    });
+    const [goalDays, streakDays, savedVocabularyCount, savedGrammarCount, recentCourse] =
+      await Promise.all([
+        this.prisma.userDailyActivity.findMany({
+          where: {
+            userId,
+            goalAchieved: true,
+            activityDate: { gte: start, lt: end },
+          },
+          orderBy: { activityDate: 'asc' },
+          select: { activityDate: true },
+        }),
+        this.prisma.userDailyActivity.findMany({
+          where: { userId, goalAchieved: true, activityDate: { lte: todayDate } },
+          orderBy: { activityDate: 'desc' },
+          select: { activityDate: true },
+          take: 366,
+        }),
+        this.prisma.scrap.count({
+          where: { userId, type: ScrapType.VOCAB, isActive: true },
+        }),
+        this.prisma.scrap.count({
+          where: { userId, type: ScrapType.GRAMMAR, isActive: true },
+        }),
+        this.learningService.getLastLessonResume(userId),
+      ]);
 
-    const activeDays = attendances.map((a) => a.attendanceDate.getUTCDate());
-
-    const recentCourse = await this.learningService.getLastLessonResume(userId);
+    const activeDays = goalDays.map((activity) => activity.activityDate.getUTCDate());
+    const currentStreak = currentGoalStreakFromDates(
+      streakDays.map((activity) => activity.activityDate),
+      todayKey,
+    );
 
     return {
       profile: {
@@ -128,6 +158,8 @@ export class UserService {
         proficiencyLevel: user.proficiencyLevel,
         ageGroup: user.ageGroup,
         dailyGoalMin: user.dailyGoalMin,
+        weeklyGoalMin: user.weeklyGoalMin,
+        timezone: user.timezone,
         learningGoal: user.learningGoal,
         subscriptionTier: user.subscriptionTier,
         subscriptionPlanId: user.subscriptionPlanId ?? null,
@@ -140,15 +172,21 @@ export class UserService {
       stats: user.stats
         ? {
             totalStudyMin: user.stats.totalStudyMin,
-            currentStreak: user.stats.currentStreak,
+            currentStreak,
             bestStreak: user.stats.maxStreak,
             totalCompletedLessons: user.stats.totalCompletedLessons,
+            savedVocabularyCount,
+            savedGrammarCount,
           }
         : null,
       attendance: {
         year: y,
         month: mo,
         activeDays,
+      },
+      notebookCounts: {
+        vocabulary: savedVocabularyCount,
+        grammar: savedGrammarCount,
       },
       recentCourse,
       recentAchievements: user.userBadges.map((ub) => ({
@@ -170,8 +208,11 @@ export class UserService {
     if (dto.proficiencyLevel !== undefined) data.proficiencyLevel = dto.proficiencyLevel;
     if (dto.ageGroup !== undefined) data.ageGroup = dto.ageGroup;
     if (dto.dailyGoalMin !== undefined) data.dailyGoalMin = dto.dailyGoalMin;
+    if (dto.weeklyGoalMin !== undefined) data.weeklyGoalMin = dto.weeklyGoalMin;
+    if (dto.timezone !== undefined) data.timezone = dto.timezone;
     if (dto.learningGoal !== undefined) data.learningGoal = dto.learningGoal;
-    if (dto.isPushNotificationOn !== undefined) data.isPushNotificationOn = dto.isPushNotificationOn;
+    if (dto.isPushNotificationOn !== undefined)
+      data.isPushNotificationOn = dto.isPushNotificationOn;
     if (dto.isMarketingAgreed !== undefined) data.isMarketingAgreed = dto.isMarketingAgreed;
     if (dto.deviceToken !== undefined) data.deviceToken = dto.deviceToken;
     if (dto.profileImgUrl !== undefined) data.profileImgUrl = dto.profileImgUrl;
@@ -191,7 +232,11 @@ export class UserService {
           HttpStatus.CONFLICT,
         );
       }
-      throw new AppException('UPDATE_FAILED', '프로필 수정에 실패했습니다.', HttpStatus.BAD_REQUEST);
+      throw new AppException(
+        'UPDATE_FAILED',
+        '프로필 수정에 실패했습니다.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -253,7 +298,11 @@ export class UserService {
 
   async createProfileImagePresignedUrl(userId: bigint, dto: PresignedProfileImageDto) {
     if (!this.bucket) {
-      throw new AppException('S3_NOT_CONFIGURED', 'S3가 설정되지 않았습니다.', HttpStatus.SERVICE_UNAVAILABLE);
+      throw new AppException(
+        'S3_NOT_CONFIGURED',
+        'S3가 설정되지 않았습니다.',
+        HttpStatus.SERVICE_UNAVAILABLE,
+      );
     }
     const key = `profiles/${userId}/${randomUUID()}.${dto.fileExtension}`;
     const command = new PutObjectCommand({

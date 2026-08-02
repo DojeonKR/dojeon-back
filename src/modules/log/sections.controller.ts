@@ -133,6 +133,8 @@ export class SectionsController {
     schema: { example: errorExample('문제를 찾을 수 없습니다.', 404, 'QUESTION_NOT_FOUND') },
   })
   @Post(':sectionId/questions/check')
+  @ApiHeader({ name: 'Idempotency-Key', description: '중복 채점 카운트 방지용 요청 키', required: false })
+  @UseInterceptors(IdempotencyInterceptor)
   async checkQuestion(
     @CurrentUser() user: JwtPayloadUser,
     @Param('sectionId', ParseIntPipe) sectionId: number,

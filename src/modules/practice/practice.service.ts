@@ -43,10 +43,8 @@ export class PracticeService {
     topicId: number,
     dto: CheckPracticeQuestionDto,
   ): Promise<
-    | { correct: false }
-    | { correct: true; correctAnswer: string; explanation: string | null }
+    { correct: false } | { correct: true; correctAnswer: string; explanation: string | null }
   > {
-    void userId;
     const topic = await this.prisma.practiceTopic.findUnique({ where: { id: topicId } });
     if (!topic) {
       throw new AppException('TOPIC_NOT_FOUND', '토픽을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
@@ -55,10 +53,29 @@ export class PracticeService {
       where: { id: dto.questionId, topicId },
     });
     if (!q) {
-      throw new AppException('QUESTION_NOT_FOUND', '문제를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+      throw new AppException(
+        'QUESTION_NOT_FOUND',
+        '문제를 찾을 수 없습니다.',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    const correct =
-      normalizeQuizAnswer(dto.userAnswer) === normalizeQuizAnswer(q.answer);
+    const correct = normalizeQuizAnswer(dto.userAnswer) === normalizeQuizAnswer(q.answer);
+
+    await this.prisma.userPracticeQuestionStat.upsert({
+      where: { userId_questionId: { userId, questionId: q.id } },
+      create: {
+        userId,
+        questionId: q.id,
+        correctCount: correct ? 1 : 0,
+        wrongCount: correct ? 0 : 1,
+      },
+      update: {
+        correctCount: correct ? { increment: 1 } : undefined,
+        wrongCount: correct ? undefined : { increment: 1 },
+        lastAnsweredAt: new Date(),
+      },
+    });
+
     if (!correct) {
       return { correct: false };
     }
